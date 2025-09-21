@@ -38,12 +38,12 @@ data class Scores(val scores: Map<Player, Int>) {
      * @return The target points required for the taker to win.
      */
     private fun getTargetForOudlers(oudlers: Int): Int =
-        when (oudlers) {
-          0 -> 56
-          1 -> 51
-          2 -> 41
-          else -> 36
-        }
+      when (oudlers) {
+        0 -> 56
+        1 -> 51
+        2 -> 41
+        else -> 36
+      }
 
     /**
      * Calculates the scores for a single round based on the round details and the game
