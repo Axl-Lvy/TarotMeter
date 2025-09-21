@@ -38,12 +38,12 @@ data class Scores(val scores: Map<Player, Int>) {
      * @return The target points required for the taker to win.
      */
     private fun getTargetForOudlers(oudlers: Int): Int =
-      when (oudlers) {
-        0 -> 56
-        1 -> 51
-        2 -> 41
-        else -> 36
-      }
+        when (oudlers) {
+          0 -> 56
+          1 -> 51
+          2 -> 41
+          else -> 36
+        }
 
     /**
      * Calculates the scores for a single round based on the round details and the game
@@ -68,30 +68,37 @@ data class Scores(val scores: Map<Player, Int>) {
       val result = mutableMapOf<Player, Int>()
       game.players.forEach { result[it] = 0 }
 
-      if (n == 3) {
-        // taker vs 2 defenders
-        result[taker] = value * 2
-        game.players.filter { it != taker }.forEach { result[it] = -value }
-      } else if (n == 4) {
-        // taker vs 3 defenders
-        result[taker] = value * 3
-        game.players.filter { it != taker }.forEach { result[it] = -value }
-      } else if (n == 5) {
-        // taker + partner vs 3 or 4 defenders
-        checkNotNull(round.partner) { "Partner must be set for 5-player game" }
-        game.players.forEach {
-          when (it) {
-            taker -> {
-              result[it] = value * 2
-            }
-            partner -> {
-              result[it] = value
-            }
-            else -> {
-              result[it] = -value
+      when (n) {
+        3 -> {
+          // taker vs 2 defenders
+          result[taker] = value * 2
+          game.players.filter { it != taker }.forEach { result[it] = -value }
+        }
+        4 -> {
+          // taker vs 3 defenders
+          result[taker] = value * 3
+          game.players.filter { it != taker }.forEach { result[it] = -value }
+        }
+        5 -> {
+          // taker + partner vs 3 or 4 defenders
+          checkNotNull(round.partner) { "Partner must be set for 5-player game" }
+          game.players.forEach {
+            when (it) {
+              taker -> {
+                result[it] = value * 2
+              }
+
+              partner -> {
+                result[it] = value
+              }
+
+              else -> {
+                result[it] = -value
+              }
             }
           }
         }
+        else -> error("The number of players must be 3, 4, or 5. Was: $n")
       }
       return Scores(result)
     }
