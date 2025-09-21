@@ -284,7 +284,7 @@ private fun HistoryScreen(app: AppState) {
 }
 
 @Composable
-private fun GameEditorScreen(app: AppState, gameId: String) {
+private fun GameEditorScreen(app: AppState, gameId: Int) {
   val game = app.getGame(gameId)
   if (game == null) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Game not found") }
@@ -304,7 +304,7 @@ private fun GameEditorScreen(app: AppState, gameId: String) {
             modifier = Modifier.weight(1f),
           ) {
             Text(p.name, fontWeight = FontWeight.Bold)
-            val total = app.totalScore(game, p.id)
+            val total = app.totalScore(game, p)
             Text(
               "$total",
               style = MaterialTheme.typography.titleMedium,
@@ -325,13 +325,14 @@ private fun GameEditorScreen(app: AppState, gameId: String) {
           modifier = Modifier.fillMaxWidth(),
         ) {
           Column(Modifier.padding(12.dp)) {
-            val taker = game.players.firstOrNull { it.id == r.takerId }?.name ?: "?"
-            val partner = r.partnerId?.let { id -> game.players.firstOrNull { it.id == id }?.name }
+            val taker = game.players.firstOrNull { it == r.taker }?.name ?: "?"
+            val partner = r.partner?.let { id -> game.players.firstOrNull { it == id }?.name }
             Text("${r.contract.title} – Taker: $taker" + (partner?.let { ", Partner: $it" } ?: ""))
-            Text("Oudlers: ${r.oudlerCount} – Points: ${r.cardPoints}")
+            Text("Oudlers: ${r.oudlerCount} – Points: ${r.takerPoints}")
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+              val roundScore = Scores.roundScores(r, game)
               game.players.forEach { p ->
-                val v = r.scores[p.id] ?: 0
+                val v = roundScore.forPlayer(p)
                 Text("${p.name.split(' ').first()}: ${if (v >= 0) "+$v" else "$v"}")
               }
             }
@@ -349,7 +350,6 @@ private fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
   var contract by remember { mutableStateOf(Contract.Garde) }
   var oudler by remember { mutableStateOf(1) }
   var pointsText by remember { mutableStateOf("41") }
-  var notes by remember { mutableStateOf("") }
 
   Surface(
     shape = RoundedCornerShape(12.dp),
@@ -382,27 +382,20 @@ private fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
           onValueChange = { pointsText = it.filter { ch -> ch.isDigit() }.take(2) },
           label = { Text("Card points (0-91)") },
         )
-        OutlinedTextField(
-          value = notes,
-          onValueChange = { notes = it },
-          label = { Text("Notes") },
-          modifier = Modifier.weight(1f),
-        )
         Button(
           onClick = {
-            val takerId = game.players[takerIndex.coerceIn(0, game.players.lastIndex)].id
-            val partnerId =
+            val taker = game.players[takerIndex.coerceIn(0, game.players.lastIndex)]
+            val partner =
               if (game.players.size == 5)
-                game.players[partnerIndex.coerceIn(0, game.players.lastIndex)].id
+                game.players[partnerIndex.coerceIn(0, game.players.lastIndex)]
               else null
             val round =
               Round(
-                takerId = takerId,
-                partnerId = if (partnerId == takerId) null else partnerId,
+                taker = taker,
+                partner = partner,
                 contract = contract,
                 oudlerCount = oudler,
-                cardPoints = pointsText.toIntOrNull()?.coerceIn(0, 91) ?: 0,
-                notes = notes,
+                takerPoints = pointsText.toIntOrNull()?.coerceIn(0, 91) ?: 0,
               )
             onAdd(round)
           }
@@ -410,13 +403,6 @@ private fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
           Text("Add Round")
         }
       }
-      val target = getTargetForOudlers(oudler)
-      val points = pointsText.toIntOrNull() ?: 0
-      val diff = points - target
-      val signOk = diff >= 0
-      val base = 25 + kotlin.math.abs(diff)
-      val preview = base * contract.multiplier * (if (signOk) 1 else -1)
-      Text("Preview result value: ${if (signOk) "+" else ""}$preview per defender")
     }
   }
 }

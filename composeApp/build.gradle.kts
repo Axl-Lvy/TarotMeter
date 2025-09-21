@@ -89,6 +89,7 @@ kotlin {
       implementation(libs.multiplatform.settings)
 
       // Backend and networking
+      implementation(libs.ktor.client.core)
       implementation(libs.supabase.database)
       implementation(libs.supabase.auth)
 
@@ -107,9 +108,16 @@ kotlin {
       configurations { implementation { exclude(group = "org.jetbrains", module = "annotations") } }
     }
 
+    androidMain.dependencies {
+      implementation(compose.preview)
+      implementation(libs.androidx.activity.compose)
+      implementation(libs.ktor.client.okhttp)
+    }
+
     jvmMain.dependencies {
       implementation(compose.desktop.currentOs)
       implementation(libs.kotlinx.coroutinesSwing)
+      implementation(libs.ktor.client.java)
     }
   }
 

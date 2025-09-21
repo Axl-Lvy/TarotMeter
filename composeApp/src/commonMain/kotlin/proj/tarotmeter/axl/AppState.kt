@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import kotlin.random.Random
 import proj.tarotmeter.axl.model.*
 
 sealed class Screen {
@@ -18,7 +17,7 @@ sealed class Screen {
 
   data object History : Screen()
 
-  data class GameEditor(val gameId: String) : Screen()
+  data class GameEditor(val gameId: Int) : Screen()
 }
 
 class AppState {
@@ -32,7 +31,7 @@ class AppState {
   init {
     // Seed with some sample players for quicker testing
     if (players.isEmpty()) {
-      repeat(5) { i -> players.add(Player(id = "P${i+1}", name = "Player ${i+1}")) }
+      repeat(5) { i -> players.add(Player(name = "Player ${i+1}")) }
     }
   }
 
@@ -41,45 +40,35 @@ class AppState {
   }
 
   fun addPlayer(name: String) {
-    val id = generateId("P")
-    players.add(Player(id, name))
+    players.add(Player(name))
   }
 
-  fun renamePlayer(id: String, newName: String) {
+  fun renamePlayer(id: Int, newName: String) {
     val idx = players.indexOfFirst { it.id == id }
-    if (idx >= 0) players[idx] = players[idx].copy(name = newName)
+    if (idx >= 0) players[idx].rename(newName)
   }
 
-  fun removePlayer(id: String) {
+  fun removePlayer(id: Int) {
     players.removeAll { it.id == id }
   }
 
   fun createGame(playerCount: Int): Game? {
     if (players.size < playerCount) return null
     val selected = players.take(playerCount)
-    val game = Game(id = generateId("G"), players = selected.toList())
+    val game = Game(players = selected.toList())
     games.add(0, game)
     currentScreen = Screen.GameEditor(game.id)
     return game
   }
 
-  fun getGame(id: String): Game? = games.find { it.id == id }
+  fun getGame(id: Int): Game? = games.find { it.id == id }
 
-  fun addRound(gameId: String, round: Round) {
+  fun addRound(gameId: Int, round: Round) {
     val game = getGame(gameId) ?: return
-    val computed = round.copy(scores = computeRoundScores(game, round))
-    game.rounds.add(computed)
+    game.rounds.add(round)
   }
 
-  fun totalScore(game: Game, playerId: String): Int = game.rounds.sumOf { it.scores[playerId] ?: 0 }
-
-  private fun generateId(prefix: String): String = buildString {
-    append(prefix)
-    append("-")
-    append(Random.nextInt(1000, 9999))
-    append("-")
-    append(idCounter++)
-  }
+  fun totalScore(game: Game, player: Player): Int = Scores.globalScores(game).scores[player] ?: 0
 
   companion object {
     private var idCounter: Int = 1
