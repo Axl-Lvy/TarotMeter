@@ -16,7 +16,6 @@ sonar {
     properties {
         property("sonar.projectKey", "Axl-Lvy_TarotMeter")
         property("sonar.organization", "axl-lvy")
-        property("sonar.host.url", "https://sonarcloud.io")
 
         property(
             "sonar.coverage.exclusions",
