@@ -66,15 +66,15 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
-      - name: Build and Analyze
+      - name: Analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           if [[ "${GITHUB_REF_NAME}" == "master" ]]; then
-            ./gradlew build sonar --no-configuration-cache --no-parallel --no-daemon \
+            ./gradlew sonar --no-configuration-cache --no-parallel --no-daemon \
               -Dsonar.branch.name=master
           else
-            ./gradlew build sonar --no-configuration-cache --no-parallel --no-daemon
+            ./gradlew sonar --no-configuration-cache --no-parallel --no-daemon
           fi
 
   # Check code formatting using ktfmt
