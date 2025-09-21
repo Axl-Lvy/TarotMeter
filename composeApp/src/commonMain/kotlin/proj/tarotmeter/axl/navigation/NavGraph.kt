@@ -30,8 +30,7 @@ fun AppNavHost(
   NavHost(navController = navController, startDestination = startDestination) {
     composable(Route.Home.route) {
       HomeScreen(
-        app = app,
-        onNewGame = { navController.navigate(Route.NewGame.route) },
+          onNewGame = { navController.navigate(Route.NewGame.route) },
         onPlayers = { navController.navigate(Route.Players.route) },
         onHistory = { navController.navigate(Route.History.route) },
         onSettings = { navController.navigate(Route.Settings.route) },
@@ -42,8 +41,7 @@ fun AppNavHost(
     composable(Route.NewGame.route) {
       NewGameScreen(
         app = app,
-        onBack = { navController.popBackStack() },
-        onGameCreated = { id -> navController.navigate(Route.Game(id)) },
+          onGameCreated = { id -> navController.navigate(Route.Game(id)) },
       )
     }
     composable(Route.History.route) {
