@@ -73,7 +73,7 @@ private fun HomeScreen(app: AppState) {
         "Tarot Meter",
         style =
           MaterialTheme.typography.headlineMedium.copy(
-            color = Color.White,
+            color = Color.Red,
             fontWeight = FontWeight.Bold,
           ),
       )
