@@ -19,48 +19,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import proj.tarotmeter.axl.AppState
-import proj.tarotmeter.axl.Screen
 import proj.tarotmeter.axl.model.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * The home screen of the application.
+ * Provides navigation buttons to other screens and a brief app introduction.
+ *
+ * @param app The application state
+ * @param onNewGame Callback for creating a new game
+ * @param onPlayers Callback for navigating to the players screen
+ * @param onHistory Callback for navigating to the game history screen
+ * @param onSettings Callback for navigating to the settings screen
+ */
 @Composable
-fun AppScaffold(app: AppState) {
-  val topTitle =
-    when (app.currentScreen) {
-      Screen.Home -> "Tarot Meter"
-      Screen.Players -> "Players"
-      Screen.Settings -> "Settings"
-      Screen.NewGame -> "New Game"
-      Screen.History -> "Game History"
-      is Screen.GameEditor -> "Game Editor"
-    }
-  Scaffold(
-    topBar = {
-      TopAppBar(
-        title = { Text(topTitle) },
-        navigationIcon = {
-          if (app.currentScreen !is Screen.Home) {
-            TextButton(onClick = { app.navigate(Screen.Home) }) { Text("Home") }
-          }
-        },
-      )
-    }
-  ) { padding ->
-    Box(Modifier.fillMaxSize().padding(padding)) {
-      when (val s = app.currentScreen) {
-        Screen.Home -> HomeScreen(app)
-        Screen.Players -> PlayersScreen(app)
-        Screen.Settings -> SettingsScreen(app)
-        Screen.NewGame -> NewGameScreen(app)
-        Screen.History -> HistoryScreen(app)
-        is Screen.GameEditor -> GameEditorScreen(app, s.gameId)
-      }
-    }
-  }
-}
-
-@Composable
-private fun HomeScreen(app: AppState) {
+fun HomeScreen(
+  app: AppState,
+  onNewGame: () -> Unit,
+  onPlayers: () -> Unit,
+  onHistory: () -> Unit,
+  onSettings: () -> Unit,
+) {
   val gradient =
     Brush.verticalGradient(listOf(Color(0xFF121212), MaterialTheme.colorScheme.primaryContainer))
   Column(
@@ -73,7 +51,7 @@ private fun HomeScreen(app: AppState) {
         "Tarot Meter",
         style =
           MaterialTheme.typography.headlineMedium.copy(
-            color = Color.Red,
+            color = Color.White,
             fontWeight = FontWeight.Bold,
           ),
       )
@@ -81,10 +59,10 @@ private fun HomeScreen(app: AppState) {
       Text("Track your Tarot games with style", color = Color(0xFFECECEC))
     }
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-      PrimaryAction("New Game") { app.navigate(Screen.NewGame) }
-      SecondaryAction("Players") { app.navigate(Screen.Players) }
-      SecondaryAction("Game History") { app.navigate(Screen.History) }
-      SecondaryAction("Settings") { app.navigate(Screen.Settings) }
+      PrimaryAction("New Game") { onNewGame() }
+      SecondaryAction("Players") { onPlayers() }
+      SecondaryAction("Game History") { onHistory() }
+      SecondaryAction("Settings") { onSettings() }
     }
     Text(
       "No data is persisted yet. Database will be added later.",
@@ -94,6 +72,12 @@ private fun HomeScreen(app: AppState) {
   }
 }
 
+/**
+ * A primary action button with full width and rounded corners.
+ *
+ * @param text The button text
+ * @param onClick Callback for when the button is clicked
+ */
 @Composable
 private fun PrimaryAction(text: String, onClick: () -> Unit) {
   Button(
@@ -105,6 +89,12 @@ private fun PrimaryAction(text: String, onClick: () -> Unit) {
   }
 }
 
+/**
+ * A secondary action button with full width, rounded corners, and an outlined style.
+ *
+ * @param text The button text
+ * @param onClick Callback for when the button is clicked
+ */
 @Composable
 private fun SecondaryAction(text: String, onClick: () -> Unit) {
   OutlinedButton(
@@ -116,8 +106,14 @@ private fun SecondaryAction(text: String, onClick: () -> Unit) {
   }
 }
 
+/**
+ * Screen for managing players.
+ * Allows adding, renaming, and removing players.
+ *
+ * @param app The application state
+ */
 @Composable
-private fun PlayersScreen(app: AppState) {
+fun PlayersScreen(app: AppState) {
   var newName by remember { mutableStateOf("") }
   Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -152,6 +148,14 @@ private fun PlayersScreen(app: AppState) {
   }
 }
 
+/**
+ * A row component for displaying and managing a single player.
+ * Allows renaming and deleting a player.
+ *
+ * @param name The player's name
+ * @param onRename Callback for when the player is renamed
+ * @param onDelete Callback for when the player is deleted
+ */
 @Composable
 private fun PlayerRow(name: String, onRename: (String) -> Unit, onDelete: () -> Unit) {
   var editing by remember { mutableStateOf(false) }
@@ -204,8 +208,14 @@ private fun PlayerRow(name: String, onRename: (String) -> Unit, onDelete: () -> 
   }
 }
 
+/**
+ * Screen for application settings.
+ * Allows toggling dark mode and hints.
+ *
+ * @param app The application state
+ */
 @Composable
-private fun SettingsScreen(@Suppress("UNUSED_PARAMETER") app: AppState) {
+fun SettingsScreen(@Suppress("UNUSED_PARAMETER") app: AppState) {
   var darkMode by remember { mutableStateOf(true) }
   var showTips by remember { mutableStateOf(true) }
   Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -222,8 +232,16 @@ private fun SettingsScreen(@Suppress("UNUSED_PARAMETER") app: AppState) {
   }
 }
 
+/**
+ * Screen for creating a new game.
+ * Allows selecting the number of players and starting a new game.
+ *
+ * @param app The application state
+ * @param onBack Callback for returning to the previous screen
+ * @param onGameCreated Callback for when a new game is created, with the game ID
+ */
 @Composable
-private fun NewGameScreen(app: AppState) {
+fun NewGameScreen(app: AppState, onBack: () -> Unit, onGameCreated: (Int) -> Unit) {
   var count by remember { mutableStateOf(5) }
   Column(
     Modifier.fillMaxSize().padding(16.dp),
@@ -247,7 +265,13 @@ private fun NewGameScreen(app: AppState) {
         color = MaterialTheme.colorScheme.error,
       )
     }
-    Button(onClick = { app.createGame(count) }, enabled = app.players.size >= count) {
+    Button(
+      onClick = {
+        val game = app.createGame(count)
+        if (game != null) onGameCreated(game.id)
+      },
+      enabled = app.players.size >= count,
+    ) {
       Text("Create Game")
     }
     Spacer(Modifier.height(8.dp))
@@ -255,8 +279,15 @@ private fun NewGameScreen(app: AppState) {
   }
 }
 
+/**
+ * Screen for viewing game history.
+ * Displays a list of past games that can be selected for viewing/editing.
+ *
+ * @param app The application state
+ * @param onOpenGame Callback for opening a specific game, with the game ID
+ */
 @Composable
-private fun HistoryScreen(app: AppState) {
+fun HistoryScreen(app: AppState, onOpenGame: (Int) -> Unit) {
   if (app.games.isEmpty()) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       Text("No games yet. Start a New Game.")
@@ -271,7 +302,7 @@ private fun HistoryScreen(app: AppState) {
       Surface(
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 2.dp,
-        modifier = Modifier.fillMaxWidth().clickable { app.navigate(Screen.GameEditor(game.id)) },
+        modifier = Modifier.fillMaxWidth().clickable { onOpenGame(game.id) },
       ) {
         Column(Modifier.padding(12.dp)) {
           Text("Game ${game.id}", style = MaterialTheme.typography.titleMedium)
@@ -283,8 +314,15 @@ private fun HistoryScreen(app: AppState) {
   }
 }
 
+/**
+ * Screen for editing a specific game.
+ * Displays game scores, allows adding rounds, and shows round history.
+ *
+ * @param app The application state
+ * @param gameId The ID of the game to edit
+ */
 @Composable
-private fun GameEditorScreen(app: AppState, gameId: Int) {
+fun GameEditorScreen(app: AppState, gameId: Int) {
   val game = app.getGame(gameId)
   if (game == null) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Game not found") }
@@ -343,8 +381,15 @@ private fun GameEditorScreen(app: AppState, gameId: Int) {
   }
 }
 
+/**
+ * Component for adding a new round to a game.
+ * Allows selecting taker, partner, contract, oudler count, and points.
+ *
+ * @param game The game to add a round to
+ * @param onAdd Callback for when a new round is added
+ */
 @Composable
-private fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
+fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
   var takerIndex by remember { mutableStateOf(0) }
   var partnerIndex by remember { mutableStateOf(if (game.players.size == 5) 1 else -1) }
   var contract by remember { mutableStateOf(Contract.Garde) }
@@ -407,6 +452,13 @@ private fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
   }
 }
 
+/**
+ * A dropdown component for selecting from a list of options.
+ *
+ * @param options The list of options to display
+ * @param selectedIndex The index of the currently selected option
+ * @param onChange Callback for when a different option is selected
+ */
 @Composable
 private fun Dropdown(options: List<String>, selectedIndex: Int, onChange: (Int) -> Unit) {
   var expanded by remember { mutableStateOf(false) }
