@@ -60,7 +60,6 @@ src/
 
 ## 🧪 Testing Guidelines
 
-- Use `Kotest` for unit and integration tests.
 - Never mock objects.
 - Use Coroutines test utilities for suspending functions.
 - Structure tests by feature and follow the AAA (Arrange-Act-Assert) pattern. No need to specify comments with

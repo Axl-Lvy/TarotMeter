@@ -13,6 +13,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import proj.tarotmeter.axl.AppState
 import proj.tarotmeter.axl.model.*
+import proj.tarotmeter.axl.model.enums.Chelem
+import proj.tarotmeter.axl.model.enums.Contract
+import proj.tarotmeter.axl.model.enums.PetitAuBout
+import proj.tarotmeter.axl.model.enums.Poignee
 
 /**
  * Screen for editing a specific game. Displays game scores, allows adding rounds, and shows round
@@ -141,6 +145,9 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
                 contract = contract,
                 oudlerCount = oudler,
                 takerPoints = pointsText.toIntOrNull()?.coerceIn(0, 91) ?: 0,
+                poignee = Poignee.NONE,
+                petitAuBout = PetitAuBout.NONE,
+                chelem = Chelem.NONE,
               )
             onAdd(round)
           }
