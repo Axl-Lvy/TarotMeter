@@ -1,0 +1,149 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Gradle: List all tasks",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["tasks"],
+            "group": "build",
+            "options": {
+                "env": {
+                    "JAVA_HOME": "/Users/raphaellevy/Library/Java/JavaVirtualMachines/ms-17.0.15/Contents/Home"
+                }
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Gradle: Build project",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["build"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Gradle: Run desktop app",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["run"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Gradle: Run with Hot Reload",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["hotRunJvm"],
+            "group": "build",
+            "options": {
+                "env": {
+                    "JAVA_HOME": "/Users/raphaellevy/Library/Java/JavaVirtualMachines/ms-17.0.15/Contents/Home"
+                }
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🚀 Launch JVM App (Hot Reload)",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["hotRunJvm"],
+            "group": "build",
+            "options": {
+                "env": {
+                    "JAVA_HOME": "/Users/raphaellevy/Library/Java/JavaVirtualMachines/ms-17.0.15/Contents/Home"
+                }
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Gradle: Run web app (dev)",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["jsBrowserDevelopmentRun"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Gradle: Clean project",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["clean"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Gradle: Run tests",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["test"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Gradle: Format code",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": ["ktfmtFormat"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
