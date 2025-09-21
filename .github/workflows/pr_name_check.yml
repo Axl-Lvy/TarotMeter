@@ -7,6 +7,9 @@ on:
 jobs:
   validate-pr-title:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
     steps:
       - name: Conventional commit check in pull request title
         uses: ytanikin/pr-conventional-commits@1.4.1
