@@ -60,7 +60,10 @@ data class Scores(val scores: Map<Player, Int>) {
       val diff = round.takerPoints - target
       val sign = if (diff >= 0) 1 else -1
       val base = 25 + kotlin.math.abs(diff)
-      val value = base * round.contract.multiplier * sign
+      val baseValue = base * round.contract.multiplier * sign
+      val poigneeValue = round.poignee.value * sign
+      val petitAuBoutValue = round.petitAuBout.value * round.contract.multiplier
+      val value = baseValue + poigneeValue + petitAuBoutValue + round.chelem.value
 
       val taker = round.taker
       val partner = round.partner
@@ -80,23 +83,15 @@ data class Scores(val scores: Map<Player, Int>) {
           game.players.filter { it != taker }.forEach { result[it] = -value }
         }
         5 -> {
-          // taker + partner vs 3 or 4 defenders
+          // taker + partner vs 3 or 4 defenders (partner can be the same as taker)
           checkNotNull(round.partner) { "Partner must be set for 5-player game" }
           game.players.forEach {
-            when (it) {
-              taker -> {
-                result[it] = value * 2
-              }
-
-              partner -> {
-                result[it] = value
-              }
-
-              else -> {
-                result[it] = -value
-              }
+            if (it != taker && it != partner) {
+              result[it] = -value
             }
           }
+          result[taker] = value * 2
+          result[partner] = (result[partner] ?: 0) + value
         }
         else -> error("The number of players must be 3, 4, or 5. Was: $n")
       }

@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.model
+package proj.tarotmeter.axl.model.enums
 
 /**
  * Represents the contract types in a Tarot game. Each contract has a different multiplier affecting
