@@ -24,7 +24,7 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             const body = pr.body || "";
-            if (!body.includes('- [x] Run Android tests')) {
+            if (!body.includes('- [x] Run Tests')) {
               core.setFailed('The "Run Android tests" box must be checked in the PR description.');
             }
 
