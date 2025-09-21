@@ -14,8 +14,8 @@ import proj.tarotmeter.axl.ui.PlayersScreen
 import proj.tarotmeter.axl.ui.SettingsScreen
 
 /**
- * Main navigation part for the application.
- * Defines all navigation routes and their corresponding composable screens.
+ * Main navigation part for the application. Defines all navigation routes and their corresponding
+ * composable screens.
  *
  * @param app The application state shared across screens
  * @param navController Controller for navigation between screens

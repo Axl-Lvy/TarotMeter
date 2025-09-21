@@ -18,8 +18,8 @@ import proj.tarotmeter.axl.navigation.AppNavHost
 import proj.tarotmeter.axl.navigation.Route
 
 /**
- * The main application scaffold that provides the top-level UI structure.
- * This component handles the app bar, navigation, and content area layout.
+ * The main application scaffold that provides the top-level UI structure. This component handles
+ * the app bar, navigation, and content area layout.
  *
  * @param app The application state shared across screens
  */

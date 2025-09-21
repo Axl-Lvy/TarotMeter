@@ -22,8 +22,8 @@ import proj.tarotmeter.axl.AppState
 import proj.tarotmeter.axl.model.*
 
 /**
- * The home screen of the application.
- * Provides navigation buttons to other screens and a brief app introduction.
+ * The home screen of the application. Provides navigation buttons to other screens and a brief app
+ * introduction.
  *
  * @param app The application state
  * @param onNewGame Callback for creating a new game
@@ -107,8 +107,7 @@ private fun SecondaryAction(text: String, onClick: () -> Unit) {
 }
 
 /**
- * Screen for managing players.
- * Allows adding, renaming, and removing players.
+ * Screen for managing players. Allows adding, renaming, and removing players.
  *
  * @param app The application state
  */
@@ -149,8 +148,8 @@ fun PlayersScreen(app: AppState) {
 }
 
 /**
- * A row component for displaying and managing a single player.
- * Allows renaming and deleting a player.
+ * A row component for displaying and managing a single player. Allows renaming and deleting a
+ * player.
  *
  * @param name The player's name
  * @param onRename Callback for when the player is renamed
@@ -209,8 +208,7 @@ private fun PlayerRow(name: String, onRename: (String) -> Unit, onDelete: () -> 
 }
 
 /**
- * Screen for application settings.
- * Allows toggling dark mode and hints.
+ * Screen for application settings. Allows toggling dark mode and hints.
  *
  * @param app The application state
  */
@@ -233,8 +231,7 @@ fun SettingsScreen(@Suppress("UNUSED_PARAMETER") app: AppState) {
 }
 
 /**
- * Screen for creating a new game.
- * Allows selecting the number of players and starting a new game.
+ * Screen for creating a new game. Allows selecting the number of players and starting a new game.
  *
  * @param app The application state
  * @param onBack Callback for returning to the previous screen
@@ -280,8 +277,8 @@ fun NewGameScreen(app: AppState, onBack: () -> Unit, onGameCreated: (Int) -> Uni
 }
 
 /**
- * Screen for viewing game history.
- * Displays a list of past games that can be selected for viewing/editing.
+ * Screen for viewing game history. Displays a list of past games that can be selected for
+ * viewing/editing.
  *
  * @param app The application state
  * @param onOpenGame Callback for opening a specific game, with the game ID
@@ -315,8 +312,8 @@ fun HistoryScreen(app: AppState, onOpenGame: (Int) -> Unit) {
 }
 
 /**
- * Screen for editing a specific game.
- * Displays game scores, allows adding rounds, and shows round history.
+ * Screen for editing a specific game. Displays game scores, allows adding rounds, and shows round
+ * history.
  *
  * @param app The application state
  * @param gameId The ID of the game to edit
@@ -382,8 +379,8 @@ fun GameEditorScreen(app: AppState, gameId: Int) {
 }
 
 /**
- * Component for adding a new round to a game.
- * Allows selecting taker, partner, contract, oudler count, and points.
+ * Component for adding a new round to a game. Allows selecting taker, partner, contract, oudler
+ * count, and points.
  *
  * @param game The game to add a round to
  * @param onAdd Callback for when a new round is added

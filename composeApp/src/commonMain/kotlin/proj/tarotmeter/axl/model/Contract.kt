@@ -1,8 +1,8 @@
 package proj.tarotmeter.axl.model
 
 /**
- * Represents the contract types in a Tarot game.
- * Each contract has a different multiplier affecting the score calculation.
+ * Represents the contract types in a Tarot game. Each contract has a different multiplier affecting
+ * the score calculation.
  *
  * @property multiplier The score multiplier for this contract
  * @property title The human-readable name of the contract
