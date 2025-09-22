@@ -23,21 +23,21 @@ class PlayersProvider {
     playersPerId[newPlayer.id] = newPlayer
   }
 
-    /**
-     * Renames a player
-     *
-     * @param id The id of the player to rename
-     * @param newName The new name for the player
-     */
+  /**
+   * Renames a player
+   *
+   * @param id The id of the player to rename
+   * @param newName The new name for the player
+   */
   fun renamePlayer(id: Int, newName: String) {
     playersPerId[id]?.rename(newName)
   }
 
-    /**
-     * Removes a player
-     *
-     * @param id The id of the player to remove
-     */
+  /**
+   * Removes a player
+   *
+   * @param id The id of the player to remove
+   */
   fun removePlayer(id: Int) {
     playersPerId.remove(id)
   }
