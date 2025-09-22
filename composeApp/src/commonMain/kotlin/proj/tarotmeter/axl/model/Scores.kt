@@ -10,6 +10,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class Scores(val scores: Map<Player, Int>) {
 
+  /** Gives the score for a particular player */
   fun forPlayer(player: Player): Int = scores[player] ?: 0
 
   companion object {

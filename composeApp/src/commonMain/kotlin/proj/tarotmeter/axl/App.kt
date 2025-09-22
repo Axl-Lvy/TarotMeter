@@ -3,12 +3,12 @@ package proj.tarotmeter.axl
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.KoinApplication
+import proj.tarotmeter.axl.ui.AppScaffold
 
 @Composable
 @Preview
 fun App() {
-  MaterialTheme {
-    val appState = remember { AppState() }
-    proj.tarotmeter.axl.ui.AppScaffold(app = appState)
-  }
+  val modules = initKoinModules()
+  KoinApplication(application = { modules(*modules) }) { MaterialTheme { AppScaffold() } }
 }

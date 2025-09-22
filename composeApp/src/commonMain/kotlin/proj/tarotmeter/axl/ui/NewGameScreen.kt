@@ -7,7 +7,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import proj.tarotmeter.axl.AppState
+import org.koin.compose.koinInject
+import proj.tarotmeter.axl.provider.GamesProvider
+import proj.tarotmeter.axl.provider.PlayersProvider
 
 /**
  * Screen for creating a new game. Allows selecting the number of players and starting a new game.
@@ -16,7 +18,11 @@ import proj.tarotmeter.axl.AppState
  * @param onGameCreated Callback for when a new game is created, with the game ID
  */
 @Composable
-fun NewGameScreen(app: AppState, onGameCreated: (Int) -> Unit) {
+fun NewGameScreen(
+  onGameCreated: (Int) -> Unit,
+  playersProvider: PlayersProvider = koinInject(),
+  gamesProvider: GamesProvider = koinInject(),
+) {
   var count by remember { mutableStateOf(5) }
   Column(
     Modifier.fillMaxSize().padding(16.dp),
@@ -34,18 +40,18 @@ fun NewGameScreen(app: AppState, onGameCreated: (Int) -> Unit) {
         else OutlinedButton(onClick = { count = n }) { Text("$n") }
       }
     }
-    if (app.players.size < count) {
+    if (playersProvider.players.size < count) {
       Text(
-        "Not enough players (${app.players.size}/$count). Add more in Players page.",
+        "Not enough players (${playersProvider.players.size}/$count). Add more in Players page.",
         color = MaterialTheme.colorScheme.error,
       )
     }
     Button(
       onClick = {
-        val game = app.createGame(count)
+        val game = gamesProvider.createGame(count)
         if (game != null) onGameCreated(game.id)
       },
-      enabled = app.players.size >= count,
+      enabled = playersProvider.players.size >= count,
     ) {
       Text("Create Game")
     }

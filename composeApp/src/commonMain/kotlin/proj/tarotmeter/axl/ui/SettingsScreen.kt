@@ -7,15 +7,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import proj.tarotmeter.axl.AppState
 
-/**
- * Screen for application settings. Allows toggling dark mode and hints.
- *
- * @param app The application state
- */
+/** Screen for application settings. Allows toggling dark mode and hints. */
 @Composable
-fun SettingsScreen(@Suppress("UNUSED_PARAMETER") app: AppState) {
+fun SettingsScreen() {
   var darkMode by remember { mutableStateOf(true) }
   var showTips by remember { mutableStateOf(true) }
   Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {

@@ -13,19 +13,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import proj.tarotmeter.axl.AppState
 import proj.tarotmeter.axl.navigation.AppNavHost
 import proj.tarotmeter.axl.navigation.Route
 
 /**
  * The main application scaffold that provides the top-level UI structure. This component handles
  * the app bar, navigation, and content area layout.
- *
- * @param app The application state shared across screens
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppScaffold(app: AppState) {
+fun AppScaffold() {
   val navController = rememberNavController()
   val backStackEntry by navController.currentBackStackEntryAsState()
   val route = backStackEntry?.destination?.route ?: Route.Home.route
@@ -53,8 +50,6 @@ fun AppScaffold(app: AppState) {
       )
     }
   ) { padding ->
-    Box(Modifier.fillMaxSize().padding(padding)) {
-      AppNavHost(app = app, navController = navController)
-    }
+    Box(Modifier.fillMaxSize().padding(padding)) { AppNavHost(navController = navController) }
   }
 }
