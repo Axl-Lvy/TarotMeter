@@ -1,6 +1,8 @@
-package proj.tarotmeter.axl.model
+package proj.tarotmeter.axl.data.model
 
 import androidx.compose.runtime.Immutable
+import kotlin.collections.iterator
+import kotlin.math.abs
 
 /**
  * Represents the scores of players in a Tarot game.
@@ -60,7 +62,7 @@ data class Scores(val scores: Map<Player, Int>) {
       val target = getTargetForOudlers(round.oudlerCount)
       val diff = round.takerPoints - target
       val sign = if (diff >= 0) 1 else -1
-      val base = 25 + kotlin.math.abs(diff)
+      val base = 25 + abs(diff)
       val baseValue = base * round.contract.multiplier * sign
       val poigneeValue = round.poignee.value * sign
       val petitAuBoutValue = round.petitAuBout.value * round.contract.multiplier

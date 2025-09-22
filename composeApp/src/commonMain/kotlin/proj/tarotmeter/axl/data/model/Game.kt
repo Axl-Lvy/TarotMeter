@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.model
+package proj.tarotmeter.axl.data.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
@@ -30,7 +30,9 @@ data class Game(
     get() = updatedAtInternal
 
   init {
-    require(players.size in 3..5) { "Number of players must be between 3 and 5" }
+    require(players.size in 3..5) {
+      "Number of players must be between 3 and 5. Was: ${players.size}"
+    }
   }
 
   /**

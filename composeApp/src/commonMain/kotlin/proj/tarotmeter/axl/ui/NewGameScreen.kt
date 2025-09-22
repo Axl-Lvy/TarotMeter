@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.provider.GamesProvider
 import proj.tarotmeter.axl.provider.PlayersProvider
@@ -24,6 +25,10 @@ fun NewGameScreen(
   gamesProvider: GamesProvider = koinInject(),
 ) {
   var count by remember { mutableStateOf(5) }
+  var players by remember { mutableStateOf(emptyList<proj.tarotmeter.axl.data.model.Player>()) }
+  val coroutineScope = rememberCoroutineScope()
+
+  LaunchedEffect(Unit) { players = playersProvider.getPlayers() }
   Column(
     Modifier.fillMaxSize().padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -40,18 +45,20 @@ fun NewGameScreen(
         else OutlinedButton(onClick = { count = n }) { Text("$n") }
       }
     }
-    if (playersProvider.players.size < count) {
+    if (players.size < count) {
       Text(
-        "Not enough players (${playersProvider.players.size}/$count). Add more in Players page.",
+        "Not enough players (${players.size}/$count). Add more in Players page.",
         color = MaterialTheme.colorScheme.error,
       )
     }
     Button(
       onClick = {
-        val game = gamesProvider.createGame(count)
-        if (game != null) onGameCreated(game.id)
+        coroutineScope.launch {
+          val game = gamesProvider.createGame(count)
+          if (game != null) onGameCreated(game.id)
+        }
       },
-      enabled = playersProvider.players.size >= count,
+      enabled = players.size >= count,
     ) {
       Text("Create Game")
     }

@@ -3,8 +3,14 @@ package proj.tarotmeter.axl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import proj.tarotmeter.axl.model.*
-import proj.tarotmeter.axl.model.enums.*
+import proj.tarotmeter.axl.data.model.Game
+import proj.tarotmeter.axl.data.model.Player
+import proj.tarotmeter.axl.data.model.Round
+import proj.tarotmeter.axl.data.model.Scores
+import proj.tarotmeter.axl.data.model.enums.Chelem
+import proj.tarotmeter.axl.data.model.enums.Contract
+import proj.tarotmeter.axl.data.model.enums.PetitAuBout
+import proj.tarotmeter.axl.data.model.enums.Poignee
 
 class TestScoresCalculation {
 
@@ -227,7 +233,7 @@ class TestScoresCalculation {
 
     // Non-announced chelem
     val nonAnnouncedRound =
-      createBasicRound(players[0], oudlerCount = 3, takerPoints = 91, chelem = Chelem.NON_ANNOUNCED)
+      createBasicRound(players[0], oudlerCount = 3, takerPoints = 91, chelem = Chelem.NOT_ANNOUNCED)
     val nonAnnouncedScores = Scores.roundScores(nonAnnouncedRound, game)
     assertEquals(
       560,

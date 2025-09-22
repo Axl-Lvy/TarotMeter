@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.navigation
+package proj.tarotmeter.axl.ui.navigation
 
 import kotlinx.serialization.Serializable
 

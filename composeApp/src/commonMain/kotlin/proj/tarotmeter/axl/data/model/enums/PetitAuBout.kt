@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.model.enums
+package proj.tarotmeter.axl.data.model.enums
 
 /**
  * Represents the possible Petit au Bout outcomes in a Tarot game.

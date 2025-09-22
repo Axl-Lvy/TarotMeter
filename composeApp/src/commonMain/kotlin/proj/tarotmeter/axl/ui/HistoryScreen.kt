@@ -22,7 +22,9 @@ import proj.tarotmeter.axl.provider.GamesProvider
  */
 @Composable
 fun HistoryScreen(onOpenGame: (Int) -> Unit, gamesProvider: GamesProvider = koinInject()) {
-  if (gamesProvider.games.isEmpty()) {
+  var games by remember { mutableStateOf(emptyList<proj.tarotmeter.axl.data.model.Game>()) }
+  LaunchedEffect(Unit) { games = gamesProvider.getGames() }
+  if (games.isEmpty()) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       Text("No games yet. Start a New Game.")
     }
@@ -32,7 +34,7 @@ fun HistoryScreen(onOpenGame: (Int) -> Unit, gamesProvider: GamesProvider = koin
     Modifier.fillMaxSize().padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    items(gamesProvider.games, key = { it.id }) { game ->
+    items(games, key = { it.id }) { game ->
       Surface(
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 2.dp,

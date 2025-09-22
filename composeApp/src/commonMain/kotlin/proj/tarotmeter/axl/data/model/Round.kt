@@ -1,10 +1,10 @@
-package proj.tarotmeter.axl.model
+package proj.tarotmeter.axl.data.model
 
 import androidx.compose.runtime.Immutable
-import proj.tarotmeter.axl.model.enums.Chelem
-import proj.tarotmeter.axl.model.enums.Contract
-import proj.tarotmeter.axl.model.enums.PetitAuBout
-import proj.tarotmeter.axl.model.enums.Poignee
+import proj.tarotmeter.axl.data.model.enums.Chelem
+import proj.tarotmeter.axl.data.model.enums.Contract
+import proj.tarotmeter.axl.data.model.enums.PetitAuBout
+import proj.tarotmeter.axl.data.model.enums.Poignee
 import proj.tarotmeter.axl.util.IdGenerator
 
 /**

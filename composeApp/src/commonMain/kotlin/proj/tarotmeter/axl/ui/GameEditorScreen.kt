@@ -11,12 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import proj.tarotmeter.axl.model.*
-import proj.tarotmeter.axl.model.enums.Chelem
-import proj.tarotmeter.axl.model.enums.Contract
-import proj.tarotmeter.axl.model.enums.PetitAuBout
-import proj.tarotmeter.axl.model.enums.Poignee
+import proj.tarotmeter.axl.data.model.Game
+import proj.tarotmeter.axl.data.model.Round
+import proj.tarotmeter.axl.data.model.Scores
+import proj.tarotmeter.axl.data.model.enums.Chelem
+import proj.tarotmeter.axl.data.model.enums.Contract
+import proj.tarotmeter.axl.data.model.enums.PetitAuBout
+import proj.tarotmeter.axl.data.model.enums.Poignee
 import proj.tarotmeter.axl.provider.GamesProvider
 
 /**
@@ -27,8 +30,13 @@ import proj.tarotmeter.axl.provider.GamesProvider
  */
 @Composable
 fun GameEditorScreen(gameId: Int, gamesProvider: GamesProvider = koinInject()) {
-  val game = gamesProvider.getGame(gameId)
-  if (game == null) {
+  var game by remember { mutableStateOf<Game?>(null) }
+  val coroutineScope = rememberCoroutineScope()
+
+  LaunchedEffect(gameId) { game = gamesProvider.getGame(gameId) }
+
+  val currentGame = game
+  if (currentGame == null) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Game not found") }
     return
   }
@@ -40,13 +48,13 @@ fun GameEditorScreen(gameId: Int, gamesProvider: GamesProvider = koinInject()) {
       modifier = Modifier.fillMaxWidth(),
     ) {
       Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        game.players.forEach { p ->
+        currentGame.players.forEach { p ->
           Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight(1f),
           ) {
             Text(p.name, fontWeight = FontWeight.Bold)
-            val total = Scores.globalScores(game).scores[p] ?: 0
+            val total = Scores.globalScores(currentGame).scores[p] ?: 0
             Text(
               "$total",
               style = MaterialTheme.typography.titleMedium,
@@ -56,24 +64,33 @@ fun GameEditorScreen(gameId: Int, gamesProvider: GamesProvider = koinInject()) {
         }
       }
     }
-    RoundEditor(game = game, onAdd = { gamesProvider.addRound(game.id, it) })
+    RoundEditor(
+      game = currentGame,
+      onAdd = { round ->
+        coroutineScope.launch {
+          gamesProvider.addRound(currentGame.id, round)
+          game = gamesProvider.getGame(gameId)
+        }
+      },
+    )
     Divider()
     Text("Rounds", style = MaterialTheme.typography.titleMedium)
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
-      items(game.rounds) { r ->
+      items(currentGame.rounds) { r ->
         Surface(
           shape = RoundedCornerShape(12.dp),
           tonalElevation = 1.dp,
           modifier = Modifier.fillMaxWidth(),
         ) {
           Column(Modifier.padding(12.dp)) {
-            val taker = game.players.firstOrNull { it == r.taker }?.name ?: "?"
-            val partner = r.partner?.let { id -> game.players.firstOrNull { it == id }?.name }
+            val taker = currentGame.players.firstOrNull { it == r.taker }?.name ?: "?"
+            val partner =
+              r.partner?.let { id -> currentGame.players.firstOrNull { it == id }?.name }
             Text("${r.contract.title} – Taker: $taker" + (partner?.let { ", Partner: $it" } ?: ""))
             Text("Oudlers: ${r.oudlerCount} – Points: ${r.takerPoints}")
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-              val roundScore = Scores.roundScores(r, game)
-              game.players.forEach { p ->
+              val roundScore = Scores.roundScores(r, currentGame)
+              currentGame.players.forEach { p ->
                 val v = roundScore.forPlayer(p)
                 Text("${p.name.split(' ').first()}: ${if (v >= 0) "+$v" else "$v"}")
               }

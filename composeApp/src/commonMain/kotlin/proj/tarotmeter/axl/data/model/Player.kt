@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.model
+package proj.tarotmeter.axl.data.model
 
 import proj.tarotmeter.axl.util.IdGenerator
 
