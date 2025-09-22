@@ -21,7 +21,7 @@ class DateConverter {
 
   /** Converts a String from the database back to a LocalDate. */
   @TypeConverter
-  fun toLocalDate(epochDays: Int?): LocalDate? {
+  fun toLocalDate(epochDays: Long?): LocalDate? {
     return if (epochDays == null) null else LocalDate.fromEpochDays(epochDays)
   }
 

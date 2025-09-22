@@ -277,9 +277,6 @@ class TestDatabaseManager : TestWithKoin {
 
   @Test
   fun testRoundWithAllEnumValues() = runTest {
-    println(dbManager.getMaxRoundId())
-    println(dbManager.getMaxPlayerId())
-    println(dbManager.getMaxGameId())
     val players =
       listOf(
         Player("Player1"),
