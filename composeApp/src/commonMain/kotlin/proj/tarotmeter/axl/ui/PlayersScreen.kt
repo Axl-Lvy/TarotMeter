@@ -13,15 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import proj.tarotmeter.axl.AppState
+import org.koin.compose.koinInject
+import proj.tarotmeter.axl.provider.PlayersProvider
 
-/**
- * Screen for managing players. Allows adding, renaming, and removing players.
- *
- * @param app The application state
- */
+/** Screen for managing players. Allows adding, renaming, and removing players. */
 @Composable
-fun PlayersScreen(app: AppState) {
+fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
   var newName by remember { mutableStateOf("") }
   Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -35,7 +32,7 @@ fun PlayersScreen(app: AppState) {
         onClick = {
           val name = newName.trim()
           if (name.isNotEmpty()) {
-            app.addPlayer(name)
+            playersProvider.addPlayer(name)
             newName = ""
           }
         }
@@ -45,11 +42,11 @@ fun PlayersScreen(app: AppState) {
     }
     Divider()
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
-      items(app.players, key = { it.id }) { p ->
+      items(playersProvider.players, key = { it.id }) { p ->
         PlayerRow(
           p.name,
-          onRename = { app.renamePlayer(p.id, it) },
-          onDelete = { app.removePlayer(p.id) },
+          onRename = { playersProvider.renamePlayer(p.id, it) },
+          onDelete = { playersProvider.removePlayer(p.id) },
         )
       }
     }

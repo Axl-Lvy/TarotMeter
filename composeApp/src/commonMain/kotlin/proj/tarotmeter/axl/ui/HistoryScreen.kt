@@ -11,18 +11,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import proj.tarotmeter.axl.AppState
+import org.koin.compose.koinInject
+import proj.tarotmeter.axl.provider.GamesProvider
 
 /**
  * Screen for viewing game history. Displays a list of past games that can be selected for
  * viewing/editing.
  *
- * @param app The application state
  * @param onOpenGame Callback for opening a specific game, with the game ID
  */
 @Composable
-fun HistoryScreen(app: AppState, onOpenGame: (Int) -> Unit) {
-  if (app.games.isEmpty()) {
+fun HistoryScreen(onOpenGame: (Int) -> Unit, gamesProvider: GamesProvider = koinInject()) {
+  if (gamesProvider.games.isEmpty()) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       Text("No games yet. Start a New Game.")
     }
@@ -32,7 +32,7 @@ fun HistoryScreen(app: AppState, onOpenGame: (Int) -> Unit) {
     Modifier.fillMaxSize().padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    items(app.games, key = { it.id }) { game ->
+    items(gamesProvider.games, key = { it.id }) { game ->
       Surface(
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 2.dp,

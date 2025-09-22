@@ -11,23 +11,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import proj.tarotmeter.axl.AppState
+import org.koin.compose.koinInject
 import proj.tarotmeter.axl.model.*
 import proj.tarotmeter.axl.model.enums.Chelem
 import proj.tarotmeter.axl.model.enums.Contract
 import proj.tarotmeter.axl.model.enums.PetitAuBout
 import proj.tarotmeter.axl.model.enums.Poignee
+import proj.tarotmeter.axl.provider.GamesProvider
 
 /**
  * Screen for editing a specific game. Displays game scores, allows adding rounds, and shows round
  * history.
  *
- * @param app The application state
  * @param gameId The ID of the game to edit
  */
 @Composable
-fun GameEditorScreen(app: AppState, gameId: Int) {
-  val game = app.getGame(gameId)
+fun GameEditorScreen(gameId: Int, gamesProvider: GamesProvider = koinInject()) {
+  val game = gamesProvider.getGame(gameId)
   if (game == null) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Game not found") }
     return
@@ -46,7 +46,7 @@ fun GameEditorScreen(app: AppState, gameId: Int) {
             modifier = Modifier.weight(1f),
           ) {
             Text(p.name, fontWeight = FontWeight.Bold)
-            val total = app.totalScore(game, p)
+            val total = Scores.globalScores(game).scores[p] ?: 0
             Text(
               "$total",
               style = MaterialTheme.typography.titleMedium,
@@ -56,7 +56,7 @@ fun GameEditorScreen(app: AppState, gameId: Int) {
         }
       }
     }
-    RoundEditor(game = game, onAdd = { app.addRound(game.id, it) })
+    RoundEditor(game = game, onAdd = { gamesProvider.addRound(game.id, it) })
     Divider()
     Text("Rounds", style = MaterialTheme.typography.titleMedium)
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
