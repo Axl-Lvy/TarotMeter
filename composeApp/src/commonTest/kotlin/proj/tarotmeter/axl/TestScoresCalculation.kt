@@ -303,7 +303,9 @@ class TestScoresCalculation {
     val round3 =
       createBasicRound(players[2], oudlerCount = 2, takerPoints = 41) // Player 2 exact win
 
-    game.rounds.addAll(listOf(round1, round2, round3))
+    game.addRound(round1)
+    game.addRound(round2)
+    game.addRound(round3)
 
     val globalScores = Scores.globalScores(game)
 
