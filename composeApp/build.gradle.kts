@@ -23,7 +23,7 @@ room { schemaDirectory("$projectDir/schemas") }
 kotlin {
   androidTarget { compilerOptions { jvmTarget.set(JvmTarget.JVM_11) } }
 
-  listOf(iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+  listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
     iosTarget.binaries.framework {
       baseName = "ComposeApp"
       isStatic = true
@@ -47,10 +47,6 @@ kotlin {
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
     common {
-      group("debug") {
-        withAndroidTarget()
-        withJvm()
-      }
       group("standalone") {
         withAndroidTarget()
         withJvm()
@@ -97,13 +93,16 @@ kotlin {
       implementation(libs.koin.core)
       implementation(libs.koin.compose)
     }
-    commonTest.dependencies { implementation(libs.kotlin.test) }
+    commonTest.dependencies {
+      implementation(libs.kotlin.test)
+      implementation(libs.coroutines.test)
+    }
 
     @SuppressWarnings("unused")
-    val standalone by creating {
+    val standaloneMain by getting {
       dependencies {
         implementation(libs.androidx.room.runtime)
-        implementation(libs.androidx.room.compiler)
+        implementation(libs.sqlite.bundled)
       }
       configurations { implementation { exclude(group = "org.jetbrains", module = "annotations") } }
     }
@@ -143,7 +142,14 @@ android {
   }
 }
 
-dependencies { debugImplementation(compose.uiTooling) }
+dependencies {
+  debugImplementation(compose.uiTooling)
+  add("kspAndroid", libs.androidx.room.compiler)
+  add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+  add("kspIosX64", libs.androidx.room.compiler)
+  add("kspIosArm64", libs.androidx.room.compiler)
+  add("kspJvm", libs.androidx.room.compiler)
+}
 
 compose.desktop {
   application {

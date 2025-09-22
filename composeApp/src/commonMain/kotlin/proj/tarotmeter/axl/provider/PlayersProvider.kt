@@ -1,26 +1,25 @@
 package proj.tarotmeter.axl.provider
 
-import proj.tarotmeter.axl.model.Player
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import proj.tarotmeter.axl.data.DatabaseManager
+import proj.tarotmeter.axl.data.model.Player
 
-/**
- * Provides access to and management of players within the application.
- *
- * @property players The list of all players, sorted by their id
- */
-class PlayersProvider {
-  private val playersPerId = mutableMapOf<Int, Player>()
+/** Provides access to and management of players within the application. */
+class PlayersProvider : KoinComponent {
 
-  val players: List<Player>
-    get() = playersPerId.values.sortedBy { it.id }
+  private val databaseManager: DatabaseManager by inject()
+
+  suspend fun getPlayers(): List<Player> = databaseManager.getPlayers()
 
   /**
    * Adds a new player.
    *
    * @param name The name of the new player
    */
-  fun addPlayer(name: String) {
+  suspend fun addPlayer(name: String) {
     val newPlayer = Player(name)
-    playersPerId[newPlayer.id] = newPlayer
+    databaseManager.insertPlayer(newPlayer)
   }
 
   /**
@@ -29,8 +28,8 @@ class PlayersProvider {
    * @param id The id of the player to rename
    * @param newName The new name for the player
    */
-  fun renamePlayer(id: Int, newName: String) {
-    playersPerId[id]?.rename(newName)
+  suspend fun renamePlayer(id: Int, newName: String) {
+    databaseManager.renamePlayer(id, newName)
   }
 
   /**
@@ -38,7 +37,7 @@ class PlayersProvider {
    *
    * @param id The id of the player to remove
    */
-  fun removePlayer(id: Int) {
-    playersPerId.remove(id)
+  suspend fun removePlayer(id: Int) {
+    databaseManager.deletePlayer(id)
   }
 }

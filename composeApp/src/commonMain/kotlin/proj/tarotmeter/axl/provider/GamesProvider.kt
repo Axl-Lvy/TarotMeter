@@ -2,21 +2,15 @@ package proj.tarotmeter.axl.provider
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import proj.tarotmeter.axl.model.Game
-import proj.tarotmeter.axl.model.Round
+import proj.tarotmeter.axl.data.DatabaseManager
+import proj.tarotmeter.axl.data.model.Game
+import proj.tarotmeter.axl.data.model.Round
 
-/**
- * Provides access to and management of games within the application.
- *
- * @property games The list of all games, sorted by their last update time.
- */
+/** Provides access to and management of games within the application. */
 class GamesProvider : KoinComponent {
   private val playersProvider: PlayersProvider by inject()
 
-  private val gamesPerId = mutableMapOf<Int, Game>()
-
-  val games: List<Game>
-    get() = gamesPerId.values.sortedBy { it.updatedAt }
+  private val databaseManager: DatabaseManager by inject()
 
   /**
    * Creates a new game.
@@ -24,12 +18,12 @@ class GamesProvider : KoinComponent {
    * @param playerCount The number of players for the new game.
    * @return The created [Game] or null if there are not enough players.
    */
-  fun createGame(playerCount: Int): Game? {
-    val players = playersProvider.players
+  suspend fun createGame(playerCount: Int): Game? {
+    val players = playersProvider.getPlayers()
     if (players.size < playerCount) return null
     val selected = players.take(playerCount)
-    val game = Game(players = selected.toList())
-    gamesPerId[game.id] = game
+    val game = Game(players = selected)
+    databaseManager.insertGame(game)
     return game
   }
 
@@ -39,7 +33,9 @@ class GamesProvider : KoinComponent {
    * @param id The id of the game to retrieve.
    * @return The [Game] with the given id, or null if not found.
    */
-  fun getGame(id: Int): Game? = gamesPerId[id]
+  suspend fun getGame(id: Int): Game? = databaseManager.getGame(id)
+
+  suspend fun getGames(): List<Game> = databaseManager.getGames()
 
   /**
    * Adds a [round] to a game.
@@ -47,8 +43,9 @@ class GamesProvider : KoinComponent {
    * @param gameId The id of the game to add the round to.
    * @param round The [Round] to add.
    */
-  fun addRound(gameId: Int, round: Round) {
+  suspend fun addRound(gameId: Int, round: Round) {
     val game = getGame(gameId) ?: return
     game.addRound(round)
+    databaseManager.addRound(gameId, round)
   }
 }

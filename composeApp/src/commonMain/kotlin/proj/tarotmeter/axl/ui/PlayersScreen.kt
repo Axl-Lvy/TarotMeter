@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.provider.PlayersProvider
 
@@ -20,6 +21,10 @@ import proj.tarotmeter.axl.provider.PlayersProvider
 @Composable
 fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
   var newName by remember { mutableStateOf("") }
+  var players by remember { mutableStateOf(emptyList<proj.tarotmeter.axl.data.model.Player>()) }
+  val coroutineScope = rememberCoroutineScope()
+
+  LaunchedEffect(Unit) { players = playersProvider.getPlayers() }
   Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       OutlinedTextField(
@@ -32,8 +37,11 @@ fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
         onClick = {
           val name = newName.trim()
           if (name.isNotEmpty()) {
-            playersProvider.addPlayer(name)
-            newName = ""
+            coroutineScope.launch {
+              playersProvider.addPlayer(name)
+              players = playersProvider.getPlayers()
+              newName = ""
+            }
           }
         }
       ) {
@@ -42,11 +50,21 @@ fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
     }
     Divider()
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
-      items(playersProvider.players, key = { it.id }) { p ->
+      items(players, key = { it.id }) { p ->
         PlayerRow(
           p.name,
-          onRename = { playersProvider.renamePlayer(p.id, it) },
-          onDelete = { playersProvider.removePlayer(p.id) },
+          onRename = { newName ->
+            coroutineScope.launch {
+              playersProvider.renamePlayer(p.id, newName)
+              players = playersProvider.getPlayers()
+            }
+          },
+          onDelete = {
+            coroutineScope.launch {
+              playersProvider.removePlayer(p.id)
+              players = playersProvider.getPlayers()
+            }
+          },
         )
       }
     }
