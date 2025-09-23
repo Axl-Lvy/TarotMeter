@@ -30,8 +30,8 @@ data class Round(
   val poignee: Poignee,
   val petitAuBout: PetitAuBout,
   val chelem: Chelem,
-  override val id: Uuid = Uuid.random(),
-) : Identifiable {
+  val id: Uuid = Uuid.random(),
+) {
   init {
     require(oudlerCount in 0..3) { "Oudler count must be between 0 and 3" }
     require(takerPoints in 0..91) { "Taker points must be between 0 and 91" }

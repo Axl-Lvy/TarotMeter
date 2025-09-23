@@ -8,8 +8,7 @@ import kotlin.uuid.Uuid
  * @property id unique player id.
  * @property name player name.
  */
-data class Player(private var internalName: String, override val id: Uuid = Uuid.random()) :
-  Identifiable {
+data class Player(private var internalName: String, val id: Uuid = Uuid.random()) {
   val name: String
     get() = internalName
 

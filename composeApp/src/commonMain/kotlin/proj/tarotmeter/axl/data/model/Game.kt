@@ -18,11 +18,11 @@ import proj.tarotmeter.axl.util.DateUtil
 @Immutable
 data class Game(
   val players: List<Player>,
-  override val id: Uuid = Uuid.random(),
+  val id: Uuid = Uuid.random(),
   private val roundsInternal: MutableList<Round> = mutableStateListOf(),
   val startedAt: LocalDateTime = DateUtil.now(),
   private var updatedAtInternal: LocalDateTime = DateUtil.now(),
-) : Identifiable {
+) {
   val rounds: List<Round>
     get() = roundsInternal
 
