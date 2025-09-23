@@ -1,70 +1,57 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM).
+# TarotMeter
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+🎴 **Welcome to TarotMeter!** 🎴
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+TarotMeter is your magical companion for keeping track of tarot points during your games. Whether you're a seasoned tarot master or just learning the ropes, this app will make sure you focus on the fun while we handle the math. ✨
 
-### Build and Run Android Application
+Link to the web version: **[TarotMeter Web App](https://axl-lvy.github.io/TarotMeter/)** 🌟
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+## Tech Stack
 
-### Build and Run Desktop (JVM) Application
+🛠️ **Under the Hood**:
+- **Language**: Kotlin 🧙‍♂️
+- **Frameworks/Libraries**: Kotlin Multiplatform, Compose, Koin 🛠️
+- **Architecture**: Clean Architecture with Modular Design 🏗️
+- **Web**: WASM (WebAssembly) 🌐
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+## How to Build and Run
 
-### Build and Run Web Application
+🃏 **Getting Started**:
 
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE's toolbar or run it directly from the terminal:
-- for the Wasm target (faster, modern browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-- for the JS target (slower, supports older browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:jsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
-    ```
+1. **Clone the Repository**:
+   ```
+   git clone https://github.com/axl-lvy/TarotMeter.git
+   cd TarotMeter
+   ```
 
-### Build and Run iOS Application
+2. **Build the Project**:
+   Use the Gradle wrapper to build the project:
+   ```
+   ./gradlew build
+   ```
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+3. **Run on Android**:
+   ```
+   ./gradlew installDebug
+   ```
+   Then, deploy the APK to your Android device or emulator. 📱
+
+4. **Run on iOS**:
+   Open the `iosApp/iosApp.xcodeproj` in Xcode and run the project on a simulator or connected device. 🍎
+
+5. **Run on Web**:
+   Use the following command to start the web server:
+   ```
+   ./gradlew jsBrowserRun
+   ```
+
+   Or skip the hassle and visit the magic directly: **[TarotMeter Web App](https://axl-lvy.github.io/TarotMeter/)** 🌟
+
+## Development Status
+
+🚧 **Under Construction** 🚧
+
+This app is still brewing in the cauldron. 🧙‍♀️ Features and functionality are bubbling up, so stay tuned for more enchantments!
 
 ---
 
