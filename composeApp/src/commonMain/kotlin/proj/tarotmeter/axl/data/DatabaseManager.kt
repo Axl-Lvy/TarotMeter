@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.data
 
+import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.data.model.Game
 import proj.tarotmeter.axl.data.model.Player
 import proj.tarotmeter.axl.data.model.Round
@@ -27,14 +28,14 @@ interface DatabaseManager {
    * @param id The player's ID.
    * @param newName The new name for the player.
    */
-  suspend fun renamePlayer(id: Int, newName: String)
+  suspend fun renamePlayer(id: Uuid, newName: String)
 
   /**
    * Deletes a player from the database.
    *
    * @param id The player's ID to delete.
    */
-  suspend fun deletePlayer(id: Int)
+  suspend fun deletePlayer(id: Uuid)
 
   /**
    * Retrieves all games from the database.
@@ -49,7 +50,7 @@ interface DatabaseManager {
    * @param id The game ID.
    * @return The game if found, null otherwise.
    */
-  suspend fun getGame(id: Int): Game?
+  suspend fun getGame(id: Uuid): Game?
 
   /**
    * Inserts a new game into the database.
@@ -64,35 +65,14 @@ interface DatabaseManager {
    * @param gameId The game ID.
    * @param round The round to add.
    */
-  suspend fun addRound(gameId: Int, round: Round)
+  suspend fun addRound(gameId: Uuid, round: Round)
 
   /**
    * Removes a game from the database.
    *
    * @param id The game ID to remove.
    */
-  suspend fun removeGame(id: Int)
-
-  /**
-   * Gets the maximum round ID currently in the database.
-   *
-   * @return The highest round ID.
-   */
-  suspend fun getMaxRoundId(): Int
-
-  /**
-   * Gets the maximum player ID currently in the database.
-   *
-   * @return The highest player ID.
-   */
-  suspend fun getMaxPlayerId(): Int
-
-  /**
-   * Gets the maximum game ID currently in the database.
-   *
-   * @return The highest game ID.
-   */
-  suspend fun getMaxGameId(): Int
+  suspend fun removeGame(id: Uuid)
 }
 
 /**

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.data.model.Game
@@ -29,7 +30,7 @@ import proj.tarotmeter.axl.provider.GamesProvider
  * @param gameId The ID of the game to edit
  */
 @Composable
-fun GameEditorScreen(gameId: Int, gamesProvider: GamesProvider = koinInject()) {
+fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) {
   var game by remember { mutableStateOf<Game?>(null) }
   val coroutineScope = rememberCoroutineScope()
 

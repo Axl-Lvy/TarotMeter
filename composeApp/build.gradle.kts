@@ -120,6 +120,8 @@ kotlin {
     }
   }
 
+  sourceSets.all { languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi") }
+
   compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
 }
 

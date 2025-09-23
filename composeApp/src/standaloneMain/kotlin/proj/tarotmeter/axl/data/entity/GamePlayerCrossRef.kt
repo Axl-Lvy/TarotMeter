@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import kotlin.uuid.Uuid
 
 /**
  * Cross-reference entity for the many-to-many relationship between Game and Player.
@@ -31,6 +32,6 @@ import androidx.room.Index
   indices = [Index(value = ["game_id"]), Index(value = ["player_id"])],
 )
 data class GamePlayerCrossRef(
-  @ColumnInfo(name = "game_id") val gameId: Int,
-  @ColumnInfo(name = "player_id") val playerId: Int,
+  @ColumnInfo(name = "game_id") val gameId: Uuid,
+  @ColumnInfo(name = "player_id") val playerId: Uuid,
 )

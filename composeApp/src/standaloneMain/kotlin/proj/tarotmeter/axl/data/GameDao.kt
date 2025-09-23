@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.data.entity.GameEntity
 import proj.tarotmeter.axl.data.entity.GamePlayerCrossRef
 import proj.tarotmeter.axl.data.entity.GameWithRefs
@@ -59,7 +60,7 @@ interface GameDao {
    */
   @Transaction
   @Query("SELECT * FROM GameEntity WHERE game_id = :id")
-  suspend fun getGame(id: Int): GameWithRefs?
+  suspend fun getGame(id: Uuid): GameWithRefs?
 
   /**
    * Deletes a game by ID.
@@ -67,21 +68,7 @@ interface GameDao {
    * @param id The game ID to delete.
    * @return Number of rows affected.
    */
-  @Query("DELETE FROM GameEntity WHERE game_id = :id") suspend fun deleteGame(id: Int): Int
-
-  /**
-   * Gets the maximum game ID.
-   *
-   * @return The highest game ID, or null if no games exist.
-   */
-  @Query("SELECT MAX(game_id) FROM GameEntity") suspend fun getMaxGameId(): Int?
-
-  /**
-   * Gets the maximum round ID.
-   *
-   * @return The highest round ID, or null if no rounds exist.
-   */
-  @Query("SELECT MAX(round_id) FROM RoundEntity") suspend fun getMaxRoundId(): Int?
+  @Query("DELETE FROM GameEntity WHERE game_id = :id") suspend fun deleteGame(id: Uuid)
 
   /**
    * Deletes all games associated with a specific player.
@@ -91,5 +78,5 @@ interface GameDao {
   @Query(
     "DELETE FROM GameEntity WHERE game_id IN (SELECT game_id FROM GamePlayerCrossRef WHERE player_id = :playerId)"
   )
-  suspend fun deleteGamesFromPlayer(playerId: Int)
+  suspend fun deleteGamesFromPlayer(playerId: Uuid)
 }

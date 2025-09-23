@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.provider.GamesProvider
@@ -15,12 +16,11 @@ import proj.tarotmeter.axl.provider.PlayersProvider
 /**
  * Screen for creating a new game. Allows selecting the number of players and starting a new game.
  *
- * @param app The application state
  * @param onGameCreated Callback for when a new game is created, with the game ID
  */
 @Composable
 fun NewGameScreen(
-  onGameCreated: (Int) -> Unit,
+  onGameCreated: (Uuid) -> Unit,
   playersProvider: PlayersProvider = koinInject(),
   gamesProvider: GamesProvider = koinInject(),
 ) {
