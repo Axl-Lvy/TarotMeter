@@ -127,7 +127,7 @@ class TestDatabaseManager : TestWithKoin {
     val round =
       Round(
         taker = players[0],
-        contract = Contract.Garde,
+        contract = Contract.GARDE,
         partner = null,
         oudlerCount = 2,
         takerPoints = 48,
@@ -144,7 +144,7 @@ class TestDatabaseManager : TestWithKoin {
 
     val addedRound = updatedGame.rounds.first()
     assertEquals(players[0].name, addedRound.taker.name)
-    assertEquals(Contract.Garde, addedRound.contract)
+    assertEquals(Contract.GARDE, addedRound.contract)
     assertEquals(2, addedRound.oudlerCount)
     assertEquals(48, addedRound.takerPoints)
   }
@@ -161,7 +161,7 @@ class TestDatabaseManager : TestWithKoin {
     val round1 =
       Round(
         taker = players[0],
-        contract = Contract.Petite,
+        contract = Contract.PETITE,
         partner = null,
         oudlerCount = 1,
         takerPoints = 40,
@@ -173,7 +173,7 @@ class TestDatabaseManager : TestWithKoin {
     val round2 =
       Round(
         taker = players[1],
-        contract = Contract.GardeSans,
+        contract = Contract.GARDE_SANS,
         partner = players[2],
         oudlerCount = 3,
         takerPoints = 55,
@@ -230,7 +230,7 @@ class TestDatabaseManager : TestWithKoin {
     val round =
       Round(
         taker = players[2],
-        contract = Contract.GardeContre,
+        contract = Contract.GARDE_CONTRE,
         partner = players[1],
         oudlerCount = 3,
         takerPoints = 70,
@@ -245,7 +245,7 @@ class TestDatabaseManager : TestWithKoin {
     assertNotNull(updatedGame)
 
     val addedRound = updatedGame.rounds.first()
-    assertEquals(Contract.GardeContre, addedRound.contract)
+    assertEquals(Contract.GARDE_CONTRE, addedRound.contract)
     assertEquals(Poignee.TRIPLE, addedRound.poignee)
     assertEquals(PetitAuBout.DEFENSE, addedRound.petitAuBout)
     assertEquals(Chelem.FAILED, addedRound.chelem)

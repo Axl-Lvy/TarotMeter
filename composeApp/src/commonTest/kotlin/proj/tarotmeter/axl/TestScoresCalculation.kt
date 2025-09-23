@@ -21,7 +21,7 @@ class TestScoresCalculation {
   private fun createBasicRound(
     taker: Player,
     partner: Player? = null,
-    contract: Contract = Contract.Petite,
+    contract: Contract = Contract.PETITE,
     oudlerCount: Int = 1,
     takerPoints: Int = 51,
     poignee: Poignee = Poignee.NONE,
@@ -142,25 +142,25 @@ class TestScoresCalculation {
 
     // Petite (1x)
     val petiteRound =
-      createBasicRound(players[0], contract = Contract.Petite, takerPoints = basePoints)
+      createBasicRound(players[0], contract = Contract.PETITE, takerPoints = basePoints)
     val petiteScores = Scores.roundScores(petiteRound, game)
     assertEquals(50, petiteScores.forPlayer(players[0])) // 25 * 1 * 2
 
     // Garde (2x)
     val gardeRound =
-      createBasicRound(players[0], contract = Contract.Garde, takerPoints = basePoints)
+      createBasicRound(players[0], contract = Contract.GARDE, takerPoints = basePoints)
     val gardeScores = Scores.roundScores(gardeRound, game)
     assertEquals(100, gardeScores.forPlayer(players[0])) // 25 * 2 * 2
 
     // Garde Sans (4x)
     val gardeSansRound =
-      createBasicRound(players[0], contract = Contract.GardeSans, takerPoints = basePoints)
+      createBasicRound(players[0], contract = Contract.GARDE_SANS, takerPoints = basePoints)
     val gardeSansScores = Scores.roundScores(gardeSansRound, game)
     assertEquals(200, gardeSansScores.forPlayer(players[0])) // 25 * 4 * 2
 
     // Garde Contre (6x)
     val gardeContreRound =
-      createBasicRound(players[0], contract = Contract.GardeContre, takerPoints = basePoints)
+      createBasicRound(players[0], contract = Contract.GARDE_CONTRE, takerPoints = basePoints)
     val gardeContreScores = Scores.roundScores(gardeContreRound, game)
     assertEquals(300, gardeContreScores.forPlayer(players[0])) // 25 * 6 * 2
   }
@@ -207,7 +207,7 @@ class TestScoresCalculation {
         oudlerCount = 1,
         takerPoints = 51,
         petitAuBout = PetitAuBout.TAKER,
-        contract = Contract.Garde, // 2x multiplier
+        contract = Contract.GARDE, // 2x multiplier
       )
     val takerPetitScores = Scores.roundScores(takerPetitRound, game)
     assertEquals(140, takerPetitScores.forPlayer(players[0])) // (25 * 2 + 10 * 2) * 2
@@ -219,7 +219,7 @@ class TestScoresCalculation {
         oudlerCount = 1,
         takerPoints = 51,
         petitAuBout = PetitAuBout.DEFENSE,
-        contract = Contract.Garde, // 2x multiplier
+        contract = Contract.GARDE, // 2x multiplier
       )
     val defensePetitScores = Scores.roundScores(defensePetitRound, game)
     assertEquals(60, defensePetitScores.forPlayer(players[0])) // (25 * 2 - 10 * 2) * 2
@@ -264,7 +264,7 @@ class TestScoresCalculation {
     val complexRound =
       createBasicRound(
         players[0],
-        contract = Contract.GardeSans, // 4x multiplier
+        contract = Contract.GARDE_SANS, // 4x multiplier
         oudlerCount = 2, // target = 41
         takerPoints = 70, // +29 points
         poignee = Poignee.DOUBLE, // +30 points

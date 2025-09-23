@@ -114,7 +114,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
 fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
   var takerIndex by remember { mutableStateOf(0) }
   var partnerIndex by remember { mutableStateOf(if (game.players.size == 5) 1 else -1) }
-  var contract by remember { mutableStateOf(Contract.Garde) }
+  var contract by remember { mutableStateOf(Contract.GARDE) }
   var oudler by remember { mutableStateOf(1) }
   var pointsText by remember { mutableStateOf("41") }
 

@@ -9,14 +9,14 @@ package proj.tarotmeter.axl.data.model.enums
  */
 enum class Contract(val multiplier: Int, val title: String) {
   /** Petite contract (1x multiplier) */
-  Petite(1, "Petite"),
+  PETITE(1, "Petite"),
 
   /** Garde contract (2x multiplier) */
-  Garde(2, "Garde"),
+  GARDE(2, "Garde"),
 
   /** Garde Sans contract (4x multiplier) */
-  GardeSans(4, "Garde Sans"),
+  GARDE_SANS(4, "Garde Sans"),
 
   /** Garde Contre contract (6x multiplier) */
-  GardeContre(6, "Garde Contre"),
+  GARDE_CONTRE(6, "Garde Contre"),
 }
