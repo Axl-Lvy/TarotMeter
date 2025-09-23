@@ -1,6 +1,7 @@
 package proj.tarotmeter.axl.data.model
 
 import kotlin.uuid.Uuid
+import kotlinx.serialization.Serializable
 
 /**
  * Player class
@@ -8,6 +9,7 @@ import kotlin.uuid.Uuid
  * @property id unique player id.
  * @property name player name.
  */
+@Serializable
 data class Player(private var internalName: String, val id: Uuid = Uuid.random()) {
   val name: String
     get() = internalName

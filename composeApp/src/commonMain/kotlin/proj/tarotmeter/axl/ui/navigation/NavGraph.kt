@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.ui.GameEditorScreen
 import proj.tarotmeter.axl.ui.HistoryScreen
 import proj.tarotmeter.axl.ui.HomeScreen
@@ -34,14 +35,14 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
     composable(Route.Players.route) { PlayersScreen() }
     composable(Route.Settings.route) { SettingsScreen() }
     composable(Route.NewGame.route) {
-      NewGameScreen(onGameCreated = { id -> navController.navigate(Route.Game(id)) })
+      NewGameScreen(onGameCreated = { id -> navController.navigate(Route.Game(id.toHexString())) })
     }
     composable(Route.History.route) {
-      HistoryScreen(onOpenGame = { id -> navController.navigate(Route.Game(id)) })
+      HistoryScreen(onOpenGame = { id -> navController.navigate(Route.Game(id.toHexString())) })
     }
     composable<Route.Game> { backStackEntry ->
       val id = backStackEntry.toRoute<Route.Game>().id
-      GameEditorScreen(gameId = id)
+      GameEditorScreen(gameId = Uuid.parseHex(id))
     }
   }
 }
