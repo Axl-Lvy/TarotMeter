@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.data.model.enums.Chelem
 import proj.tarotmeter.axl.data.model.enums.Contract
 import proj.tarotmeter.axl.data.model.enums.PetitAuBout
@@ -55,10 +56,10 @@ import proj.tarotmeter.axl.data.model.enums.Poignee
     ],
 )
 data class RoundEntity(
-  @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "round_id") val id: Int,
-  @ColumnInfo(name = "game_id") val gameId: Int,
-  @ColumnInfo(name = "taker_id") val takerId: Int,
-  @ColumnInfo(name = "partner_id") val partnerId: Int?,
+  @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "round_id") val id: Uuid,
+  @ColumnInfo(name = "game_id") val gameId: Uuid,
+  @ColumnInfo(name = "taker_id") val takerId: Uuid,
+  @ColumnInfo(name = "partner_id") val partnerId: Uuid?,
   val contract: Contract,
   @ColumnInfo(name = "oudler_count") val oudlerCount: Int,
   @ColumnInfo(name = "taker_points") val takerPoints: Int,

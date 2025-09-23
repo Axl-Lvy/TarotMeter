@@ -29,7 +29,6 @@ class TestScoresCalculation {
     chelem: Chelem = Chelem.NONE,
   ): Round {
     return Round(
-      id = 1,
       taker = taker,
       partner = partner,
       contract = contract,

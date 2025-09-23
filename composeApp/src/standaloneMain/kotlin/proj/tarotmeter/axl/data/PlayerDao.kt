@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.data.entity.PlayerEntity
 
 /** Data Access Object for Player operations. */
@@ -23,7 +24,7 @@ interface PlayerDao {
    * @return The player entity if found, null otherwise.
    */
   @Query("SELECT * FROM PlayerEntity WHERE player_id = :id")
-  suspend fun getPlayer(id: Int): PlayerEntity?
+  suspend fun getPlayer(id: Uuid): PlayerEntity?
 
   /**
    * Retrieves all players.
@@ -40,7 +41,7 @@ interface PlayerDao {
    * @return Number of rows affected.
    */
   @Query("UPDATE PlayerEntity SET name = :name WHERE player_id = :id")
-  suspend fun renamePlayer(id: Int, name: String): Int
+  suspend fun renamePlayer(id: Uuid, name: String)
 
   /**
    * Deletes a player by ID.
@@ -48,12 +49,5 @@ interface PlayerDao {
    * @param id The player ID to delete.
    * @return Number of rows affected.
    */
-  @Query("DELETE FROM PlayerEntity WHERE player_id = :id") suspend fun deletePlayer(id: Int): Int
-
-  /**
-   * Gets the maximum player ID.
-   *
-   * @return The highest player ID, or null if no players exist.
-   */
-  @Query("SELECT MAX(player_id) FROM PlayerEntity") suspend fun getMaxPlayerId(): Int?
+  @Query("DELETE FROM PlayerEntity WHERE player_id = :id") suspend fun deletePlayer(id: Uuid)
 }

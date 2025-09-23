@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.provider
 
+import kotlin.uuid.Uuid
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.data.DatabaseManager
@@ -33,7 +34,7 @@ class GamesProvider : KoinComponent {
    * @param id The id of the game to retrieve.
    * @return The [Game] with the given id, or null if not found.
    */
-  suspend fun getGame(id: Int): Game? = databaseManager.getGame(id)
+  suspend fun getGame(id: Uuid): Game? = databaseManager.getGame(id)
 
   suspend fun getGames(): List<Game> = databaseManager.getGames()
 
@@ -43,7 +44,7 @@ class GamesProvider : KoinComponent {
    * @param gameId The id of the game to add the round to.
    * @param round The [Round] to add.
    */
-  suspend fun addRound(gameId: Int, round: Round) {
+  suspend fun addRound(gameId: Uuid, round: Round) {
     val game = getGame(gameId) ?: return
     game.addRound(round)
     databaseManager.addRound(gameId, round)

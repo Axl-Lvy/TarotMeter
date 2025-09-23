@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.provider
 
+import kotlin.uuid.Uuid
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.data.DatabaseManager
@@ -28,7 +29,7 @@ class PlayersProvider : KoinComponent {
    * @param id The id of the player to rename
    * @param newName The new name for the player
    */
-  suspend fun renamePlayer(id: Int, newName: String) {
+  suspend fun renamePlayer(id: Uuid, newName: String) {
     databaseManager.renamePlayer(id, newName)
   }
 
@@ -37,7 +38,7 @@ class PlayersProvider : KoinComponent {
    *
    * @param id The id of the player to remove
    */
-  suspend fun removePlayer(id: Int) {
+  suspend fun removePlayer(id: Uuid) {
     databaseManager.deletePlayer(id)
   }
 }

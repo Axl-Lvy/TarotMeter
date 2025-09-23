@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.data
 
+import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.data.model.Game
 import proj.tarotmeter.axl.data.model.Player
 import proj.tarotmeter.axl.data.model.Round
@@ -17,11 +18,11 @@ object NoOpDatabaseManager : DatabaseManager {
     /* Nothing to do */
   }
 
-  override suspend fun renamePlayer(id: Int, newName: String) {
+  override suspend fun renamePlayer(id: Uuid, newName: String) {
     /* Nothing to do */
   }
 
-  override suspend fun deletePlayer(id: Int) {
+  override suspend fun deletePlayer(id: Uuid) {
     /* Nothing to do */
   }
 
@@ -29,7 +30,7 @@ object NoOpDatabaseManager : DatabaseManager {
     return emptyList()
   }
 
-  override suspend fun getGame(id: Int): Game? {
+  override suspend fun getGame(id: Uuid): Game? {
     return null
   }
 
@@ -37,23 +38,11 @@ object NoOpDatabaseManager : DatabaseManager {
     /* Nothing to do */
   }
 
-  override suspend fun addRound(gameId: Int, round: Round) {
+  override suspend fun addRound(gameId: Uuid, round: Round) {
     /* Nothing to do */
   }
 
-  override suspend fun removeGame(id: Int) {
+  override suspend fun removeGame(id: Uuid) {
     /* Nothing to do */
-  }
-
-  override suspend fun getMaxRoundId(): Int {
-    return 0
-  }
-
-  override suspend fun getMaxPlayerId(): Int {
-    return 0
-  }
-
-  override suspend fun getMaxGameId(): Int {
-    return 0
   }
 }

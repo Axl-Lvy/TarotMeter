@@ -30,8 +30,8 @@ data class GameWithRefs(
    */
   fun toGame(): Game {
     return Game(
-      game.id,
       players.map { it.toPlayer() },
+      game.id,
       rounds.map { it.toRound() }.toMutableList(),
       game.startedAt,
       game.updatedAt,

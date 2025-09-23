@@ -9,6 +9,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import proj.tarotmeter.axl.data.converter.DateConverter
+import proj.tarotmeter.axl.data.converter.UuidConverter
 import proj.tarotmeter.axl.data.entity.GameEntity
 import proj.tarotmeter.axl.data.entity.GamePlayerCrossRef
 import proj.tarotmeter.axl.data.entity.PlayerEntity
@@ -22,7 +23,7 @@ import proj.tarotmeter.axl.data.entity.RoundEntity
   autoMigrations = [],
 )
 @ConstructedBy(DatabaseConstructor::class)
-@TypeConverters(DateConverter::class)
+@TypeConverters(DateConverter::class, UuidConverter::class)
 abstract class StandaloneLocalDatabase : RoomDatabase() {
   /**
    * Player data access object.

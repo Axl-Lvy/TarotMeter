@@ -23,7 +23,6 @@ data class RoundWithRefs(
    */
   fun toRound(): Round =
     Round(
-      round.id,
       taker.toPlayer(),
       partner?.toPlayer(),
       round.contract,
@@ -32,5 +31,6 @@ data class RoundWithRefs(
       round.poignee,
       round.petitAuBout,
       round.chelem,
+      round.id,
     )
 }

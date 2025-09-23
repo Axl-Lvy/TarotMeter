@@ -2,16 +2,16 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b149702bad9d33ad99e36b8f3f92e92f",
+    "identityHash": "b20f0a39cd7417e0dd09b8604e09dba9",
     "entities": [
       {
         "tableName": "PlayerEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`player_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`player_id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`player_id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "player_id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -22,7 +22,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "player_id"
           ]
@@ -50,30 +50,30 @@
       },
       {
         "tableName": "RoundEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`round_id` INTEGER NOT NULL, `game_id` INTEGER NOT NULL, `taker_id` INTEGER NOT NULL, `partner_id` INTEGER, `contract` TEXT NOT NULL, `oudler_count` INTEGER NOT NULL, `taker_points` INTEGER NOT NULL, `poignee` TEXT NOT NULL, `petit_au_bout` TEXT NOT NULL, `chelem` TEXT NOT NULL, PRIMARY KEY(`round_id`), FOREIGN KEY(`game_id`) REFERENCES `GameEntity`(`game_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`taker_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`partner_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`round_id` TEXT NOT NULL, `game_id` TEXT NOT NULL, `taker_id` TEXT NOT NULL, `partner_id` TEXT, `contract` TEXT NOT NULL, `oudler_count` INTEGER NOT NULL, `taker_points` INTEGER NOT NULL, `poignee` TEXT NOT NULL, `petit_au_bout` TEXT NOT NULL, `chelem` TEXT NOT NULL, PRIMARY KEY(`round_id`), FOREIGN KEY(`game_id`) REFERENCES `GameEntity`(`game_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`taker_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`partner_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "round_id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "gameId",
             "columnName": "game_id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "takerId",
             "columnName": "taker_id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "partnerId",
             "columnName": "partner_id",
-            "affinity": "INTEGER"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "contract",
@@ -194,12 +194,12 @@
       },
       {
         "tableName": "GameEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`game_id` INTEGER NOT NULL, `started_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`game_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`game_id` TEXT NOT NULL, `started_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`game_id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "game_id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -235,18 +235,18 @@
       },
       {
         "tableName": "GamePlayerCrossRef",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`game_id` INTEGER NOT NULL, `player_id` INTEGER NOT NULL, PRIMARY KEY(`game_id`, `player_id`), FOREIGN KEY(`game_id`) REFERENCES `GameEntity`(`game_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`player_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`game_id` TEXT NOT NULL, `player_id` TEXT NOT NULL, PRIMARY KEY(`game_id`, `player_id`), FOREIGN KEY(`game_id`) REFERENCES `GameEntity`(`game_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`player_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "gameId",
             "columnName": "game_id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "playerId",
             "columnName": "player_id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -305,7 +305,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b149702bad9d33ad99e36b8f3f92e92f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b20f0a39cd7417e0dd09b8604e09dba9')"
     ]
   }
 }

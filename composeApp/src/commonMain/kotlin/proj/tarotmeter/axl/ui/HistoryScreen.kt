@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlin.uuid.Uuid
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.provider.GamesProvider
 
@@ -21,7 +22,7 @@ import proj.tarotmeter.axl.provider.GamesProvider
  * @param onOpenGame Callback for opening a specific game, with the game ID
  */
 @Composable
-fun HistoryScreen(onOpenGame: (Int) -> Unit, gamesProvider: GamesProvider = koinInject()) {
+fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koinInject()) {
   var games by remember { mutableStateOf(emptyList<proj.tarotmeter.axl.data.model.Game>()) }
   LaunchedEffect(Unit) { games = gamesProvider.getGames() }
   if (games.isEmpty()) {

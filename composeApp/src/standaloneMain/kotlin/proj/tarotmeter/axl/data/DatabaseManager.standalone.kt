@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.data
 
+import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.data.entity.GameEntity
 import proj.tarotmeter.axl.data.entity.GamePlayerCrossRef
 import proj.tarotmeter.axl.data.entity.PlayerEntity
@@ -21,11 +22,11 @@ internal class StandaloneLocalDatabaseManager(
     database.getPlayerDao().insertPlayer(PlayerEntity(player.id, player.name))
   }
 
-  override suspend fun renamePlayer(id: Int, newName: String) {
+  override suspend fun renamePlayer(id: Uuid, newName: String) {
     database.getPlayerDao().renamePlayer(id, newName)
   }
 
-  override suspend fun deletePlayer(id: Int) {
+  override suspend fun deletePlayer(id: Uuid) {
     database.getGameDao().deleteGamesFromPlayer(id)
     database.getPlayerDao().deletePlayer(id)
   }
@@ -34,7 +35,7 @@ internal class StandaloneLocalDatabaseManager(
     return database.getGameDao().getAllGames().map { it.toGame() }
   }
 
-  override suspend fun getGame(id: Int): Game? {
+  override suspend fun getGame(id: Uuid): Game? {
     return database.getGameDao().getGame(id)?.toGame()
   }
 
@@ -48,7 +49,7 @@ internal class StandaloneLocalDatabaseManager(
     }
   }
 
-  override suspend fun addRound(gameId: Int, round: Round) {
+  override suspend fun addRound(gameId: Uuid, round: Round) {
     insertPlayer(round.taker)
     round.partner?.let { insertPlayer(it) }
     database
@@ -69,20 +70,8 @@ internal class StandaloneLocalDatabaseManager(
       )
   }
 
-  override suspend fun removeGame(id: Int) {
+  override suspend fun removeGame(id: Uuid) {
     database.getGameDao().deleteGame(id)
-  }
-
-  override suspend fun getMaxPlayerId(): Int {
-    return database.getPlayerDao().getMaxPlayerId() ?: 0
-  }
-
-  override suspend fun getMaxRoundId(): Int {
-    return database.getGameDao().getMaxRoundId() ?: 0
-  }
-
-  override suspend fun getMaxGameId(): Int {
-    return database.getGameDao().getMaxGameId() ?: 0
   }
 }
 

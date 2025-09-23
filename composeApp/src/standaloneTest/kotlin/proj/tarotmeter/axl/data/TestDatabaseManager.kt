@@ -109,13 +109,6 @@ class TestDatabaseManager : TestWithKoin {
   }
 
   @Test
-  fun testGetGameByIdNotFound() = runTest {
-    val nonExistentGameId = 99999
-    val retrievedGame = dbManager.getGame(nonExistentGameId)
-    assertNull(retrievedGame)
-  }
-
-  @Test
   fun testAddRoundToGame() = runTest {
     val players =
       listOf(
@@ -216,63 +209,6 @@ class TestDatabaseManager : TestWithKoin {
 
     val removedGame = dbManager.getGame(game.id)
     assertNull(removedGame)
-  }
-
-  @Test
-  fun testGetMaxRoundId() = runTest {
-    val initialMaxId = dbManager.getMaxRoundId()
-
-    val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
-
-    players.forEach { dbManager.insertPlayer(it) }
-
-    val game = Game(players)
-    dbManager.insertGame(game)
-
-    val round =
-      Round(
-        taker = players[0],
-        contract = Contract.Garde,
-        partner = null,
-        oudlerCount = 2,
-        takerPoints = 45,
-        poignee = Poignee.NONE,
-        petitAuBout = PetitAuBout.NONE,
-        chelem = Chelem.NONE,
-      )
-
-    dbManager.addRound(game.id, round)
-
-    val newMaxId = dbManager.getMaxRoundId()
-    assertTrue(newMaxId > initialMaxId)
-  }
-
-  @Test
-  fun testGetMaxPlayerId() = runTest {
-    val initialMaxId = dbManager.getMaxPlayerId()
-
-    val player = Player("TestPlayer")
-    dbManager.insertPlayer(player)
-
-    val newMaxId = dbManager.getMaxPlayerId()
-    assertTrue(newMaxId >= player.id)
-    assertTrue(newMaxId > initialMaxId)
-  }
-
-  @Test
-  fun testGetMaxGameId() = runTest {
-    val initialMaxId = dbManager.getMaxGameId()
-
-    val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
-
-    players.forEach { dbManager.insertPlayer(it) }
-
-    val game = Game(players)
-    dbManager.insertGame(game)
-
-    val newMaxId = dbManager.getMaxGameId()
-    assertTrue(newMaxId >= game.id)
-    assertTrue(newMaxId > initialMaxId)
   }
 
   @Test

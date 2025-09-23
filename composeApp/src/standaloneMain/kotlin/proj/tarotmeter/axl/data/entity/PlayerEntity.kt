@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.data.model.Player
 
 /**
@@ -14,7 +15,7 @@ import proj.tarotmeter.axl.data.model.Player
  */
 @Entity(indices = [Index(value = ["player_id"]), Index(value = ["name"])])
 data class PlayerEntity(
-  @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "player_id") val id: Int,
+  @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "player_id") val id: Uuid,
   val name: String,
 ) {
   /**
@@ -22,5 +23,5 @@ data class PlayerEntity(
    *
    * @return Player domain model.
    */
-  fun toPlayer(): Player = Player(id, name)
+  fun toPlayer(): Player = Player(name, id)
 }
