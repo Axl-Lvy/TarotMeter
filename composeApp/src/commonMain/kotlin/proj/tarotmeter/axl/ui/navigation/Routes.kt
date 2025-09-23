@@ -1,6 +1,5 @@
 package proj.tarotmeter.axl.ui.navigation
 
-import kotlin.uuid.Uuid
 import kotlinx.serialization.Serializable
 
 /**
@@ -57,7 +56,7 @@ sealed interface Route {
    * @property id The unique identifier of the game to edit
    */
   @Serializable
-  data class Game(val id: Uuid) : Route {
+  data class Game(val id: String) : Route {
     override val route: String
       get() = ROUTE
 

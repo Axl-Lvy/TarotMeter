@@ -113,6 +113,8 @@ kotlin {
       implementation(libs.ktor.client.okhttp)
     }
 
+    androidUnitTest.dependencies { implementation(libs.androidx.test.core) }
+
     jvmMain.dependencies {
       implementation(compose.desktop.currentOs)
       implementation(libs.kotlinx.coroutinesSwing)
@@ -135,6 +137,7 @@ android {
     targetSdk = libs.versions.android.targetSdk.get().toInt()
     versionCode = 1
     versionName = "1.0"
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
   packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
   buildTypes { getByName("release") { isMinifyEnabled = false } }

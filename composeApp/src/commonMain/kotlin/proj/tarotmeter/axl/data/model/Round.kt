@@ -2,6 +2,7 @@ package proj.tarotmeter.axl.data.model
 
 import androidx.compose.runtime.Immutable
 import kotlin.uuid.Uuid
+import kotlinx.serialization.Serializable
 import proj.tarotmeter.axl.data.model.enums.Chelem
 import proj.tarotmeter.axl.data.model.enums.Contract
 import proj.tarotmeter.axl.data.model.enums.PetitAuBout
@@ -20,6 +21,7 @@ import proj.tarotmeter.axl.data.model.enums.Poignee
  * @property petitAuBout The Petit au Bout outcome for the round.
  * @property chelem The Chelem (slam) outcome for the round.
  */
+@Serializable
 @Immutable
 data class Round(
   val taker: Player,

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
 import kotlin.uuid.Uuid
 import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.Serializable
 import proj.tarotmeter.axl.util.DateUtil
 
 /**
@@ -15,6 +16,7 @@ import proj.tarotmeter.axl.util.DateUtil
  * @property startedAt timestamp when the game started.
  * @property updatedAt timestamp when the game was last edited.
  */
+@Serializable
 @Immutable
 data class Game(
   val players: List<Player>,
