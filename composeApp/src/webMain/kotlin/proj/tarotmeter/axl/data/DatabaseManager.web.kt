@@ -27,7 +27,7 @@ object LocalStorageDatabaseManager : DatabaseManager {
 
   override suspend fun insertPlayer(player: Player) =
     withContext(Dispatchers.Default) {
-      val players = getPlayers().toMutableList().apply { add(player) }
+      val players = getPlayers() + player
       window.localStorage.setItem(PLAYERS_KEY, json.encodeToString(players))
     }
 
@@ -54,7 +54,7 @@ object LocalStorageDatabaseManager : DatabaseManager {
 
   override suspend fun insertGame(game: Game) =
     withContext(Dispatchers.Default) {
-      val games = getGames().toMutableList().apply { add(game) }
+      val games = getGames() + game
       window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
     }
 
