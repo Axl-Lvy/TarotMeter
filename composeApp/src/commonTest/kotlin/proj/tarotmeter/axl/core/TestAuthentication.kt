@@ -38,8 +38,10 @@ class TestAuthentication : TestWithKoin {
     AUTH_REFRESH_TOKEN.reset()
     AUTH_ACCESS_TOKEN.reset()
     KEEP_LOGGED_IN.reset()
-    runTest { authManager.signOut() }
-    eventually(duration = 5.seconds) { assertNull(authManager.user) }
+    runTest {
+      authManager.signOut()
+      eventually(duration = 5.seconds) { assertNull(authManager.user) }
+    }
   }
 
   @AfterTest
