@@ -26,6 +26,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # Update secrets with the specific TEST_USER_MAIL for this shard
+      - name: Update local.properties for this shard
+        run: |
+          chmod +x .github/scripts/update_properties.sh
+          .github/scripts/update_properties.sh
+        env:
+          SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+          TEST_USER_MAIL: "testuser1@axl.com"
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
