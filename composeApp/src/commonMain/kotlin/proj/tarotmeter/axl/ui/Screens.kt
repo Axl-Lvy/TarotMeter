@@ -34,19 +34,58 @@ fun AppScaffold(app: AppState) {
       Screen.History -> "Game History"
       is Screen.GameEditor -> "Game Editor"
     }
+  
+  val lightBackground = Color(0xFFF9FAFB)
+  val subtleBlue = Color(0xFFF1F5F9)
+  val accentPurple = Color(0xFFF8FAFC)
+  
+  // Modern gradient background for scaffold
+  val scaffoldBackground = Brush.radialGradient(
+    colors = listOf(
+      lightBackground,
+      subtleBlue,
+      accentPurple
+    ),
+    radius = 1200f,
+    center = androidx.compose.ui.geometry.Offset(0.5f, 0.3f)
+  )
+  
+  val primaryAccent = Color(0xFF06B6D4)
+  val darkText = Color(0xFF111827)
+  
   Scaffold(
+    containerColor = Color.Transparent,
     topBar = {
       TopAppBar(
-        title = { Text(topTitle) },
+        title = { 
+          Text(
+            topTitle,
+            color = darkText,
+            fontWeight = FontWeight.SemiBold
+          ) 
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = Color.White
+        ),
         navigationIcon = {
           if (app.currentScreen !is Screen.Home) {
-            TextButton(onClick = { app.navigate(Screen.Home) }) { Text("Home") }
+            TextButton(
+              onClick = { app.navigate(Screen.Home) },
+              colors = ButtonDefaults.textButtonColors(contentColor = primaryAccent)
+            ) { 
+              Text("🏠 Home") 
+            }
           }
         },
       )
     }
   ) { padding ->
-    Box(Modifier.fillMaxSize().padding(padding)) {
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .background(scaffoldBackground)
+        .padding(padding)
+    ) {
       when (val s = app.currentScreen) {
         Screen.Home -> HomeScreen(app)
         Screen.Players -> PlayersScreen(app)
@@ -61,60 +100,191 @@ fun AppScaffold(app: AppState) {
 
 @Composable
 private fun HomeScreen(app: AppState) {
-  val gradient =
-    Brush.verticalGradient(listOf(Color(0xFF121212), MaterialTheme.colorScheme.primaryContainer))
+  val lightBackground = Color(0xFFF9FAFB)
+  val subtleBlue = Color(0xFFF1F5F9)
+  val accentPurple = Color(0xFFF8FAFC)
+  
+  // Modern gradient background with subtle depth
+  val modernBackground = Brush.radialGradient(
+    colors = listOf(
+      lightBackground,
+      subtleBlue,
+      accentPurple
+    ),
+    radius = 1200f,
+    center = androidx.compose.ui.geometry.Offset(0.5f, 0.3f)
+  )
+  
+  val primaryGradient = listOf(Color(0xFF06B6D4), Color(0xFF10B981))
+  val secondaryAccent = Color(0xFF6366F1)
+  val darkText = Color(0xFF111827)
+  val mediumGray = Color(0xFF6B7280)
+  val lightBorder = Color(0xFFE5E7EB)
+  
   Column(
-    modifier = Modifier.fillMaxSize().background(gradient).padding(24.dp),
+    modifier = Modifier
+      .fillMaxSize()
+      .background(modernBackground)
+      .padding(32.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.SpaceBetween,
+    verticalArrangement = Arrangement.Center
   ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+    // Header Section
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.fillMaxWidth()
+    ) {
       Text(
         "Tarot Meter",
-        style =
-          MaterialTheme.typography.headlineMedium.copy(
-            color = Color.Red,
-            fontWeight = FontWeight.Bold,
-          ),
+        style = MaterialTheme.typography.displayLarge.copy(
+          color = darkText,
+          fontWeight = FontWeight.Bold
+        ),
+        textAlign = TextAlign.Center
       )
-      Spacer(Modifier.height(8.dp))
-      Text("Track your Tarot games with style", color = Color(0xFFECECEC))
+      Spacer(Modifier.height(16.dp))
+      Text(
+        "Track your tarot games with style",
+        style = MaterialTheme.typography.titleLarge.copy(
+          color = mediumGray,
+          fontWeight = FontWeight.Medium
+        ),
+        textAlign = TextAlign.Center
+      )
     }
-    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-      PrimaryAction("New Game") { app.navigate(Screen.NewGame) }
-      SecondaryAction("Players") { app.navigate(Screen.Players) }
-      SecondaryAction("Game History") { app.navigate(Screen.History) }
-      SecondaryAction("Settings") { app.navigate(Screen.Settings) }
+    
+    Spacer(Modifier.height(80.dp))
+    
+    // Main Action - New Game (Gradient)
+    PrimaryGradientButton(
+      text = "🎮 New Game",
+      onClick = { app.navigate(Screen.NewGame) },
+      gradientColors = primaryGradient,
+      modifier = Modifier.fillMaxWidth()
+    )
+    
+    Spacer(Modifier.height(48.dp))
+    
+    // Secondary Actions (Clean Cards)
+    Column(
+      modifier = Modifier.fillMaxWidth(),
+      verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+      ModernCardButton(
+        text = "👥 Players",
+        onClick = { app.navigate(Screen.Players) },
+        accentColor = secondaryAccent
+      )
+      
+      ModernCardButton(
+        text = "📊 History",
+        onClick = { app.navigate(Screen.History) },
+        accentColor = Color(0xFF8B5CF6)
+      )
+      
+      ModernCardButton(
+        text = "⚙️ Settings",
+        onClick = { app.navigate(Screen.Settings) },
+        accentColor = mediumGray
+      )
     }
+  }
+}
+
+@Composable
+private fun PrimaryGradientButton(
+  text: String,
+  onClick: () -> Unit,
+  gradientColors: List<Color>,
+  modifier: Modifier = Modifier
+) {
+  val gradient = Brush.linearGradient(gradientColors)
+  
+  Box(
+    modifier = modifier
+      .height(68.dp)
+      .clip(RoundedCornerShape(16.dp))
+      .background(gradient)
+      .clickable { onClick() },
+    contentAlignment = Alignment.Center
+  ) {
     Text(
-      "No data is persisted yet. Database will be added later.",
-      color = Color(0xFFDDDDDD),
-      textAlign = TextAlign.Center,
+      text = text,
+      style = MaterialTheme.typography.titleLarge.copy(
+        fontWeight = FontWeight.Bold,
+        color = Color.White
+      )
     )
   }
 }
 
 @Composable
-private fun PrimaryAction(text: String, onClick: () -> Unit) {
-  Button(
-    onClick = onClick,
-    modifier = Modifier.fillMaxWidth().height(56.dp),
+private fun ModernCardButton(
+  text: String,
+  onClick: () -> Unit,
+  accentColor: Color,
+  modifier: Modifier = Modifier
+) {
+  var isPressed by remember { mutableStateOf(false) }
+  
+  Surface(
     shape = RoundedCornerShape(16.dp),
+    color = Color.White,
+    modifier = modifier
+      .fillMaxWidth()
+      .height(72.dp)
+      .clickable { onClick() },
+    shadowElevation = if (isPressed) 8.dp else 4.dp,
+    border = androidx.compose.foundation.BorderStroke(
+      width = 1.dp, 
+      color = Color(0xFFE5E7EB)
+    )
   ) {
-    Text(text)
+    Row(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 24.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      // Icon with accent color background
+      Surface(
+        shape = CircleShape,
+        color = accentColor.copy(alpha = 0.1f),
+        modifier = Modifier.size(48.dp)
+      ) {
+        Box(
+          modifier = Modifier.fillMaxSize(),
+          contentAlignment = Alignment.Center
+        ) {
+          Text(
+            text = text.split(" ").firstOrNull() ?: "🎯",
+            style = MaterialTheme.typography.titleLarge
+          )
+        }
+      }
+      
+      Spacer(Modifier.width(20.dp))
+      
+      Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium.copy(
+          color = Color(0xFF111827),
+          fontWeight = FontWeight.SemiBold
+        ),
+        modifier = Modifier.weight(1f)
+      )
+      
+      // Subtle arrow
+      Text(
+        text = "→",
+        style = MaterialTheme.typography.titleMedium.copy(
+          color = Color(0xFF6B7280)
+        )
+      )
+    }
   }
 }
 
-@Composable
-private fun SecondaryAction(text: String, onClick: () -> Unit) {
-  OutlinedButton(
-    onClick = onClick,
-    modifier = Modifier.fillMaxWidth().height(56.dp),
-    shape = RoundedCornerShape(16.dp),
-  ) {
-    Text(text)
-  }
-}
 
 @Composable
 private fun PlayersScreen(app: AppState) {
@@ -139,7 +309,7 @@ private fun PlayersScreen(app: AppState) {
         Text("Add")
       }
     }
-    Divider()
+    HorizontalDivider()
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
       items(app.players, key = { it.id }) { p ->
         PlayerRow(
@@ -315,7 +485,7 @@ private fun GameEditorScreen(app: AppState, gameId: Int) {
       }
     }
     RoundEditor(game = game, onAdd = { app.addRound(game.id, it) })
-    Divider()
+    HorizontalDivider()
     Text("Rounds", style = MaterialTheme.typography.titleMedium)
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
       items(game.rounds) { r ->
