@@ -6,15 +6,15 @@ import com.russhwolf.settings.set
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class ValueBasedConfigItem<T : Any>(
+open class ValueBasedConfigItem<T : Any>(
   name: String,
-  defaultValue: T?,
+  defaultValue: T,
   private val parser: (String) -> T,
 ) : KoinComponent, ConfigItem<T>(name, defaultValue) {
   private val settings: Settings by inject()
   private var cachedValue: T? = null
 
-  override var value: T?
+  override var value: T
     get() {
       if (cachedValue == null) {
         val retrievedValue = settings[name, NO_VALUE]
@@ -25,7 +25,9 @@ class ValueBasedConfigItem<T : Any>(
             parser(retrievedValue)
           }
       }
-      return cachedValue
+      val valueToReturn = cachedValue
+      checkNotNull(valueToReturn)
+      return valueToReturn
     }
     set(value) {
       cachedValue = value

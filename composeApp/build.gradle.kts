@@ -167,3 +167,5 @@ compose.desktop {
     }
   }
 }
+
+apply(from = "precompile.gradle.kts")
