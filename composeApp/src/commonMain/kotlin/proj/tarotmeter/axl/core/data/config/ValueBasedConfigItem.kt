@@ -3,7 +3,6 @@ package proj.tarotmeter.axl.core.data.config
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
-import kotlin.getValue
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
