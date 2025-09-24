@@ -42,7 +42,9 @@ class AuthManager() : KoinComponent {
               refreshUser()
             }
           }
-          else -> {}
+          else -> {
+            // No action needed for other states
+          }
         }
       }
     }
