@@ -3,14 +3,14 @@ package proj.tarotmeter.axl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import proj.tarotmeter.axl.data.model.Game
-import proj.tarotmeter.axl.data.model.Player
-import proj.tarotmeter.axl.data.model.Round
-import proj.tarotmeter.axl.data.model.Scores
-import proj.tarotmeter.axl.data.model.enums.Chelem
-import proj.tarotmeter.axl.data.model.enums.Contract
-import proj.tarotmeter.axl.data.model.enums.PetitAuBout
-import proj.tarotmeter.axl.data.model.enums.Poignee
+import proj.tarotmeter.axl.core.data.model.Game
+import proj.tarotmeter.axl.core.data.model.Player
+import proj.tarotmeter.axl.core.data.model.Round
+import proj.tarotmeter.axl.core.data.model.Scores
+import proj.tarotmeter.axl.core.data.model.enums.Chelem
+import proj.tarotmeter.axl.core.data.model.enums.Contract
+import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
+import proj.tarotmeter.axl.core.data.model.enums.Poignee
 
 class TestScoresCalculation {
 

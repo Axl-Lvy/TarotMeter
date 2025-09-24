@@ -3,10 +3,10 @@ package proj.tarotmeter.axl
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import proj.tarotmeter.axl.data.config.getPlatformSpecificConfig
-import proj.tarotmeter.axl.data.getPlatformSpecificDatabaseManager
-import proj.tarotmeter.axl.provider.GamesProvider
-import proj.tarotmeter.axl.provider.PlayersProvider
+import proj.tarotmeter.axl.core.data.config.getPlatformSpecificConfig
+import proj.tarotmeter.axl.core.data.getPlatformSpecificDatabaseManager
+import proj.tarotmeter.axl.core.provider.GamesProvider
+import proj.tarotmeter.axl.core.provider.PlayersProvider
 
 /**
  * Initializes koin modules

@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlin.uuid.Uuid
 import org.koin.compose.koinInject
-import proj.tarotmeter.axl.provider.GamesProvider
+import proj.tarotmeter.axl.core.provider.GamesProvider
 
 /**
  * Screen for viewing game history. Displays a list of past games that can be selected for
@@ -23,7 +23,7 @@ import proj.tarotmeter.axl.provider.GamesProvider
  */
 @Composable
 fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koinInject()) {
-  var games by remember { mutableStateOf(emptyList<proj.tarotmeter.axl.data.model.Game>()) }
+  var games by remember { mutableStateOf(emptyList<proj.tarotmeter.axl.core.data.model.Game>()) }
   LaunchedEffect(Unit) { games = gamesProvider.getGames() }
   if (games.isEmpty()) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

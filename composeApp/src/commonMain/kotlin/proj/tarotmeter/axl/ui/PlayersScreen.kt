@@ -15,13 +15,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import proj.tarotmeter.axl.provider.PlayersProvider
+import proj.tarotmeter.axl.core.provider.PlayersProvider
 
 /** Screen for managing players. Allows adding, renaming, and removing players. */
 @Composable
 fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
   var newName by remember { mutableStateOf("") }
-  var players by remember { mutableStateOf(emptyList<proj.tarotmeter.axl.data.model.Player>()) }
+  var players by remember {
+    mutableStateOf(emptyList<proj.tarotmeter.axl.core.data.model.Player>())
+  }
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) { players = playersProvider.getPlayers() }

@@ -14,14 +14,14 @@ import androidx.compose.ui.unit.dp
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import proj.tarotmeter.axl.data.model.Game
-import proj.tarotmeter.axl.data.model.Round
-import proj.tarotmeter.axl.data.model.Scores
-import proj.tarotmeter.axl.data.model.enums.Chelem
-import proj.tarotmeter.axl.data.model.enums.Contract
-import proj.tarotmeter.axl.data.model.enums.PetitAuBout
-import proj.tarotmeter.axl.data.model.enums.Poignee
-import proj.tarotmeter.axl.provider.GamesProvider
+import proj.tarotmeter.axl.core.data.model.Game
+import proj.tarotmeter.axl.core.data.model.Round
+import proj.tarotmeter.axl.core.data.model.Scores
+import proj.tarotmeter.axl.core.data.model.enums.Chelem
+import proj.tarotmeter.axl.core.data.model.enums.Contract
+import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
+import proj.tarotmeter.axl.core.data.model.enums.Poignee
+import proj.tarotmeter.axl.core.provider.GamesProvider
 
 /**
  * Screen for editing a specific game. Displays game scores, allows adding rounds, and shows round

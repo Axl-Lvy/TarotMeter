@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.data
+package proj.tarotmeter.axl.core.data
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
