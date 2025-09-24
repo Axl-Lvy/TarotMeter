@@ -31,7 +31,6 @@ class AuthManager() : KoinComponent {
   private val authListeningScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
   init {
-
     authListeningScope.launch {
       supabaseClient.auth.sessionStatus.collect {
         when (it) {

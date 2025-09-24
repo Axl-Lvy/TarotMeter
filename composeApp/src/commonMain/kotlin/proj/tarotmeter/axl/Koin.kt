@@ -31,5 +31,5 @@ fun initKoinModules(): Array<Module> {
     single { getPlatformSpecificConfig() }
   }
 
-  return arrayOf(dataModule, providerModule)
+  return arrayOf(authModule, dataModule, providerModule)
 }

@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl
+package proj.tarotmeter.axl.core
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
