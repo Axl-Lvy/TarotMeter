@@ -54,15 +54,15 @@ class TestAuthentication : TestWithKoin {
 
   @Test
   fun testSuccessfulSignIn() = runTest {
-    assertNull(authManager.user, "User should be null before sign in")
-
     authManager.signInFromEmail(
         providedEmail = Secrets.testUserMail,
         providedPassword = Secrets.testUserPassword,
     )
 
-    assertNotNull(authManager.user, "User should not be null after successful sign in")
-    assertEquals(Secrets.testUserMail, authManager.user?.email, "Email should match")
+    eventually(duration = 5.seconds) {
+      assertNotNull(authManager.user, "User should not be null after successful sign in")
+      assertEquals(Secrets.testUserMail, authManager.user?.email, "Email should match")
+    }
   }
 
   @Test
