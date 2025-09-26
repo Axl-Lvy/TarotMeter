@@ -1,6 +1,5 @@
 package proj.tarotmeter.axl.core.data
 
-import kotlin.text.iterator
 import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.core.data.entity.GameEntity
 import proj.tarotmeter.axl.core.data.entity.GamePlayerCrossRef
@@ -20,7 +19,7 @@ internal class StandaloneLocalDatabaseManager(
   }
 
   override suspend fun insertPlayer(player: Player) {
-    database.getPlayerDao().insertPlayer(PlayerEntity(player.id, player.name))
+    database.getPlayerDao().insertPlayer(PlayerEntity(player.id, player.name, player.updatedAt))
   }
 
   override suspend fun renamePlayer(id: Uuid, newName: String) {
@@ -67,6 +66,7 @@ internal class StandaloneLocalDatabaseManager(
           round.poignee,
           round.petitAuBout,
           round.chelem,
+          round.updatedAt,
         )
       )
   }

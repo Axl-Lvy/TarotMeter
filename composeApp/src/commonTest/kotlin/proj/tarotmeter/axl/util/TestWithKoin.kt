@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl
+package proj.tarotmeter.axl.util
 
 import com.russhwolf.settings.Settings
 import kotlin.test.AfterTest
@@ -8,6 +8,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import proj.tarotmeter.axl.initKoinModules
 
 interface TestWithKoin : KoinComponent {
 

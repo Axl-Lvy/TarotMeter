@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl
+package proj.tarotmeter.axl.util
 
 import com.russhwolf.settings.Settings
 

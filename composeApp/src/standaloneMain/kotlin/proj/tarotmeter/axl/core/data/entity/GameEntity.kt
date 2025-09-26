@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
-import kotlinx.datetime.LocalDateTime
 
 /**
  * Room entity for Game.
@@ -17,6 +17,6 @@ import kotlinx.datetime.LocalDateTime
 @Entity(indices = [Index(value = ["game_id"])])
 data class GameEntity(
   @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "game_id") val id: Uuid,
-  @ColumnInfo(name = "started_at") val startedAt: LocalDateTime,
-  @ColumnInfo(name = "updated_at") val updatedAt: LocalDateTime,
+  @ColumnInfo(name = "started_at") val startedAt: Instant,
+  @ColumnInfo(name = "updated_at") val updatedAt: Instant,
 )

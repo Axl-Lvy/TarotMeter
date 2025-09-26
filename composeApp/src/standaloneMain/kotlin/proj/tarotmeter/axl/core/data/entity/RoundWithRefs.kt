@@ -32,5 +32,6 @@ data class RoundWithRefs(
       round.petitAuBout,
       round.chelem,
       round.id,
+      round.updatedAt,
     )
 }

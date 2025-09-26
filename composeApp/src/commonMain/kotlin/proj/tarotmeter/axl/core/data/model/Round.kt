@@ -1,12 +1,14 @@
 package proj.tarotmeter.axl.core.data.model
 
 import androidx.compose.runtime.Immutable
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import kotlinx.serialization.Serializable
 import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
+import proj.tarotmeter.axl.util.DateUtil
 
 /**
  * Represents a single round of a Tarot game.
@@ -33,6 +35,7 @@ data class Round(
   val petitAuBout: PetitAuBout,
   val chelem: Chelem,
   val id: Uuid = Uuid.random(),
+  val updatedAt: Instant = DateUtil.now(),
 ) {
   init {
     require(oudlerCount in 0..3) { "Oudler count must be between 0 and 3" }

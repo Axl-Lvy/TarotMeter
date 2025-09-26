@@ -11,14 +11,14 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.test.runTest
 import org.koin.core.component.inject
-import proj.tarotmeter.axl.TestWithKoin
 import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.config.AUTH_ACCESS_TOKEN
 import proj.tarotmeter.axl.core.data.config.AUTH_REFRESH_TOKEN
 import proj.tarotmeter.axl.core.data.config.KEEP_LOGGED_IN
+import proj.tarotmeter.axl.util.TEST_TIMEOUT
+import proj.tarotmeter.axl.util.TestWithKoin
 import proj.tarotmeter.axl.util.generated.Secrets
 
 /**
@@ -40,7 +40,7 @@ class TestAuthentication : TestWithKoin {
     KEEP_LOGGED_IN.reset()
     runTest {
       authManager.signOut()
-      eventually(duration = 5.seconds) { assertNull(authManager.user) }
+      eventually(duration = TEST_TIMEOUT) { assertNull(authManager.user) }
     }
   }
 
@@ -55,11 +55,11 @@ class TestAuthentication : TestWithKoin {
   @Test
   fun testSuccessfulSignIn() = runTest {
     authManager.signInFromEmail(
-        providedEmail = Secrets.testUserMail,
-        providedPassword = Secrets.testUserPassword,
+      providedEmail = Secrets.testUserMail,
+      providedPassword = Secrets.testUserPassword,
     )
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       assertNotNull(authManager.user, "User should not be null after successful sign in")
       assertEquals(Secrets.testUserMail, authManager.user?.email, "Email should match")
     }
@@ -75,8 +75,8 @@ class TestAuthentication : TestWithKoin {
     var exceptionThrown = false
     try {
       authManager.signInFromEmail(
-          providedEmail = "invalid@email.com",
-          providedPassword = "wrongpassword",
+        providedEmail = "invalid@email.com",
+        providedPassword = "wrongpassword",
       )
     } catch (_: AuthRestException) {
       exceptionThrown = true
@@ -90,17 +90,17 @@ class TestAuthentication : TestWithKoin {
   fun testSignOut() = runTest {
     // Sign in first
     authManager.signInFromEmail(
-        providedEmail = Secrets.testUserMail,
-        providedPassword = Secrets.testUserPassword,
+      providedEmail = Secrets.testUserMail,
+      providedPassword = Secrets.testUserPassword,
     )
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       assertNotNull(authManager.user, "User should not be null after sign in")
     }
 
     authManager.signOut()
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       assertNull(authManager.user, "User should be null after sign out")
     }
   }
@@ -112,11 +112,11 @@ class TestAuthentication : TestWithKoin {
 
     // Sign in
     authManager.signInFromEmail(
-        providedEmail = Secrets.testUserMail,
-        providedPassword = Secrets.testUserPassword,
+      providedEmail = Secrets.testUserMail,
+      providedPassword = Secrets.testUserPassword,
     )
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       // Tokens should be saved when keep logged in is enabled
       assertTrue(AUTH_REFRESH_TOKEN.value.isNotEmpty(), "Refresh token should be saved")
       assertTrue(AUTH_ACCESS_TOKEN.value.isNotEmpty(), "Access token should be saved")
@@ -130,11 +130,11 @@ class TestAuthentication : TestWithKoin {
 
     // Sign in
     authManager.signInFromEmail(
-        providedEmail = Secrets.testUserMail,
-        providedPassword = Secrets.testUserPassword,
+      providedEmail = Secrets.testUserMail,
+      providedPassword = Secrets.testUserPassword,
     )
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       // Tokens should not be saved when keep logged in is disabled
       assertTrue(AUTH_REFRESH_TOKEN.value.isEmpty(), "Refresh token should not be saved")
       assertTrue(AUTH_ACCESS_TOKEN.value.isEmpty(), "Access token should not be saved")
@@ -146,11 +146,11 @@ class TestAuthentication : TestWithKoin {
     // Enable keep logged in and sign in
     KEEP_LOGGED_IN.value = true
     authManager.signInFromEmail(
-        providedEmail = Secrets.testUserMail,
-        providedPassword = Secrets.testUserPassword,
+      providedEmail = Secrets.testUserMail,
+      providedPassword = Secrets.testUserPassword,
     )
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       // Verify tokens are saved
       assertTrue(AUTH_REFRESH_TOKEN.value.isNotEmpty(), "Refresh token should be saved")
       assertTrue(AUTH_ACCESS_TOKEN.value.isNotEmpty(), "Access token should be saved")
@@ -159,11 +159,11 @@ class TestAuthentication : TestWithKoin {
     // Sign out
     authManager.signOut()
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       // Tokens should be cleared after sign out
       assertTrue(
-          AUTH_REFRESH_TOKEN.value.isEmpty(),
-          "Refresh token should be cleared after sign out",
+        AUTH_REFRESH_TOKEN.value.isEmpty(),
+        "Refresh token should be cleared after sign out",
       )
       assertTrue(AUTH_ACCESS_TOKEN.value.isEmpty(), "Access token should be cleared after sign out")
       assertFalse(KEEP_LOGGED_IN.value, "Keep logged in should be reset after sign out")
@@ -179,25 +179,25 @@ class TestAuthentication : TestWithKoin {
 
     // Sign in to trigger listener
     authManager.signInFromEmail(
-        providedEmail = Secrets.testUserMail,
-        providedPassword = Secrets.testUserPassword,
+      providedEmail = Secrets.testUserMail,
+      providedPassword = Secrets.testUserPassword,
     )
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       assertNotNull(sessionStatusReceived, "Session status should be received by listener")
       assertTrue(
-          sessionStatusReceived is SessionStatus.Authenticated,
-          "Session status should be Authenticated after sign in",
+        sessionStatusReceived is SessionStatus.Authenticated,
+        "Session status should be Authenticated after sign in",
       )
     }
 
     // Test sign out listener
     authManager.signOut()
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       assertTrue(
-          sessionStatusReceived is SessionStatus.NotAuthenticated,
-          "Session status should be NotAuthenticated after sign out",
+        sessionStatusReceived is SessionStatus.NotAuthenticated,
+        "Session status should be NotAuthenticated after sign out",
       )
     }
   }
@@ -211,7 +211,7 @@ class TestAuthentication : TestWithKoin {
       exceptionThrown = true
     }
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       assertTrue(exceptionThrown, "Exception should be thrown for empty email")
       assertNull(authManager.user, "User should remain null after failed sign in")
     }
@@ -226,7 +226,7 @@ class TestAuthentication : TestWithKoin {
       exceptionThrown = true
     }
 
-    eventually(duration = 5.seconds) {
+    eventually(duration = TEST_TIMEOUT) {
       assertTrue(exceptionThrown, "Exception should be thrown for empty password")
       assertNull(authManager.user, "User should remain null after failed sign in")
     }

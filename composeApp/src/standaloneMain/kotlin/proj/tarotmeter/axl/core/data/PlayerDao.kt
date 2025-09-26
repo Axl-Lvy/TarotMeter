@@ -40,7 +40,7 @@ interface PlayerDao {
    * @param name The new name.
    * @return Number of rows affected.
    */
-  @Query("UPDATE PlayerEntity SET name = :name WHERE player_id = :id")
+  @Query("UPDATE PlayerEntity SET name = :name, updated_at = datetime('now') WHERE player_id = :id")
   suspend fun renamePlayer(id: Uuid, name: String)
 
   /**

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
@@ -66,4 +67,5 @@ data class RoundEntity(
   val poignee: Poignee,
   @ColumnInfo(name = "petit_au_bout") val petitAuBout: PetitAuBout,
   val chelem: Chelem,
+  @ColumnInfo(name = "updated_at") val updatedAt: Instant,
 )
