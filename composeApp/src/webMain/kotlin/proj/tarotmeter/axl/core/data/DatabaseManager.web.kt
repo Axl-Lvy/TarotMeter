@@ -1,0 +1,81 @@
+package proj.tarotmeter.axl.core.data
+
+import kotlin.uuid.Uuid
+import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import proj.tarotmeter.axl.core.data.model.Game
+import proj.tarotmeter.axl.core.data.model.Player
+import proj.tarotmeter.axl.core.data.model.Round
+
+private const val PLAYERS_KEY = "tarotmeter_players"
+private const val GAMES_KEY = "tarotmeter_games"
+
+/** LocalStorage-based implementation of DatabaseManager for web. */
+class LocalStorageDatabaseManager(
+  private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.Default
+) : DatabaseManager {
+
+  private val json = Json {
+    encodeDefaults = true
+    ignoreUnknownKeys = true
+  }
+
+  override suspend fun getPlayers(): List<Player> =
+    withContext(coroutineDispatcher) {
+      val raw = window.localStorage.getItem(PLAYERS_KEY) ?: return@withContext emptyList()
+      runCatching { json.decodeFromString<List<Player>>(raw) }.getOrDefault(emptyList())
+    }
+
+  override suspend fun insertPlayer(player: Player) =
+    withContext(coroutineDispatcher) {
+      val players = getPlayers() + player
+      window.localStorage.setItem(PLAYERS_KEY, json.encodeToString(players))
+    }
+
+  override suspend fun renamePlayer(id: Uuid, newName: String) =
+    withContext(coroutineDispatcher) {
+      val players = getPlayers().map { if (it.id == id) Player(newName, id) else it }
+      window.localStorage.setItem(PLAYERS_KEY, json.encodeToString(players))
+    }
+
+  override suspend fun deletePlayer(id: Uuid) =
+    withContext(coroutineDispatcher) {
+      val players = getPlayers().filterNot { it.id == id }
+      window.localStorage.setItem(PLAYERS_KEY, json.encodeToString(players))
+    }
+
+  override suspend fun getGames(): List<Game> =
+    withContext(coroutineDispatcher) {
+      val raw = window.localStorage.getItem(GAMES_KEY) ?: return@withContext emptyList()
+      runCatching { json.decodeFromString<List<Game>>(raw) }.getOrDefault(emptyList())
+    }
+
+  override suspend fun getGame(id: Uuid): Game? =
+    withContext(coroutineDispatcher) { getGames().find { it.id == id } }
+
+  override suspend fun insertGame(game: Game) =
+    withContext(coroutineDispatcher) {
+      val games = getGames() + game
+      window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+    }
+
+  override suspend fun addRound(gameId: Uuid, round: Round) =
+    withContext(coroutineDispatcher) {
+      val games = getGames()
+      games.forEach { if (it.id == gameId) it.addRound(round) }
+      window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+    }
+
+  override suspend fun removeGame(id: Uuid) =
+    withContext(coroutineDispatcher) {
+      val games = getGames().filterNot { it.id == id }
+      window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+    }
+}
+
+actual fun getPlatformSpecificDatabaseManager(): DatabaseManager {
+  return LocalStorageDatabaseManager()
+}
