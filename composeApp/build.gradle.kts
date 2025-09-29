@@ -13,6 +13,7 @@ plugins {
   alias(libs.plugins.ktfmt)
   alias(libs.plugins.room)
   alias(libs.plugins.ksp)
+  alias { libs.plugins.atomicfu }
 }
 
 ktfmt { googleStyle() }
@@ -96,6 +97,7 @@ kotlin {
     commonTest.dependencies {
       implementation(libs.kotlin.test)
       implementation(libs.coroutines.test)
+      implementation(libs.kotest.assertions)
     }
 
     @SuppressWarnings("unused")
@@ -122,7 +124,10 @@ kotlin {
     }
   }
 
-  sourceSets.all { languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi") }
+  sourceSets.all {
+    languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+    languageSettings.optIn("kotlin.time.ExperimentalTime")
+  }
 
   compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
 }
@@ -167,3 +172,5 @@ compose.desktop {
     }
   }
 }
+
+apply(from = "precompile.gradle.kts")
