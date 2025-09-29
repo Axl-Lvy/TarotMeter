@@ -43,5 +43,5 @@ fun initKoinModules(): Array<Module> {
 
   val miscModule = module { single { getPlatformSpecificConfig() } }
 
-  return arrayOf(authModule, dataModule, providerModule)
+  return arrayOf(authModule, dataModule, providerModule, miscModule)
 }

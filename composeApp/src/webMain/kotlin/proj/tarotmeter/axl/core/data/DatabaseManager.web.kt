@@ -85,7 +85,9 @@ class LocalStorageDatabaseManager(
               .map {
                 RoundLocalStorage(
                   PlayerLocalStorage(it.taker.name, it.taker.id, it.taker.updatedAt),
-                  PlayerLocalStorage(it.taker.name, it.taker.id, it.taker.updatedAt),
+                  it.partner?.let { partner ->
+                    PlayerLocalStorage(partner.name, partner.id, partner.updatedAt)
+                  },
                   it.contract,
                   it.oudlerCount,
                   it.takerPoints,
@@ -112,7 +114,9 @@ class LocalStorageDatabaseManager(
           it.roundsInternal.add(
             RoundLocalStorage(
               PlayerLocalStorage(round.taker.name, round.taker.id, round.taker.updatedAt),
-              PlayerLocalStorage(round.taker.name, round.taker.id, round.taker.updatedAt),
+              round.partner?.let { partner ->
+                PlayerLocalStorage(partner.name, partner.id, partner.updatedAt)
+              },
               round.contract,
               round.oudlerCount,
               round.takerPoints,
