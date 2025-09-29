@@ -4,7 +4,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import java.io.File
 
-internal actual fun databaseBuilder(): RoomDatabase.Builder<StandaloneLocalDatabase> {
+internal actual fun databaseBuilder(): RoomDatabase.Builder<StandaloneDatabase> {
   val dbFile = File("build/jvmDb/tarot.db")
-  return Room.databaseBuilder<StandaloneLocalDatabase>(name = dbFile.absolutePath)
+  return Room.databaseBuilder<StandaloneDatabase>(name = dbFile.absolutePath)
 }

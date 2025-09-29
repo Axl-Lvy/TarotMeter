@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.core.data
 
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.core.data.entity.GameEntity
 import proj.tarotmeter.axl.core.data.entity.GamePlayerCrossRef
@@ -8,11 +9,15 @@ import proj.tarotmeter.axl.core.data.entity.RoundEntity
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
+import proj.tarotmeter.axl.core.data.sync.GameSync
+import proj.tarotmeter.axl.core.data.sync.PlayerSync
+import proj.tarotmeter.axl.core.data.sync.RoundSync
+import proj.tarotmeter.axl.util.DateUtil
 
 /** DatabaseManager implementation for standalone platforms using Room database. */
-internal class StandaloneLocalDatabaseManager(
-  private val database: StandaloneLocalDatabase = getStandaloneLocalDatabase()
-) : DatabaseManager {
+internal class StandaloneDatabaseManager(
+  private val database: StandaloneDatabase = getStandaloneLocalDatabase()
+) : LocalDatabaseManager() {
 
   override suspend fun getPlayers(): List<Player> {
     return database.getPlayerDao().getAllPlayers().map { it.toPlayer() }
@@ -20,15 +25,19 @@ internal class StandaloneLocalDatabaseManager(
 
   override suspend fun insertPlayer(player: Player) {
     database.getPlayerDao().insertPlayer(PlayerEntity(player.id, player.name, player.updatedAt))
+    notifyChange()
   }
 
   override suspend fun renamePlayer(id: Uuid, newName: String) {
-    database.getPlayerDao().renamePlayer(id, newName)
+    database.getPlayerDao().renamePlayer(id, newName, DateUtil.now())
+    notifyChange()
   }
 
   override suspend fun deletePlayer(id: Uuid) {
-    database.getGameDao().deleteGamesFromPlayer(id)
-    database.getPlayerDao().deletePlayer(id)
+    val now = DateUtil.now()
+    database.getGameDao().deleteGamesFromPlayer(id, now)
+    database.getPlayerDao().deletePlayer(id, now)
+    notifyChange()
   }
 
   override suspend fun getGames(): List<Game> {
@@ -47,6 +56,7 @@ internal class StandaloneLocalDatabaseManager(
     for (player in game.players) {
       database.getGameDao().insertGamePlayerCrossRef(GamePlayerCrossRef(game.id, player.id))
     }
+    notifyChange()
   }
 
   override suspend fun addRound(gameId: Uuid, round: Round) {
@@ -69,13 +79,61 @@ internal class StandaloneLocalDatabaseManager(
           round.updatedAt,
         )
       )
+    // touch game timestamp
+    database.getGameDao().touchGame(gameId, DateUtil.now())
+    notifyChange()
   }
 
-  override suspend fun removeGame(id: Uuid) {
-    database.getGameDao().deleteGame(id)
+  override suspend fun deleteGame(id: Uuid) {
+    database.getGameDao().deleteGame(id, DateUtil.now())
+    notifyChange()
+  }
+
+  override suspend fun getPlayersUpdatedSince(since: Instant): List<PlayerSync> {
+    return database.getPlayerDao().getPlayersUpdatedSince(since).map {
+      PlayerSync(id = it.id, name = it.name, updatedAt = it.updatedAt, isDeleted = it.isDeleted)
+    }
+  }
+
+  override suspend fun getGamesUpdatedSince(since: Instant): List<GameSync> {
+    val dao = database.getGameDao()
+    return dao.getGamesUpdatedSince(since).map { gameEntity ->
+      GameSync(
+        id = gameEntity.id,
+        startedAt = gameEntity.startedAt,
+        updatedAt = gameEntity.updatedAt,
+        isDeleted = gameEntity.isDeleted,
+        playerIds = dao.getPlayerIdsForGame(gameEntity.id),
+      )
+    }
+  }
+
+  override suspend fun getRoundsUpdatedSince(since: Instant): List<RoundSync> {
+    return database.getGameDao().getRoundsUpdatedSince(since).map {
+      RoundSync(
+        id = it.id,
+        gameId = it.gameId,
+        takerId = it.takerId,
+        partnerId = it.partnerId,
+        contract = it.contract,
+        oudlerCount = it.oudlerCount,
+        takerPoints = it.takerPoints,
+        poignee = it.poignee,
+        petitAuBout = it.petitAuBout,
+        chelem = it.chelem,
+        updatedAt = it.updatedAt,
+        isDeleted = it.isDeleted,
+      )
+    }
+  }
+
+  override suspend fun clear() {
+    database.getPlayerDao().clearPlayers()
+    database.getGameDao().clearGamePlayerCrossRef()
+    database.getGameDao().clearGames()
   }
 }
 
 actual fun getPlatformSpecificDatabaseManager(): DatabaseManager {
-  return StandaloneLocalDatabaseManager()
+  return StandaloneDatabaseManager()
 }

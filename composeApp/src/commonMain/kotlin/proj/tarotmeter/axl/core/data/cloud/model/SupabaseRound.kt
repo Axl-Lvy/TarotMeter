@@ -39,6 +39,7 @@ data class SupabaseRound(
   @SerialName("petit_au_bout") val petitAuBout: PetitAuBout,
   val chelem: Chelem,
   @SerialName("game_id") val gameId: String,
+  @SerialName("is_deleted") val isDeleted: Boolean = false,
 ) {
   fun toRound(playerProvider: (String) -> Player) =
     Round(

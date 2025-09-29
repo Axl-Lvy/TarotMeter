@@ -30,8 +30,8 @@ private fun initTestModule(): Module {
 }
 
 private fun getTestDatabaseManager(): DatabaseManager {
-  return StandaloneLocalDatabaseManager(
-    Room.inMemoryDatabaseBuilder<StandaloneLocalDatabase>()
+  return StandaloneDatabaseManager(
+    Room.inMemoryDatabaseBuilder<StandaloneDatabase>()
       .setDriver(BundledSQLiteDriver())
       .setQueryCoroutineContext(Dispatchers.IO)
       .build()

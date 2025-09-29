@@ -68,4 +68,5 @@ data class RoundEntity(
   @ColumnInfo(name = "petit_au_bout") val petitAuBout: PetitAuBout,
   val chelem: Chelem,
   @ColumnInfo(name = "updated_at") val updatedAt: Instant,
+  @ColumnInfo(name = "is_deleted") val isDeleted: Boolean = false,
 )

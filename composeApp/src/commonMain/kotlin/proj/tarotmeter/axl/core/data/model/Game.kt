@@ -1,6 +1,5 @@
 package proj.tarotmeter.axl.core.data.model
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -17,7 +16,6 @@ import proj.tarotmeter.axl.util.DateUtil
  * @property updatedAt timestamp when the game was last edited.
  */
 @Serializable
-@Immutable
 data class Game(
   val players: List<Player>,
   val id: Uuid = Uuid.random(),

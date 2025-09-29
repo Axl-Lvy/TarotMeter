@@ -29,10 +29,8 @@ class TestCloudDatabase : TestAuthenticated() {
   }
 
   private suspend fun CloudDatabaseManager.clear() {
-    val players = getPlayers()
-    players.forEach { deletePlayer(it.id) }
-    val games = getGames()
-    games.forEach { removeGame(it.id) }
+    hardDeletePlayers()
+    hardDeleteGames()
   }
 
   @Test
@@ -205,7 +203,7 @@ class TestCloudDatabase : TestAuthenticated() {
     val gamesBeforeRemoval = databaseManager.getGames()
     assertTrue(gamesBeforeRemoval.any { it.id == game.id })
 
-    databaseManager.removeGame(game.id)
+    databaseManager.deleteGame(game.id)
 
     val gamesAfterRemoval = databaseManager.getGames()
     assertTrue(gamesAfterRemoval.none { it.id == game.id })

@@ -20,6 +20,7 @@ data class SupabasePlayer(
   val name: String,
   @SerialName("updated_at") val updatedAt: Instant,
   @SerialName("user_id") val userId: String,
+  @SerialName("is_deleted") val isDeleted: Boolean = false,
 ) {
   fun toPlayer() = Player(name, Uuid.parse(playerId), updatedAt)
 }

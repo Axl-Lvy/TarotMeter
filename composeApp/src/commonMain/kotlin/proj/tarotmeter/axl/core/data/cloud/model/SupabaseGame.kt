@@ -16,6 +16,7 @@ import kotlinx.serialization.Serializable
 data class SupabaseGame(
   @SerialName("game_id") val gameId: String,
   @SerialName("user_id") val userId: String,
-    @SerialName("updated_at") val updatedAt: Instant,
+  @SerialName("updated_at") val updatedAt: Instant,
   @SerialName("created_at") val createdAt: Instant,
+  @SerialName("is_deleted") val isDeleted: Boolean = false,
 )

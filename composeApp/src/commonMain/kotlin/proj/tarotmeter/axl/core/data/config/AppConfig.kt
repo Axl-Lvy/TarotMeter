@@ -1,12 +1,9 @@
 package proj.tarotmeter.axl.core.data.config
 
 import com.russhwolf.settings.Settings
-import kotlinx.datetime.LocalDateTime
+import kotlin.time.Instant
 
-val LAST_SYNC =
-  ValueBasedConfigItem("LAST_SYNC", LocalDateTime(1998, 7, 24, 0, 0, 0, 0).toString()) {
-    LocalDateTime.parse(it)
-  }
+val LAST_SYNC = ValueBasedConfigItem("LAST_SYNC", Instant.DISTANT_PAST) { Instant.parse(it) }
 
 val KEEP_LOGGED_IN = ValueBasedConfigItem("KEEP_LOGGED_IN", false) { it.toBoolean() }
 

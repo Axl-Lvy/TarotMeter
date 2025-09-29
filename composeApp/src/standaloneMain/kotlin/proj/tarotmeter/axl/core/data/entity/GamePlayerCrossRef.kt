@@ -34,4 +34,5 @@ import kotlin.uuid.Uuid
 data class GamePlayerCrossRef(
   @ColumnInfo(name = "game_id") val gameId: Uuid,
   @ColumnInfo(name = "player_id") val playerId: Uuid,
+  @ColumnInfo(name = "is_deleted") val isDeleted: Boolean = false,
 )

@@ -7,9 +7,9 @@ import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
-internal actual fun databaseBuilder(): RoomDatabase.Builder<StandaloneLocalDatabase> {
+internal actual fun databaseBuilder(): RoomDatabase.Builder<StandaloneDatabase> {
   val dbFilePath = documentDirectory() + "/tarot.db"
-  return Room.databaseBuilder<StandaloneLocalDatabase>(name = dbFilePath)
+  return Room.databaseBuilder<StandaloneDatabase>(name = dbFilePath)
 }
 
 @OptIn(ExperimentalForeignApi::class)

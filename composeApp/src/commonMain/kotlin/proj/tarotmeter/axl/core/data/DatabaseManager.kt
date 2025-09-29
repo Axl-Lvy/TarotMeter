@@ -72,7 +72,7 @@ interface DatabaseManager {
    *
    * @param id The game ID to remove.
    */
-  suspend fun removeGame(id: Uuid)
+  suspend fun deleteGame(id: Uuid)
 }
 
 /**

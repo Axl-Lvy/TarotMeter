@@ -19,4 +19,5 @@ data class GameEntity(
   @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "game_id") val id: Uuid,
   @ColumnInfo(name = "started_at") val startedAt: Instant,
   @ColumnInfo(name = "updated_at") val updatedAt: Instant,
+  @ColumnInfo(name = "is_deleted") val isDeleted: Boolean = false,
 )

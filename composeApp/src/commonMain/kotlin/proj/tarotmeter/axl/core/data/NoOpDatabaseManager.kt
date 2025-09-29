@@ -42,7 +42,7 @@ object NoOpDatabaseManager : DatabaseManager {
     /* Nothing to do */
   }
 
-  override suspend fun removeGame(id: Uuid) {
+  override suspend fun deleteGame(id: Uuid) {
     /* Nothing to do */
   }
 }

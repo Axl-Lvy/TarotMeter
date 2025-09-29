@@ -20,6 +20,7 @@ data class PlayerEntity(
   @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "player_id") val id: Uuid,
   val name: String,
   @ColumnInfo(name = "updated_at") val updatedAt: Instant,
+  @ColumnInfo(name = "is_deleted") val isDeleted: Boolean = false,
 ) {
   /**
    * Converts this entity to a domain model Player.

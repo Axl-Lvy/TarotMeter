@@ -1,11 +1,6 @@
 package proj.tarotmeter.axl.core.data
 
-import kotlin.test.AfterTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 import kotlinx.coroutines.test.runTest
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.model.Game
@@ -128,7 +123,7 @@ class TestDatabaseManager : TestWithKoin {
       Round(
         taker = players[0],
         contract = Contract.GARDE,
-        partner = null,
+        partner = players[1],
         oudlerCount = 2,
         takerPoints = 48,
         poignee = Poignee.SIMPLE,
@@ -174,7 +169,7 @@ class TestDatabaseManager : TestWithKoin {
       Round(
         taker = players[1],
         contract = Contract.GARDE_SANS,
-        partner = players[2],
+        partner = null,
         oudlerCount = 3,
         takerPoints = 55,
         poignee = Poignee.DOUBLE,
@@ -202,7 +197,7 @@ class TestDatabaseManager : TestWithKoin {
     val gamesBeforeRemoval = dbManager.getGames()
     assertTrue(gamesBeforeRemoval.any { it.id == game.id })
 
-    dbManager.removeGame(game.id)
+    dbManager.deleteGame(game.id)
 
     val gamesAfterRemoval = dbManager.getGames()
     assertTrue(gamesAfterRemoval.none { it.id == game.id })

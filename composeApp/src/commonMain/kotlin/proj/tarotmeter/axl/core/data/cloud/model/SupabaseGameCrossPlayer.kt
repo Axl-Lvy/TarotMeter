@@ -16,4 +16,5 @@ data class SupabaseGameCrossPlayer(
   @SerialName("player_id") val playerId: String,
   @SerialName("updated_at") val updatedAt: Instant,
   @SerialName("game_id") val gameId: String,
+  @SerialName("is_deleted") val isDeleted: Boolean = false,
 )

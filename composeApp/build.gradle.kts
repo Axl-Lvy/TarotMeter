@@ -13,6 +13,7 @@ plugins {
   alias(libs.plugins.ktfmt)
   alias(libs.plugins.room)
   alias(libs.plugins.ksp)
+  alias { libs.plugins.atomicfu }
 }
 
 ktfmt { googleStyle() }

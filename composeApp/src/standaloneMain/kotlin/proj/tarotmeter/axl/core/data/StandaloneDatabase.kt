@@ -24,7 +24,7 @@ import proj.tarotmeter.axl.core.data.entity.RoundEntity
 )
 @ConstructedBy(DatabaseConstructor::class)
 @TypeConverters(DateConverter::class, UuidConverter::class)
-abstract class StandaloneLocalDatabase : RoomDatabase() {
+abstract class StandaloneDatabase : RoomDatabase() {
   /**
    * Player data access object.
    *
@@ -42,8 +42,8 @@ abstract class StandaloneLocalDatabase : RoomDatabase() {
 
 /** Database constructor for platform-specific initialization. */
 @Suppress("NO_ACTUAL_FOR_EXPECT")
-expect object DatabaseConstructor : RoomDatabaseConstructor<StandaloneLocalDatabase> {
-  override fun initialize(): StandaloneLocalDatabase
+expect object DatabaseConstructor : RoomDatabaseConstructor<StandaloneDatabase> {
+  override fun initialize(): StandaloneDatabase
 }
 
 /**
@@ -51,14 +51,14 @@ expect object DatabaseConstructor : RoomDatabaseConstructor<StandaloneLocalDatab
  *
  * @return Room database builder.
  */
-internal expect fun databaseBuilder(): RoomDatabase.Builder<StandaloneLocalDatabase>
+internal expect fun databaseBuilder(): RoomDatabase.Builder<StandaloneDatabase>
 
 /**
  * Creates and configures the standalone local database instance.
  *
  * @return Configured StandaloneLocalDatabase instance.
  */
-internal fun getStandaloneLocalDatabase(): StandaloneLocalDatabase {
+internal fun getStandaloneLocalDatabase(): StandaloneDatabase {
   return databaseBuilder()
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
