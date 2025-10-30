@@ -39,7 +39,7 @@ fun SettingsScreen() {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           Text("Appearance", style = MaterialTheme.typography.titleMedium)
 
-            ThemeChoosingComponent()
+          ThemeChoosingComponent()
 
           HorizontalDivider()
 
@@ -90,38 +90,29 @@ fun SettingsScreen() {
 
 @Composable
 private fun ThemeChoosingComponent() {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Theme", style = MaterialTheme.typography.bodyLarge)
-        Text(
-            "Choose your preferred color theme",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            FilterChip(
-                selected = APP_THEME_SETTING.value == AppThemeSetting.LIGHT,
-                onClick = {
-                    APP_THEME_SETTING.value = AppThemeSetting.LIGHT
-                },
-                label = { Text("Light") }
-            )
-            FilterChip(
-                selected = APP_THEME_SETTING.value == AppThemeSetting.DARK,
-                onClick = {
-                    APP_THEME_SETTING.value = AppThemeSetting.DARK
-                },
-                label = { Text("Dark") }
-            )
-            FilterChip(
-                selected = APP_THEME_SETTING.value == AppThemeSetting.SYSTEM,
-                onClick = {
-                    APP_THEME_SETTING.value = AppThemeSetting.SYSTEM
-                },
-                label = { Text("System") }
-            )
-        }
+  Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Text("Theme", style = MaterialTheme.typography.bodyLarge)
+    Text(
+      "Choose your preferred color theme",
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+      FilterChip(
+        selected = APP_THEME_SETTING.value == AppThemeSetting.LIGHT,
+        onClick = { APP_THEME_SETTING.value = AppThemeSetting.LIGHT },
+        label = { Text("Light") },
+      )
+      FilterChip(
+        selected = APP_THEME_SETTING.value == AppThemeSetting.DARK,
+        onClick = { APP_THEME_SETTING.value = AppThemeSetting.DARK },
+        label = { Text("Dark") },
+      )
+      FilterChip(
+        selected = APP_THEME_SETTING.value == AppThemeSetting.SYSTEM,
+        onClick = { APP_THEME_SETTING.value = AppThemeSetting.SYSTEM },
+        label = { Text("System") },
+      )
     }
+  }
 }
