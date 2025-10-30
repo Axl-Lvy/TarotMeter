@@ -1,7 +1,11 @@
 package proj.tarotmeter.axl.core
 
 import io.kotest.assertions.nondeterministic.eventually
-import kotlin.test.*
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlinx.coroutines.test.runTest
 import org.koin.core.component.inject
@@ -72,7 +76,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   private suspend fun awaitCloudPlayerAbsent(playerId: String, timeoutMs: Duration = TEST_TIMEOUT) {
     eventually(timeoutMs) {
       val cloudIds = cloudDb.getPlayers().map { it.id.toString() }.toSet()
-      assertFalse { !cloudIds.contains(playerId) }
+      assertFalse { cloudIds.contains(playerId) }
     }
   }
 
