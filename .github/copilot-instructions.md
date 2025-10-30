@@ -40,11 +40,11 @@ src/
 
 ### ✅ Patterns to Follow
 
-- Use data classes for DTOs and model representations.
+- Put only one public class or interface per file.
+- Put only one public Composable function per file.
 - Use sealed classes and `when` expressions for state/result handling.
 - Leverage Coroutines for async and non-blocking operations.
 - Use dependency injection via Koin.
-- Handle errors using `Result`, `sealed class`, or exception mapping.
 - Prefer composition to inheritance.
 - Document public classes and functions with KDoc.
 - Document Compose UI components with KDoc.
