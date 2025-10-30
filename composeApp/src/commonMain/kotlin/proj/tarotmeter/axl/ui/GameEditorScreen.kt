@@ -3,13 +3,10 @@ package proj.tarotmeter.axl.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
@@ -22,6 +19,7 @@ import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
 import proj.tarotmeter.axl.core.provider.GamesProvider
+import proj.tarotmeter.axl.ui.components.*
 
 /**
  * Screen for editing a specific game. Displays game scores, allows adding rounds, and shows round
@@ -38,64 +36,51 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
 
   val currentGame = game
   if (currentGame == null) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Game not found") }
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
     return
   }
-  Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-    // Scores header
-    Surface(
-      shape = RoundedCornerShape(12.dp),
-      tonalElevation = 2.dp,
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        currentGame.players.forEach { p ->
-          Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.weight(1f),
-          ) {
-            Text(p.name, fontWeight = FontWeight.Bold)
-            val total = Scores.globalScores(currentGame).scores[p] ?: 0
-            Text(
-              "$total",
-              style = MaterialTheme.typography.titleMedium,
-              color = if (total >= 0) Color(0xFF2E7D32) else Color(0xFFC62828),
-            )
+
+  ResponsiveContainer {
+    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+      SectionHeader("Game in Progress")
+
+      // Current scores
+      val globalScores = Scores.globalScores(currentGame)
+      PlayerScoresRow(
+        playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
+      )
+
+      // Add round section
+      RoundEditor(
+        game = currentGame,
+        onAdd = { round ->
+          coroutineScope.launch {
+            gamesProvider.addRound(currentGame.id, round)
+            game = gamesProvider.getGame(gameId)
           }
-        }
-      }
-    }
-    RoundEditor(
-      game = currentGame,
-      onAdd = { round ->
-        coroutineScope.launch {
-          gamesProvider.addRound(currentGame.id, round)
-          game = gamesProvider.getGame(gameId)
-        }
-      },
-    )
-    Divider()
-    Text("Rounds", style = MaterialTheme.typography.titleMedium)
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
-      items(currentGame.rounds) { r ->
-        Surface(
-          shape = RoundedCornerShape(12.dp),
-          tonalElevation = 1.dp,
-          modifier = Modifier.fillMaxWidth(),
+        },
+      )
+
+      HorizontalDivider()
+
+      // Rounds history
+      Text(
+        "Round History (${currentGame.rounds.size})",
+        style = MaterialTheme.typography.titleMedium,
+      )
+
+      if (currentGame.rounds.isEmpty()) {
+        EmptyState(
+          message = "No rounds yet. Add your first round above!",
+          modifier = Modifier.weight(1f),
+        )
+      } else {
+        LazyColumn(
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+          modifier = Modifier.weight(1f),
         ) {
-          Column(Modifier.padding(12.dp)) {
-            val taker = currentGame.players.firstOrNull { it == r.taker }?.name ?: "?"
-            val partner =
-              r.partner?.let { id -> currentGame.players.firstOrNull { it == id }?.name }
-            Text("${r.contract.title} – Taker: $taker" + (partner?.let { ", Partner: $it" } ?: ""))
-            Text("Oudlers: ${r.oudlerCount} – Points: ${r.takerPoints}")
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-              val roundScore = Scores.roundScores(r, currentGame)
-              currentGame.players.forEach { p ->
-                val v = roundScore.forPlayer(p)
-                Text("${p.name.split(' ').first()}: ${if (v >= 0) "+$v" else "$v"}")
-              }
-            }
+          items(currentGame.rounds.reversed()) { round ->
+            RoundCard(round = round, game = currentGame)
           }
         }
       }
@@ -103,101 +88,155 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   }
 }
 
-/**
- * Component for adding a new round to a game. Allows selecting taker, partner, contract, oudler
- * count, and points.
- *
- * @param game The game to add a round to
- * @param onAdd Callback for when a new round is added
- */
 @Composable
-fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
+private fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
   var takerIndex by remember { mutableStateOf(0) }
   var partnerIndex by remember { mutableStateOf(if (game.players.size == 5) 1 else -1) }
   var contract by remember { mutableStateOf(Contract.GARDE) }
   var oudler by remember { mutableStateOf(1) }
   var pointsText by remember { mutableStateOf("41") }
 
-  Surface(
-    shape = RoundedCornerShape(12.dp),
-    tonalElevation = 2.dp,
-    modifier = Modifier.fillMaxWidth(),
-  ) {
-    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Text("Add Round", style = MaterialTheme.typography.titleMedium)
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-        Text("Taker", modifier = Modifier.align(Alignment.CenterVertically))
-        Dropdown(game.players.map { it.name }, takerIndex, onChange = { takerIndex = it })
-        if (game.players.size == 5) {
-          Text("Partner", modifier = Modifier.align(Alignment.CenterVertically))
-          Dropdown(game.players.map { it.name }, partnerIndex, onChange = { partnerIndex = it })
-        }
-      }
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Contract", modifier = Modifier.align(Alignment.CenterVertically))
-        Dropdown(
-          Contract.entries.map { it.title },
-          Contract.entries.indexOf(contract),
-          onChange = { contract = Contract.entries[it] },
-        )
-        Text("Oudlers", modifier = Modifier.align(Alignment.CenterVertically))
-        Dropdown((0..3).map { it.toString() }, oudler, onChange = { oudler = it })
-      }
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedTextField(
-          value = pointsText,
-          onValueChange = { pointsText = it.filter { ch -> ch.isDigit() }.take(2) },
-          label = { Text("Card points (0-91)") },
-        )
-        Button(
-          onClick = {
-            val taker = game.players[takerIndex.coerceIn(0, game.players.lastIndex)]
-            val partner =
-              if (game.players.size == 5)
-                game.players[partnerIndex.coerceIn(0, game.players.lastIndex)]
-              else null
-            val round =
-              Round(
-                taker = taker,
-                partner = partner,
-                contract = contract,
-                oudlerCount = oudler,
-                takerPoints = pointsText.toIntOrNull()?.coerceIn(0, 91) ?: 0,
-                poignee = Poignee.NONE,
-                petitAuBout = PetitAuBout.NONE,
-                chelem = Chelem.NONE,
-              )
-            onAdd(round)
+  proj.tarotmeter.axl.ui.components.ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+      Text("Add New Round", style = MaterialTheme.typography.titleMedium)
+
+      ResponsiveTwoColumn(
+        leftContent = {
+          TarotDropdown(
+            label = "Taker",
+            options = game.players.map { it.name },
+            selectedIndex = takerIndex,
+            onSelect = { takerIndex = it },
+          )
+
+          if (game.players.size == 5) {
+            TarotDropdown(
+              label = "Partner",
+              options = game.players.map { it.name },
+              selectedIndex = partnerIndex,
+              onSelect = { partnerIndex = it },
+            )
           }
-        ) {
-          Text("Add Round")
-        }
-      }
+        },
+        rightContent = {
+          TarotDropdown(
+            label = "Contract",
+            options = Contract.entries.map { it.title },
+            selectedIndex = Contract.entries.indexOf(contract),
+            onSelect = { contract = Contract.entries[it] },
+          )
+
+          TarotDropdown(
+            label = "Oudlers",
+            options = (0..3).map { "$it Oudler${if (it != 1) "s" else ""}" },
+            selectedIndex = oudler,
+            onSelect = { oudler = it },
+          )
+        },
+      )
+
+      OutlinedTextField(
+        value = pointsText,
+        onValueChange = { pointsText = it.filter { ch -> ch.isDigit() }.take(2) },
+        label = { Text("Card points (0-91)") },
+        modifier = Modifier.fillMaxWidth(),
+      )
+
+      PrimaryButton(
+        text = "Add Round",
+        onClick = {
+          val taker = game.players[takerIndex.coerceIn(0, game.players.lastIndex)]
+          val partner =
+            if (game.players.size == 5)
+              game.players[partnerIndex.coerceIn(0, game.players.lastIndex)]
+            else null
+          val round =
+            Round(
+              taker = taker,
+              partner = partner,
+              contract = contract,
+              oudlerCount = oudler,
+              takerPoints = pointsText.toIntOrNull()?.coerceIn(0, 91) ?: 0,
+              poignee = Poignee.NONE,
+              petitAuBout = PetitAuBout.NONE,
+              chelem = Chelem.NONE,
+            )
+          onAdd(round)
+          // Reset form
+          pointsText = "41"
+        },
+        modifier = Modifier.fillMaxWidth(),
+      )
     }
   }
 }
 
-/**
- * A dropdown component for selecting from a list of options.
- *
- * @param options The list of options to display
- * @param selectedIndex The index of the currently selected option
- * @param onChange Callback for when a different option is selected
- */
 @Composable
-private fun Dropdown(options: List<String>, selectedIndex: Int, onChange: (Int) -> Unit) {
-  var expanded by remember { mutableStateOf(false) }
-  val label = options.getOrNull(selectedIndex).orEmpty()
-  OutlinedButton(onClick = { expanded = true }) { Text(if (label.isEmpty()) "Select" else label) }
-  DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-    options.forEachIndexed { idx, item ->
-      DropdownMenuItem(
-        text = { Text(item) },
-        onClick = {
-          onChange(idx)
-          expanded = false
-        },
-      )
+private fun RoundCard(round: Round, game: Game) {
+  proj.tarotmeter.axl.ui.components.ElevatedCard {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      // Round header
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = round.contract.title,
+          style = MaterialTheme.typography.titleMedium,
+          color = MaterialTheme.colorScheme.primary,
+        )
+        Surface(
+          shape = MaterialTheme.shapes.small,
+          color = MaterialTheme.colorScheme.secondaryContainer,
+        ) {
+          Text(
+            text = "${round.oudlerCount} Oudler${if (round.oudlerCount != 1) "s" else ""}",
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+          )
+        }
+      }
+
+      // Taker and partner info
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        PlayerAvatar(name = round.taker.name, size = 32.dp)
+        Column {
+          Text(text = round.taker.name, style = MaterialTheme.typography.bodyMedium)
+          Text(
+            text = "Taker • ${round.takerPoints} pts",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+        if (round.partner != null) {
+          Text("with", style = MaterialTheme.typography.bodySmall)
+          PlayerAvatar(name = round.partner.name, size = 32.dp)
+          Text(text = round.partner.name, style = MaterialTheme.typography.bodyMedium)
+        }
+      }
+
+      HorizontalDivider()
+
+      // Round scores
+      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        val roundScore = Scores.roundScores(round, game)
+        game.players.forEach { player ->
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+              text = player.name.split(' ').first(),
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            val score = roundScore.forPlayer(player)
+            ScoreText(score = score)
+          }
+        }
+      }
     }
   }
 }

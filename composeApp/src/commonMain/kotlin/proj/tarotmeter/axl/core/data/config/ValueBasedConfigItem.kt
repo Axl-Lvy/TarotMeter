@@ -1,5 +1,8 @@
 package proj.tarotmeter.axl.core.data.config
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
@@ -21,7 +24,7 @@ open class ValueBasedConfigItem<T : Any>(
   private val parser: (String) -> T,
 ) : KoinComponent, ConfigItem<T>(name, defaultValue) {
   private val settings: Settings by inject()
-  private var cachedValue: T? = null
+  private var cachedValue by mutableStateOf<T?>(null)
 
   override var value: T
     get() {
