@@ -81,6 +81,7 @@ kotlin {
 
       // Navigation and UI
       implementation(libs.navigation.compose)
+      implementation(libs.compose.icons.awesome)
 
       // Utilities
       implementation(libs.multiplatform.settings)

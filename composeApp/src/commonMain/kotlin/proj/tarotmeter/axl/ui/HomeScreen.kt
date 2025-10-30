@@ -2,16 +2,17 @@ package proj.tarotmeter.axl.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import proj.tarotmeter.axl.ui.components.PrimaryButton
+import proj.tarotmeter.axl.ui.components.ResponsiveContainer
+import proj.tarotmeter.axl.ui.components.SecondaryButton
 
 /**
  * The home screen of the application. Provides navigation buttons to other screens and a brief app
@@ -30,68 +31,69 @@ fun HomeScreen(
   onSettings: () -> Unit,
 ) {
   val gradient =
-    Brush.verticalGradient(listOf(Color(0xFF121212), MaterialTheme.colorScheme.primaryContainer))
-  Column(
-    modifier = Modifier.fillMaxSize().background(gradient).padding(24.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.SpaceBetween,
-  ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-      Text(
-        "Tarot Meter",
-        style =
-          MaterialTheme.typography.headlineMedium.copy(
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-          ),
+    Brush.verticalGradient(
+      listOf(
+        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+        MaterialTheme.colorScheme.surface,
       )
-      Spacer(Modifier.height(8.dp))
-      Text("Track your Tarot games with style", color = Color(0xFFECECEC))
-    }
-    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-      PrimaryAction("New Game") { onNewGame() }
-      SecondaryAction("Players") { onPlayers() }
-      SecondaryAction("Game History") { onHistory() }
-      SecondaryAction("Settings") { onSettings() }
-    }
-    Text(
-      "No data is persisted yet. Database will be added later.",
-      color = Color(0xFFDDDDDD),
-      textAlign = TextAlign.Center,
     )
-  }
-}
 
-/**
- * A primary action button with full width and rounded corners.
- *
- * @param text The button text
- * @param onClick Callback for when the button is clicked
- */
-@Composable
-private fun PrimaryAction(text: String, onClick: () -> Unit) {
-  Button(
-    onClick = onClick,
-    modifier = Modifier.fillMaxWidth().height(56.dp),
-    shape = RoundedCornerShape(16.dp),
-  ) {
-    Text(text)
-  }
-}
+  Box(modifier = Modifier.fillMaxSize().background(gradient)) {
+    ResponsiveContainer {
+      Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween,
+      ) {
+        Spacer(Modifier.height(32.dp))
 
-/**
- * A secondary action button with full width, rounded corners, and an outlined style.
- *
- * @param text The button text
- * @param onClick Callback for when the button is clicked
- */
-@Composable
-private fun SecondaryAction(text: String, onClick: () -> Unit) {
-  OutlinedButton(
-    onClick = onClick,
-    modifier = Modifier.fillMaxWidth().height(56.dp),
-    shape = RoundedCornerShape(16.dp),
-  ) {
-    Text(text)
+        // Header
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Text(
+            "Tarot Meter",
+            style = MaterialTheme.typography.displayMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+          )
+          Spacer(Modifier.height(8.dp))
+          Text(
+            "Track your Tarot games with elegance",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+
+        // Navigation buttons
+        Column(
+          Modifier.fillMaxWidth().widthIn(max = 400.dp),
+          verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+          PrimaryButton(text = "New Game", onClick = onNewGame, modifier = Modifier.fillMaxWidth())
+          SecondaryButton(text = "Players", onClick = onPlayers, modifier = Modifier.fillMaxWidth())
+          SecondaryButton(
+            text = "Game History",
+            onClick = onHistory,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          SecondaryButton(
+            text = "Settings",
+            onClick = onSettings,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+
+        // Footer
+        Text(
+          "Database integration active",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          textAlign = TextAlign.Center,
+          modifier = Modifier.padding(bottom = 16.dp),
+        )
+      }
+    }
   }
 }
