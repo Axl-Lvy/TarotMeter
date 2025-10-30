@@ -1,12 +1,12 @@
 package proj.tarotmeter.axl.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,6 +24,7 @@ import proj.tarotmeter.axl.core.data.config.APP_THEME_SETTING
 import proj.tarotmeter.axl.ui.components.ElevatedCard
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SectionHeader
+import proj.tarotmeter.axl.ui.components.SegmentedButtons
 import proj.tarotmeter.axl.ui.theme.AppThemeSetting
 
 /** Screen for application settings. Allows choosing theme and toggling hints. */
@@ -39,19 +40,17 @@ fun SettingsScreen() {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           Text("Appearance", style = MaterialTheme.typography.titleMedium)
 
-          ThemeChoosingComponent()
+          ButtonRow("App theme", "Choose light, dark, or system default theme.") {
+            SegmentedButtons(
+              AppThemeSetting.entries.map { it.displayName },
+              AppThemeSetting.entries.indexOf(APP_THEME_SETTING.value),
+              onSelect = { index -> APP_THEME_SETTING.value = AppThemeSetting.entries[index] },
+            )
+          }
 
           HorizontalDivider()
 
-          Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.weight(1f)) {
-              Text("Show Hints", style = MaterialTheme.typography.bodyLarge)
-              Text(
-                "Display helpful tips throughout the app",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-              )
-            }
+          ButtonRow(title = "Show Tips", subTitle = "Enable or disable in-app tips and hints.") {
             Switch(checked = showTips, onCheckedChange = { showTips = it })
           }
         }
@@ -89,30 +88,16 @@ fun SettingsScreen() {
 }
 
 @Composable
-private fun ThemeChoosingComponent() {
-  Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    Text("Theme", style = MaterialTheme.typography.bodyLarge)
-    Text(
-      "Choose your preferred color theme",
-      style = MaterialTheme.typography.bodySmall,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-      FilterChip(
-        selected = APP_THEME_SETTING.value == AppThemeSetting.LIGHT,
-        onClick = { APP_THEME_SETTING.value = AppThemeSetting.LIGHT },
-        label = { Text("Light") },
-      )
-      FilterChip(
-        selected = APP_THEME_SETTING.value == AppThemeSetting.DARK,
-        onClick = { APP_THEME_SETTING.value = AppThemeSetting.DARK },
-        label = { Text("Dark") },
-      )
-      FilterChip(
-        selected = APP_THEME_SETTING.value == AppThemeSetting.SYSTEM,
-        onClick = { APP_THEME_SETTING.value = AppThemeSetting.SYSTEM },
-        label = { Text("System") },
+private fun ButtonRow(title: String, subTitle: String, content: @Composable () -> Unit) {
+  Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.weight(1f)) {
+      Text(title, style = MaterialTheme.typography.bodyLarge)
+      Text(
+        subTitle,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
     }
+    Box(modifier = Modifier.weight(1f)) { content() }
   }
 }
