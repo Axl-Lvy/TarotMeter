@@ -79,7 +79,7 @@ fun ScoreText(score: Int, modifier: Modifier = Modifier) {
  */
 @Composable
 fun PlayerScoresRow(playerScores: List<Pair<String, Int>>, modifier: Modifier = Modifier) {
-  ElevatedCard(modifier = modifier.fillMaxWidth()) {
+  CustomElevatedCard(modifier = modifier.fillMaxWidth()) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
       playerScores.forEach { (name, score) ->
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

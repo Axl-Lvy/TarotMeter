@@ -1,10 +1,28 @@
 package proj.tarotmeter.axl.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,12 +32,12 @@ import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Round
 import proj.tarotmeter.axl.core.data.model.Scores
-import proj.tarotmeter.axl.core.data.model.enums.Chelem
-import proj.tarotmeter.axl.core.data.model.enums.Contract
-import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
-import proj.tarotmeter.axl.core.data.model.enums.Poignee
 import proj.tarotmeter.axl.core.provider.GamesProvider
-import proj.tarotmeter.axl.ui.components.*
+import proj.tarotmeter.axl.ui.components.CustomElevatedCard
+import proj.tarotmeter.axl.ui.components.EmptyState
+import proj.tarotmeter.axl.ui.components.PlayerAvatar
+import proj.tarotmeter.axl.ui.components.PlayerScoresRow
+import proj.tarotmeter.axl.ui.components.ScoreText
 
 /**
  * Screen for editing a specific game. Displays game scores, allows adding rounds, and shows round
@@ -40,48 +58,53 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
     return
   }
 
-  ResponsiveContainer {
-    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      SectionHeader("Game in Progress")
+  val globalScores = Scores.globalScores(currentGame)
 
-      // Current scores
-      val globalScores = Scores.globalScores(currentGame)
-      PlayerScoresRow(
-        playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
-      )
+  Column(Modifier.fillMaxSize()) {
+    Spacer(modifier = Modifier.size(16.dp))
+    // Fixed scores at the top
+    PlayerScoresRow(
+      playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
+    )
 
-      // Add round section
-      RoundEditor(
-        game = currentGame,
-        onAdd = { round ->
-          coroutineScope.launch {
-            gamesProvider.addRound(currentGame.id, round)
-            game = gamesProvider.getGame(gameId)
-          }
-        },
-      )
+    // Scrollable list with header content
+    LazyColumn(
+      modifier = Modifier.fillMaxSize(),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+      item {
+        Spacer(modifier = Modifier.size(16.dp))
+        // Add round section
+        RoundEditor(
+          game = currentGame,
+          onAdd = { round ->
+            coroutineScope.launch {
+              gamesProvider.addRound(currentGame.id, round)
+              game = gamesProvider.getGame(gameId)
+            }
+          },
+        )
+      }
 
-      HorizontalDivider()
+      item { HorizontalDivider() }
 
-      // Rounds history
-      Text(
-        "Round History (${currentGame.rounds.size})",
-        style = MaterialTheme.typography.titleMedium,
-      )
+      item {
+        Text(
+          "Round History (${currentGame.rounds.size})",
+          style = MaterialTheme.typography.titleMedium,
+        )
+      }
 
       if (currentGame.rounds.isEmpty()) {
-        EmptyState(
-          message = "No rounds yet. Add your first round above!",
-          modifier = Modifier.weight(1f),
-        )
+        item {
+          EmptyState(
+            message = "No rounds yet. Add your first round above!",
+            modifier = Modifier.fillParentMaxHeight(0.3f),
+          )
+        }
       } else {
-        LazyColumn(
-          verticalArrangement = Arrangement.spacedBy(8.dp),
-          modifier = Modifier.weight(1f),
-        ) {
-          items(currentGame.rounds.reversed()) { round ->
-            RoundCard(round = round, game = currentGame)
-          }
+        items(currentGame.rounds.reversed()) { round ->
+          RoundCard(round = round, game = currentGame)
         }
       }
     }
@@ -89,91 +112,8 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
 }
 
 @Composable
-private fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
-  var takerIndex by remember { mutableStateOf(0) }
-  var partnerIndex by remember { mutableStateOf(if (game.players.size == 5) 1 else -1) }
-  var contract by remember { mutableStateOf(Contract.GARDE) }
-  var oudler by remember { mutableStateOf(1) }
-  var pointsText by remember { mutableStateOf("41") }
-
-  proj.tarotmeter.axl.ui.components.ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      Text("Add New Round", style = MaterialTheme.typography.titleMedium)
-
-      ResponsiveTwoColumn(
-        leftContent = {
-          TarotDropdown(
-            label = "Taker",
-            options = game.players.map { it.name },
-            selectedIndex = takerIndex,
-            onSelect = { takerIndex = it },
-          )
-
-          if (game.players.size == 5) {
-            TarotDropdown(
-              label = "Partner",
-              options = game.players.map { it.name },
-              selectedIndex = partnerIndex,
-              onSelect = { partnerIndex = it },
-            )
-          }
-        },
-        rightContent = {
-          TarotDropdown(
-            label = "Contract",
-            options = Contract.entries.map { it.title },
-            selectedIndex = Contract.entries.indexOf(contract),
-            onSelect = { contract = Contract.entries[it] },
-          )
-
-          TarotDropdown(
-            label = "Oudlers",
-            options = (0..3).map { "$it Oudler${if (it != 1) "s" else ""}" },
-            selectedIndex = oudler,
-            onSelect = { oudler = it },
-          )
-        },
-      )
-
-      OutlinedTextField(
-        value = pointsText,
-        onValueChange = { pointsText = it.filter { ch -> ch.isDigit() }.take(2) },
-        label = { Text("Card points (0-91)") },
-        modifier = Modifier.fillMaxWidth(),
-      )
-
-      PrimaryButton(
-        text = "Add Round",
-        onClick = {
-          val taker = game.players[takerIndex.coerceIn(0, game.players.lastIndex)]
-          val partner =
-            if (game.players.size == 5)
-              game.players[partnerIndex.coerceIn(0, game.players.lastIndex)]
-            else null
-          val round =
-            Round(
-              taker = taker,
-              partner = partner,
-              contract = contract,
-              oudlerCount = oudler,
-              takerPoints = pointsText.toIntOrNull()?.coerceIn(0, 91) ?: 0,
-              poignee = Poignee.NONE,
-              petitAuBout = PetitAuBout.NONE,
-              chelem = Chelem.NONE,
-            )
-          onAdd(round)
-          // Reset form
-          pointsText = "41"
-        },
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
-  }
-}
-
-@Composable
 private fun RoundCard(round: Round, game: Game) {
-  proj.tarotmeter.axl.ui.components.ElevatedCard {
+  CustomElevatedCard {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       // Round header
       Row(

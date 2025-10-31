@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
  * @param content The content to display inside the card
  */
 @Composable
-fun ElevatedCard(
+fun CustomElevatedCard(
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
   content: @Composable ColumnScope.() -> Unit,
