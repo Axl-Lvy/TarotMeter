@@ -12,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import compose.icons.FontAwesomeIcons
@@ -28,7 +30,7 @@ import proj.tarotmeter.axl.ui.navigation.Route
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppScaffold() {
+fun AppScaffold(onNavHostReady: suspend (NavController) -> Unit) {
   val navController = rememberNavController()
   val backStackEntry by navController.currentBackStackEntryAsState()
   val route = backStackEntry?.destination?.route ?: Route.Home.route
@@ -71,4 +73,5 @@ fun AppScaffold() {
   ) { padding ->
     Box(Modifier.fillMaxSize().padding(padding)) { AppNavHost(navController = navController) }
   }
+  LaunchedEffect(navController) { onNavHostReady(navController) }
 }

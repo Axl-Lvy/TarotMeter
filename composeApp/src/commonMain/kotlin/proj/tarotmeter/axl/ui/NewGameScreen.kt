@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.core.provider.PlayersProvider
 import proj.tarotmeter.axl.ui.components.*
@@ -25,9 +26,7 @@ fun NewGameScreen(
   gamesProvider: GamesProvider = koinInject(),
 ) {
   var playerCount by remember { mutableStateOf(5) }
-  var players by remember {
-    mutableStateOf(emptyList<proj.tarotmeter.axl.core.data.model.Player>())
-  }
+  var players by remember { mutableStateOf(emptyList<Player>()) }
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) { players = playersProvider.getPlayers() }
@@ -40,7 +39,7 @@ fun NewGameScreen(
     ) {
       SectionHeader("Create New Game")
 
-      proj.tarotmeter.axl.ui.components.ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+      ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           Text("Select Number of Players", style = MaterialTheme.typography.titleMedium)
 
