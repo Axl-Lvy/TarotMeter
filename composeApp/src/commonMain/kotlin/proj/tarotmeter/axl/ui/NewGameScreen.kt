@@ -39,7 +39,7 @@ fun NewGameScreen(
     ) {
       SectionHeader("Create New Game")
 
-      ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+      CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           Text("Select Number of Players", style = MaterialTheme.typography.titleMedium)
 

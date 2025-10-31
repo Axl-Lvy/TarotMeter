@@ -27,8 +27,6 @@ fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koi
 
   ResponsiveContainer {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      SectionHeader("Game History")
-
       if (games.isEmpty()) {
         EmptyState(message = "No games yet. Start a New Game.", modifier = Modifier.weight(1f))
       } else {
@@ -53,7 +51,7 @@ fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koi
 
 @Composable
 private fun GameHistoryCard(game: proj.tarotmeter.axl.core.data.model.Game, onClick: () -> Unit) {
-  proj.tarotmeter.axl.ui.components.ElevatedCard(onClick = onClick) {
+  proj.tarotmeter.axl.ui.components.CustomElevatedCard(onClick = onClick) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
       Row(
         modifier = Modifier.fillMaxWidth(),

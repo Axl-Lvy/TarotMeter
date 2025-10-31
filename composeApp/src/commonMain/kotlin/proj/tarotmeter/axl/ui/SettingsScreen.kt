@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import proj.tarotmeter.axl.core.data.config.APP_THEME_SETTING
-import proj.tarotmeter.axl.ui.components.ElevatedCard
+import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SectionHeader
 import proj.tarotmeter.axl.ui.components.SegmentedButtons
@@ -36,7 +36,7 @@ fun SettingsScreen() {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
       SectionHeader("Settings")
 
-      ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+      CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           Text("Appearance", style = MaterialTheme.typography.titleMedium)
 
@@ -56,7 +56,7 @@ fun SettingsScreen() {
         }
       }
 
-      ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+      CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text("About", style = MaterialTheme.typography.titleMedium)
           Text(
