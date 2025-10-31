@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TarotMeter</title>
+    <script>
+        // GitHub Pages SPA redirect
+        // This script handles client-side routing for single-page applications on GitHub Pages.
+        // When a user navigates to a specific route (e.g., /TarotMeter/players), GitHub Pages
+        // returns a 404. This script captures the requested path and redirects to index.html
+        // with the path encoded in the URL, which the app can then use to navigate to the
+        // correct route.
+        
+        const pathSegmentsToKeep = 1; // For /TarotMeter/ as the base path
+        const l = window.location;
+        
+        l.replace(
+            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+            l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') +
+            '/?/' +
+            l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+        );
+    </script>
+</head>
+<body>
+</body>
+</html>

@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TarotMeter</title>
     <link type="text/css" rel="stylesheet" href="styles.css">
+    <script>
+        // GitHub Pages SPA redirect handler
+        // This script processes redirects from 404.html to restore the original URL path.
+        // When a user navigates directly to a specific route (e.g., /TarotMeter/players),
+        // the 404.html page encodes the path in the URL query. This script decodes it and
+        // updates the browser's history so the Compose navigation controller can handle it.
+        
+        (function() {
+            const redirect = sessionStorage.getItem('redirect');
+            if (redirect && redirect !== location.href) {
+                sessionStorage.removeItem('redirect');
+                history.replaceState(null, null, redirect);
+            }
+        })();
+        
+        // Check if we're coming from a 404 redirect
+        (function() {
+            const l = window.location;
+            if (l.search[1] === '/') {
+                const path = l.search.slice(1).split('&').find(s => s.startsWith('/')).replace(/~and~/g, '&');
+                if (path && path !== '/') {
+                    const url = l.pathname.slice(0, -1) + path + (l.hash || '');
+                    sessionStorage.setItem('redirect', url);
+                    history.replaceState(null, null, url);
+                }
+            }
+        })();
+    </script>
     <script type="application/javascript" src="composeApp.js"></script>
 </head>
 <body>
