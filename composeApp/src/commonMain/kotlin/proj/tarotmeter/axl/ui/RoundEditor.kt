@@ -89,6 +89,11 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
             createRound(game, takerIndex, partnerIndex, contract, oudler, pointsText.value)
           onAdd(round)
           // Reset form
+          takerIndex = 0
+          partnerIndex = if (game.players.size == 5) 1 else -1
+          contract = Contract.GARDE
+          oudler = 1
+          pointsText.value = "41"
         },
         modifier = Modifier.fillMaxWidth(),
       )
