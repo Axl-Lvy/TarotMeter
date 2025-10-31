@@ -35,7 +35,12 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
     composable(Route.Players.route) { PlayersScreen() }
     composable(Route.Settings.route) { SettingsScreen() }
     composable(Route.NewGame.route) {
-      NewGameScreen(onGameCreated = { id -> navController.navigate(Route.Game(id.toHexString())) })
+      NewGameScreen(
+        onGameCreated = { id ->
+          navController.popBackStack()
+          navController.navigate(Route.Game(id.toHexString()))
+        }
+      )
     }
     composable(Route.History.route) {
       HistoryScreen(onOpenGame = { id -> navController.navigate(Route.Game(id.toHexString())) })

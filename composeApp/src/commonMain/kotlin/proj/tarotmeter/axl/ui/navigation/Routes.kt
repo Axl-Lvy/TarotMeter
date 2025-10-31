@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.ui.navigation
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -15,7 +16,7 @@ sealed interface Route {
 
   /** Home screen route - the starting point of the application. */
   data object Home : Route {
-    override val route: String = "/"
+    override val route: String = "home"
     override val title: String = "Tarot Meter"
   }
 
@@ -24,13 +25,13 @@ sealed interface Route {
    * players.
    */
   data object Players : Route {
-    override val route: String = "/players"
+    override val route: String = "players"
     override val title: String = "Players"
   }
 
   /** Settings screen route. This screen provides app configuration options. */
   data object Settings : Route {
-    override val route: String = "/settings"
+    override val route: String = "settings"
     override val title: String = "Settings"
   }
 
@@ -39,13 +40,13 @@ sealed interface Route {
    * players.
    */
   data object NewGame : Route {
-    override val route: String = "/new"
+    override val route: String = "new"
     override val title: String = "New Game"
   }
 
   /** Game History screen route. This screen shows a list of past games. */
   data object History : Route {
-    override val route: String = "/history"
+    override val route: String = "history"
     override val title: String = "Game History"
   }
 
@@ -56,6 +57,7 @@ sealed interface Route {
    * @property id The unique identifier of the game to edit
    */
   @Serializable
+  @SerialName("game")
   data class Game(val id: String) : Route {
     override val route: String
       get() = ROUTE
@@ -65,7 +67,7 @@ sealed interface Route {
 
     companion object {
       /** The base route path for game editing. */
-      const val ROUTE = "/game"
+      const val ROUTE = "game"
 
       /** The title displayed when editing a game. */
       const val TITLE = "Game Editor"
