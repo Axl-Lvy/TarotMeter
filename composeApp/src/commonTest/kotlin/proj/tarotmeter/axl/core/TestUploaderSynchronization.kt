@@ -7,7 +7,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.CloudDatabaseManager
@@ -173,3 +174,6 @@ class TestUploaderSynchronization : TestAuthenticated() {
     assertEquals(2, cloudGame?.rounds?.size)
   }
 }
+
+private fun runTest(block: suspend () -> Unit) =
+  kotlinx.coroutines.test.runTest { withContext(Dispatchers.Default) { block() } }
