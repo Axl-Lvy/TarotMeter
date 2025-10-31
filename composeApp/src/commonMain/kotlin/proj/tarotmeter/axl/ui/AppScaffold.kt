@@ -15,12 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.ArrowAltCircleLeft
 import proj.tarotmeter.axl.ui.navigation.AppNavHost
 import proj.tarotmeter.axl.ui.navigation.Route
+import proj.tarotmeter.axl.ui.navigation.rememberPlatformNavController
 
 /**
  * The main application scaffold that provides the top-level UI structure. This component handles
@@ -29,7 +29,7 @@ import proj.tarotmeter.axl.ui.navigation.Route
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold() {
-  val navController = rememberNavController()
+  val navController = rememberPlatformNavController()
   val backStackEntry by navController.currentBackStackEntryAsState()
   val route = backStackEntry?.destination?.route ?: Route.Home.route
 
