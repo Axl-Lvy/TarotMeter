@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TarotMeter</title>
     <link type="text/css" rel="stylesheet" href="styles.css">
+    <script>
+        // Handle redirects from 404.html for direct navigation to routes on GitHub Pages
+        // The 404.html stores the intended path in sessionStorage before redirecting here.
+        // We restore that path using the History API so the navigation library can handle it.
+        (function() {
+            const redirectPath = sessionStorage.getItem('redirect_path');
+            if (redirectPath && redirectPath !== '/') {
+                sessionStorage.removeItem('redirect_path');
+                const newUrl = '/TarotMeter' + redirectPath;
+                history.replaceState(null, '', newUrl);
+            }
+        })();
+    </script>
     <script type="application/javascript" src="composeApp.js"></script>
 </head>
 <body>

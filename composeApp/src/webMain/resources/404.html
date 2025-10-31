@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TarotMeter</title>
     <script>
-        // Redirect to index.html to handle SPA routing on GitHub Pages
-        // The path will be preserved and the navigation library will handle it
-        window.location.href = '/TarotMeter/' + window.location.hash;
+        // Redirect to index.html while preserving the path for SPA routing on GitHub Pages
+        // When GitHub Pages serves this 404, we want to redirect to index.html but keep
+        // the route information so the navigation library can handle it.
+        // We use sessionStorage to pass the intended path to index.html
+        const path = window.location.pathname.replace('/TarotMeter', '') || '/';
+        sessionStorage.setItem('redirect_path', path);
+        window.location.replace('/TarotMeter/');
     </script>
 </head>
 <body>
