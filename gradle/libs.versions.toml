@@ -51,6 +51,7 @@ multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", vers
 
 # --- Navigation and ui ---
 compose-icons-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "composeIcons"}
+compose-icons-simple = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "composeIcons"}
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 
 # --- KotlinX ---

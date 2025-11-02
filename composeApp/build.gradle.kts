@@ -82,6 +82,7 @@ kotlin {
       // Navigation and UI
       implementation(libs.navigation.compose)
       implementation(libs.compose.icons.awesome)
+      implementation(libs.compose.icons.simple)
 
       // Utilities
       implementation(libs.multiplatform.settings)
@@ -146,7 +147,12 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
   packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
-  buildTypes { getByName("release") { isMinifyEnabled = false } }
+  buildTypes {
+    getByName("release") {
+      isMinifyEnabled = true
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    }
+  }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
