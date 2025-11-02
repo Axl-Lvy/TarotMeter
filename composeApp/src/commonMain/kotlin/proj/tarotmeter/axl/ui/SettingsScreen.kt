@@ -20,12 +20,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.core.data.config.APP_THEME_SETTING
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SectionHeader
 import proj.tarotmeter.axl.ui.components.SegmentedButtons
 import proj.tarotmeter.axl.ui.theme.AppThemeSetting
+import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.*
 
 /** Screen for application settings. Allows choosing theme and toggling hints. */
 @Composable
@@ -34,13 +37,13 @@ fun SettingsScreen() {
 
   ResponsiveContainer {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      SectionHeader("Settings")
+      SectionHeader(stringResource(Res.string.settings_header))
 
       CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-          Text("Appearance", style = MaterialTheme.typography.titleMedium)
+          Text(stringResource(Res.string.settings_appearance), style = MaterialTheme.typography.titleMedium)
 
-          ButtonRow("App theme", "Choose light, dark, or system default theme.") {
+          ButtonRow(stringResource(Res.string.settings_app_theme), stringResource(Res.string.settings_app_theme_description)) {
             SegmentedButtons(
               AppThemeSetting.entries.map { it.displayName },
               AppThemeSetting.entries.indexOf(APP_THEME_SETTING.value),
@@ -50,7 +53,7 @@ fun SettingsScreen() {
 
           HorizontalDivider()
 
-          ButtonRow(title = "Show Tips", subTitle = "Enable or disable in-app tips and hints.") {
+          ButtonRow(title = stringResource(Res.string.settings_show_tips), subTitle = stringResource(Res.string.settings_show_tips_description)) {
             Switch(checked = showTips, onCheckedChange = { showTips = it })
           }
         }
@@ -58,13 +61,13 @@ fun SettingsScreen() {
 
       CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text("About", style = MaterialTheme.typography.titleMedium)
+          Text(stringResource(Res.string.settings_about), style = MaterialTheme.typography.titleMedium)
           Text(
-            "Tarot Meter is a comprehensive score tracking application for French Tarot games.",
+            stringResource(Res.string.settings_about_description),
             style = MaterialTheme.typography.bodyMedium,
           )
           Text(
-            "Version 1.0.0",
+            stringResource(Res.string.settings_version),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
@@ -77,7 +80,7 @@ fun SettingsScreen() {
         modifier = Modifier.fillMaxWidth(),
       ) {
         Text(
-          "Theme settings are persisted. Other settings will be added in future versions.",
+          stringResource(Res.string.settings_persistence_note),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSecondaryContainer,
           modifier = Modifier.padding(12.dp),

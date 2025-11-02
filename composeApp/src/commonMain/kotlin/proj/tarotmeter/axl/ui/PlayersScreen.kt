@@ -32,6 +32,7 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.UserPlus
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.provider.PlayersProvider
@@ -42,6 +43,8 @@ import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SecondaryButton
 import proj.tarotmeter.axl.ui.components.SectionHeader
+import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.*
 
 /** Screen for managing players. Allows adding, renaming, and removing players. */
 @Composable
@@ -65,24 +68,24 @@ fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
 
   ResponsiveContainer {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      SectionHeader("Manage Players")
+      SectionHeader(stringResource(Res.string.players_header))
 
       // Add player section
       CustomElevatedCard {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-          Text("Add New Player", style = MaterialTheme.typography.titleMedium)
+          Text(stringResource(Res.string.players_add_new), style = MaterialTheme.typography.titleMedium)
           Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
               value = newName,
               onValueChange = { newName = it },
-              label = { Text("Player name") },
+              label = { Text(stringResource(Res.string.players_label_name)) },
               modifier = Modifier.weight(1f),
               singleLine = true,
               keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
               keyboardActions = KeyboardActions(onDone = { addPlayer() }),
             )
             IconButton(onClick = { addPlayer() }, modifier = Modifier.size(56.dp)) {
-              Icon(FontAwesomeIcons.Solid.UserPlus, contentDescription = "Add player")
+              Icon(FontAwesomeIcons.Solid.UserPlus, contentDescription = stringResource(Res.string.cd_add_player))
             }
           }
         }
@@ -90,12 +93,12 @@ fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
 
       if (players.isEmpty()) {
         EmptyState(
-          message = "No players yet. Add your first player above!",
+          message = stringResource(Res.string.players_empty_state),
           modifier = Modifier.weight(1f),
         )
       } else {
         Text(
-          "${players.size} player${if (players.size != 1) "s" else ""}",
+          stringResource(if (players.size == 1) Res.string.players_count_single else Res.string.players_count_plural, players.size),
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -162,7 +165,7 @@ private fun EditablePlayerCard(name: String, onRename: (String) -> Unit, onDelet
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (editing) {
           SecondaryButton(
-            text = "Cancel",
+            text = stringResource(Res.string.players_button_cancel),
             onClick = {
               editing = false
               editedName = name
@@ -170,14 +173,14 @@ private fun EditablePlayerCard(name: String, onRename: (String) -> Unit, onDelet
             modifier = Modifier.weight(1f),
           )
           PrimaryButton(
-            text = "Save",
+            text = stringResource(Res.string.players_button_save),
             onClick = { renamePlayer() },
             modifier = Modifier.weight(1f),
             enabled = editedName.trim().isNotEmpty(),
           )
         } else {
           SecondaryButton(
-            text = "Rename",
+            text = stringResource(Res.string.players_button_rename),
             onClick = { editing = true },
             modifier = Modifier.weight(1f),
           )
@@ -187,7 +190,7 @@ private fun EditablePlayerCard(name: String, onRename: (String) -> Unit, onDelet
             colors =
               ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
           ) {
-            Text("Delete")
+            Text(stringResource(Res.string.players_button_delete))
           }
         }
       }

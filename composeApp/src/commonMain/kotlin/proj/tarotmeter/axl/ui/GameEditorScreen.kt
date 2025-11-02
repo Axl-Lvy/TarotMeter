@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Round
@@ -38,6 +39,8 @@ import proj.tarotmeter.axl.ui.components.EmptyState
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.ScoreText
+import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.*
 
 /**
  * Screen for editing a specific game. Displays game scores, allows adding rounds, and shows round
@@ -90,7 +93,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
 
       item {
         Text(
-          "Round History (${currentGame.rounds.size})",
+          stringResource(Res.string.game_editor_round_history, currentGame.rounds.size),
           style = MaterialTheme.typography.titleMedium,
         )
       }
@@ -98,7 +101,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
       if (currentGame.rounds.isEmpty()) {
         item {
           EmptyState(
-            message = "No rounds yet. Add your first round above!",
+            message = stringResource(Res.string.game_editor_empty_state),
             modifier = Modifier.fillParentMaxHeight(0.3f),
           )
         }
@@ -131,7 +134,7 @@ private fun RoundCard(round: Round, game: Game) {
           color = MaterialTheme.colorScheme.secondaryContainer,
         ) {
           Text(
-            text = "${round.oudlerCount} Oudler${if (round.oudlerCount != 1) "s" else ""}",
+            text = stringResource(if (round.oudlerCount != 1) Res.string.game_editor_oudler_badge_plural else Res.string.game_editor_oudler_badge, round.oudlerCount),
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
           )
@@ -148,13 +151,13 @@ private fun RoundCard(round: Round, game: Game) {
         Column {
           Text(text = round.taker.name, style = MaterialTheme.typography.bodyMedium)
           Text(
-            text = "Taker • ${round.takerPoints} pts",
+            text = stringResource(Res.string.game_editor_taker_points, round.takerPoints),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
         if (round.partner != null) {
-          Text("with", style = MaterialTheme.typography.bodySmall)
+          Text(stringResource(Res.string.game_editor_with), style = MaterialTheme.typography.bodySmall)
           PlayerAvatar(name = round.partner.name, size = 32.dp)
           Text(text = round.partner.name, style = MaterialTheme.typography.bodyMedium)
         }

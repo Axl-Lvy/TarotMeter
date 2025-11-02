@@ -21,8 +21,11 @@ import androidx.navigation.compose.rememberNavController
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.ArrowAltCircleLeft
+import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.ui.navigation.AppNavHost
 import proj.tarotmeter.axl.ui.navigation.Route
+import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.*
 
 /**
  * The main application scaffold that provides the top-level UI structure. This component handles
@@ -37,13 +40,13 @@ fun AppScaffold(onNavHostReady: suspend (NavController) -> Unit) {
 
   val title =
     when {
-      route == Route.Home.route -> Route.Home.title
-      route == Route.Players.route -> Route.Players.title
-      route == Route.Settings.route -> Route.Settings.title
-      route == Route.NewGame.route -> Route.NewGame.title
-      route == Route.History.route -> Route.History.title
-      route.startsWith(Route.Game.ROUTE) -> Route.Game.TITLE
-      else -> "Tarot Meter"
+      route == Route.Home.route -> stringResource(Res.string.title_home)
+      route == Route.Players.route -> stringResource(Res.string.title_players)
+      route == Route.Settings.route -> stringResource(Res.string.title_settings)
+      route == Route.NewGame.route -> stringResource(Res.string.title_new_game)
+      route == Route.History.route -> stringResource(Res.string.title_game_history)
+      route.startsWith(Route.Game.ROUTE) -> stringResource(Res.string.title_game_editor)
+      else -> stringResource(Res.string.title_home)
     }
 
   val showBackButton = route != Route.Home.route
@@ -57,7 +60,7 @@ fun AppScaffold(onNavHostReady: suspend (NavController) -> Unit) {
             IconButton(onClick = { navController.popBackStack() }) {
               Icon(
                 imageVector = FontAwesomeIcons.Regular.ArrowAltCircleLeft,
-                contentDescription = "Navigate back",
+                contentDescription = stringResource(Res.string.cd_navigate_back),
               )
             }
           }

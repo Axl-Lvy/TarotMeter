@@ -24,9 +24,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Github
+import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SecondaryButton
+import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.*
 
 private const val GITHUB_REPO_URL = "https://github.com/Axl-Lvy/TarotMeter"
 
@@ -69,14 +72,14 @@ fun HomeScreen(
           modifier = Modifier.fillMaxWidth(),
         ) {
           Text(
-            "Tarot Meter",
+            stringResource(Res.string.title_home),
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
           )
           Spacer(Modifier.height(8.dp))
           Text(
-            "Track your Tarot games with elegance",
+            stringResource(Res.string.home_subtitle),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
@@ -87,15 +90,15 @@ fun HomeScreen(
           Modifier.fillMaxWidth().widthIn(max = 400.dp),
           verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-          PrimaryButton(text = "New Game", onClick = onNewGame, modifier = Modifier.fillMaxWidth())
-          SecondaryButton(text = "Players", onClick = onPlayers, modifier = Modifier.fillMaxWidth())
+          PrimaryButton(text = stringResource(Res.string.home_button_new_game), onClick = onNewGame, modifier = Modifier.fillMaxWidth())
+          SecondaryButton(text = stringResource(Res.string.home_button_players), onClick = onPlayers, modifier = Modifier.fillMaxWidth())
           SecondaryButton(
-            text = "Game History",
+            text = stringResource(Res.string.home_button_history),
             onClick = onHistory,
             modifier = Modifier.fillMaxWidth(),
           )
           SecondaryButton(
-            text = "Settings",
+            text = stringResource(Res.string.home_button_settings),
             onClick = onSettings,
             modifier = Modifier.fillMaxWidth(),
           )
@@ -116,14 +119,14 @@ private fun Footer() {
     modifier = Modifier.padding(bottom = 16.dp),
   ) {
     Text(
-      "No adds. Open source. Will remain as such.",
+      stringResource(Res.string.home_footer_text),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(4.dp))
     IconButton(onClick = { uriHandler.openUri(GITHUB_REPO_URL) }) {
-      Icon(imageVector = SimpleIcons.Github, contentDescription = "GitHub Repository")
+      Icon(imageVector = SimpleIcons.Github, contentDescription = stringResource(Res.string.cd_github_repository))
     }
   }
 }
