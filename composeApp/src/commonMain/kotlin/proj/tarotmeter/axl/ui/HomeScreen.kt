@@ -16,6 +16,8 @@ import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SecondaryButton
 
+private const val GITHUB_REPO_URL = "https://github.com/Axl-Lvy/TarotMeter"
+
 /**
  * The home screen of the application. Provides navigation buttons to other screens and a brief app
  * introduction.
@@ -105,8 +107,7 @@ fun HomeScreen(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
-            modifier =
-              Modifier.clickable { uriHandler.openUri("https://github.com/Axl-Lvy/TarotMeter") },
+            modifier = Modifier.clickable { uriHandler.openUri(GITHUB_REPO_URL) },
           )
         }
       }
