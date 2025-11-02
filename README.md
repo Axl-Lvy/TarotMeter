@@ -6,6 +6,8 @@ TarotMeter is your magical companion for keeping track of tarot points during yo
 
 Link to the web version: **[TarotMeter Web App](https://axl-lvy.github.io/TarotMeter/)** 🌟
 
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Axl-Lvy_TarotMeter&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Axl-Lvy_TarotMeter)
+
 ## Tech Stack
 
 🛠️ **Under the Hood**:
