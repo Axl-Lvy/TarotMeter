@@ -1,7 +1,6 @@
 package proj.tarotmeter.axl.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,7 +64,6 @@ fun NewGameScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    val scrollState = rememberScrollState()
     SectionHeader("Create New Game")
 
     CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -106,19 +104,24 @@ fun NewGameScreen(
             color = MaterialTheme.colorScheme.error,
           )
         } else {
-          SelectablePlayers(scrollState, availablePlayers, selectedPlayers)
+          PlayersList(availablePlayers, selectedPlayers)
         }
       }
     }
   }
 }
 
+/**
+ * Displays a list of selectable players.
+ *
+ * Each player can be selected or deselected by clicking on their entry.
+ *
+ * @param availablePlayers List of players to choose from
+ * @param selectedPlayers Mutable set of currently selected players
+ */
 @Composable
-private fun SelectablePlayers(
-  scrollState: ScrollState,
-  availablePlayers: List<Player>,
-  selectedPlayers: MutableSet<Player>,
-) {
+private fun PlayersList(availablePlayers: List<Player>, selectedPlayers: MutableSet<Player>) {
+  val scrollState = rememberScrollState()
   Column(
     modifier = Modifier.fillMaxWidth().fillMaxHeight().verticalScroll(scrollState),
     verticalArrangement = Arrangement.spacedBy(8.dp),
