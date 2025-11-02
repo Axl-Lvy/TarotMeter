@@ -43,8 +43,8 @@ import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SecondaryButton
 import proj.tarotmeter.axl.ui.components.SectionHeader
-import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.*
+import tarotmeter.composeapp.generated.resources.Res
 
 /** Screen for managing players. Allows adding, renaming, and removing players. */
 @Composable
@@ -73,7 +73,10 @@ fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
       // Add player section
       CustomElevatedCard {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-          Text(stringResource(Res.string.players_add_new), style = MaterialTheme.typography.titleMedium)
+          Text(
+            stringResource(Res.string.players_add_new),
+            style = MaterialTheme.typography.titleMedium,
+          )
           Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
               value = newName,
@@ -85,7 +88,10 @@ fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
               keyboardActions = KeyboardActions(onDone = { addPlayer() }),
             )
             IconButton(onClick = { addPlayer() }, modifier = Modifier.size(56.dp)) {
-              Icon(FontAwesomeIcons.Solid.UserPlus, contentDescription = stringResource(Res.string.cd_add_player))
+              Icon(
+                FontAwesomeIcons.Solid.UserPlus,
+                contentDescription = stringResource(Res.string.cd_add_player),
+              )
             }
           }
         }
@@ -98,7 +104,11 @@ fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
         )
       } else {
         Text(
-          stringResource(if (players.size == 1) Res.string.players_count_single else Res.string.players_count_plural, players.size),
+          stringResource(
+            if (players.size == 1) Res.string.players_count_single
+            else Res.string.players_count_plural,
+            players.size,
+          ),
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

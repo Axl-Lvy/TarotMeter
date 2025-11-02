@@ -24,8 +24,8 @@ import compose.icons.fontawesomeicons.regular.ArrowAltCircleLeft
 import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.ui.navigation.AppNavHost
 import proj.tarotmeter.axl.ui.navigation.Route
-import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.*
+import tarotmeter.composeapp.generated.resources.Res
 
 /**
  * The main application scaffold that provides the top-level UI structure. This component handles

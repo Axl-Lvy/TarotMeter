@@ -28,8 +28,8 @@ import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SecondaryButton
-import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.*
+import tarotmeter.composeapp.generated.resources.Res
 
 private const val GITHUB_REPO_URL = "https://github.com/Axl-Lvy/TarotMeter"
 
@@ -90,8 +90,16 @@ fun HomeScreen(
           Modifier.fillMaxWidth().widthIn(max = 400.dp),
           verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-          PrimaryButton(text = stringResource(Res.string.home_button_new_game), onClick = onNewGame, modifier = Modifier.fillMaxWidth())
-          SecondaryButton(text = stringResource(Res.string.home_button_players), onClick = onPlayers, modifier = Modifier.fillMaxWidth())
+          PrimaryButton(
+            text = stringResource(Res.string.home_button_new_game),
+            onClick = onNewGame,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          SecondaryButton(
+            text = stringResource(Res.string.home_button_players),
+            onClick = onPlayers,
+            modifier = Modifier.fillMaxWidth(),
+          )
           SecondaryButton(
             text = stringResource(Res.string.home_button_history),
             onClick = onHistory,
@@ -126,7 +134,10 @@ private fun Footer() {
     )
     Spacer(Modifier.height(4.dp))
     IconButton(onClick = { uriHandler.openUri(GITHUB_REPO_URL) }) {
-      Icon(imageVector = SimpleIcons.Github, contentDescription = stringResource(Res.string.cd_github_repository))
+      Icon(
+        imageVector = SimpleIcons.Github,
+        contentDescription = stringResource(Res.string.cd_github_repository),
+      )
     }
   }
 }

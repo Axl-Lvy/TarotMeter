@@ -21,11 +21,7 @@ import androidx.compose.ui.unit.dp
  * @param size Size of the avatar circle
  */
 @Composable
-fun PlayerAvatar(
-  name: String,
-  modifier: Modifier = Modifier,
-  size: Dp = 40.dp,
-) {
+fun PlayerAvatar(name: String, modifier: Modifier = Modifier, size: Dp = 40.dp) {
   val initials =
     name
       .split(' ')

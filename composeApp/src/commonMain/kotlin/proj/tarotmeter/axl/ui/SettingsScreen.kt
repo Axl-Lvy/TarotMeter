@@ -27,8 +27,8 @@ import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.SectionHeader
 import proj.tarotmeter.axl.ui.components.SegmentedButtons
 import proj.tarotmeter.axl.ui.theme.AppThemeSetting
-import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.*
+import tarotmeter.composeapp.generated.resources.Res
 
 /** Screen for application settings. Allows choosing theme and toggling hints. */
 @Composable
@@ -41,9 +41,15 @@ fun SettingsScreen() {
 
       CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-          Text(stringResource(Res.string.settings_appearance), style = MaterialTheme.typography.titleMedium)
+          Text(
+            stringResource(Res.string.settings_appearance),
+            style = MaterialTheme.typography.titleMedium,
+          )
 
-          ButtonRow(stringResource(Res.string.settings_app_theme), stringResource(Res.string.settings_app_theme_description)) {
+          ButtonRow(
+            stringResource(Res.string.settings_app_theme),
+            stringResource(Res.string.settings_app_theme_description),
+          ) {
             SegmentedButtons(
               AppThemeSetting.entries.map { it.displayName },
               AppThemeSetting.entries.indexOf(APP_THEME_SETTING.value),
@@ -53,7 +59,10 @@ fun SettingsScreen() {
 
           HorizontalDivider()
 
-          ButtonRow(title = stringResource(Res.string.settings_show_tips), subTitle = stringResource(Res.string.settings_show_tips_description)) {
+          ButtonRow(
+            title = stringResource(Res.string.settings_show_tips),
+            subTitle = stringResource(Res.string.settings_show_tips_description),
+          ) {
             Switch(checked = showTips, onCheckedChange = { showTips = it })
           }
         }
@@ -61,7 +70,10 @@ fun SettingsScreen() {
 
       CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text(stringResource(Res.string.settings_about), style = MaterialTheme.typography.titleMedium)
+          Text(
+            stringResource(Res.string.settings_about),
+            style = MaterialTheme.typography.titleMedium,
+          )
           Text(
             stringResource(Res.string.settings_about_description),
             style = MaterialTheme.typography.bodyMedium,

@@ -14,8 +14,8 @@ import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.ui.components.*
-import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.*
+import tarotmeter.composeapp.generated.resources.Res
 
 /**
  * Screen for viewing game history. Displays a list of past games that can be selected for
@@ -31,10 +31,17 @@ fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koi
   ResponsiveContainer {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
       if (games.isEmpty()) {
-        EmptyState(message = stringResource(Res.string.history_empty_state), modifier = Modifier.weight(1f))
+        EmptyState(
+          message = stringResource(Res.string.history_empty_state),
+          modifier = Modifier.weight(1f),
+        )
       } else {
         Text(
-          stringResource(if (games.size == 1) Res.string.history_game_count_single else Res.string.history_game_count_plural, games.size),
+          stringResource(
+            if (games.size == 1) Res.string.history_game_count_single
+            else Res.string.history_game_count_plural,
+            games.size,
+          ),
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -71,7 +78,12 @@ private fun GameHistoryCard(game: proj.tarotmeter.axl.core.data.model.Game, onCl
           color = MaterialTheme.colorScheme.secondaryContainer,
         ) {
           Text(
-            text = stringResource(if (game.rounds.size == 1) Res.string.history_round_count_single else Res.string.history_round_count_plural, game.rounds.size),
+            text =
+              stringResource(
+                if (game.rounds.size == 1) Res.string.history_round_count_single
+                else Res.string.history_round_count_plural,
+                game.rounds.size,
+              ),
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
           )

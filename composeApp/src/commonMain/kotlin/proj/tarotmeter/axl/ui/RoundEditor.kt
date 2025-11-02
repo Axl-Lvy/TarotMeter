@@ -27,8 +27,8 @@ import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.ResponsiveTwoColumn
 import proj.tarotmeter.axl.ui.components.TarotDropdown
-import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.*
+import tarotmeter.composeapp.generated.resources.Res
 
 /**
  * Composable for adding a new round to a game.
@@ -46,7 +46,10 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
 
   CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      Text(stringResource(Res.string.round_editor_add_new), style = MaterialTheme.typography.titleMedium)
+      Text(
+        stringResource(Res.string.round_editor_add_new),
+        style = MaterialTheme.typography.titleMedium,
+      )
 
       ResponsiveTwoColumn(
         leftContent = {
@@ -76,7 +79,14 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
 
           TarotDropdown(
             label = stringResource(Res.string.round_editor_label_oudlers),
-            options = (0..3).map { stringResource(if (it != 1) Res.string.round_editor_oudler_plural else Res.string.round_editor_oudler_single, it) },
+            options =
+              (0..3).map {
+                stringResource(
+                  if (it != 1) Res.string.round_editor_oudler_plural
+                  else Res.string.round_editor_oudler_single,
+                  it,
+                )
+              },
             selectedIndex = oudler,
             onSelect = { oudler = it },
           )

@@ -80,4 +80,5 @@
     <string name="settings_about_description">Tarot Meter is a comprehensive score tracking application for French Tarot games.</string>
     <string name="settings_version">Version 1.0.0</string>
     <string name="settings_persistence_note">Theme settings are persisted. Other settings will be added in future versions.</string>
+    <string name="settings_button_rate_app">Rate this App</string>
 </resources>

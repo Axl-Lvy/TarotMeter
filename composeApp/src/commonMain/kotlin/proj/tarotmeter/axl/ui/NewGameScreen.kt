@@ -39,8 +39,8 @@ import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.SectionHeader
-import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.*
+import tarotmeter.composeapp.generated.resources.Res
 
 /**
  * Screen for creating a new game. Allows selecting the number of players and starting a new game.
@@ -71,10 +71,17 @@ fun NewGameScreen(
 
     CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
       Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text(stringResource(Res.string.new_game_select_players), style = MaterialTheme.typography.titleMedium)
+        Text(
+          stringResource(Res.string.new_game_select_players),
+          style = MaterialTheme.typography.titleMedium,
+        )
 
         Text(
-          stringResource(Res.string.new_game_selected_count, selectedCount, if (selectedCount != 1) "s" else ""),
+          stringResource(
+            Res.string.new_game_selected_count,
+            selectedCount,
+            if (selectedCount != 1) "s" else "",
+          ),
           style = MaterialTheme.typography.bodySmall,
           color =
             if (isValidSelection) {
