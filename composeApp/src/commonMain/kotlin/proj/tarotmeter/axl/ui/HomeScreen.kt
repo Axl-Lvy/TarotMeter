@@ -1,12 +1,14 @@
 package proj.tarotmeter.axl.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,6 +39,7 @@ fun HomeScreen(
         MaterialTheme.colorScheme.surface,
       )
     )
+  val uriHandler = LocalUriHandler.current
 
   Box(modifier = Modifier.fillMaxSize().background(gradient)) {
     ResponsiveContainer {
@@ -86,13 +89,26 @@ fun HomeScreen(
         }
 
         // Footer
-        Text(
-          "Database integration active",
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          textAlign = TextAlign.Center,
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier.padding(bottom = 16.dp),
-        )
+        ) {
+          Text(
+            "Database integration active",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+          )
+          Spacer(Modifier.height(4.dp))
+          Text(
+            "GitHub Project",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center,
+            modifier =
+              Modifier.clickable { uriHandler.openUri("https://github.com/Axl-Lvy/TarotMeter") },
+          )
+        }
       }
     }
   }
