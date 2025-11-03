@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Round
@@ -79,14 +80,7 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
 
           TarotDropdown(
             label = stringResource(Res.string.round_editor_label_oudlers),
-            options =
-              (0..3).map {
-                stringResource(
-                  if (it != 1) Res.string.round_editor_oudler_plural
-                  else Res.string.round_editor_oudler_single,
-                  it,
-                )
-              },
+            options = (0..3).map { pluralStringResource(Res.plurals.round_editor_oudlers, it, it) },
             selectedIndex = oudler,
             onSelect = { oudler = it },
           )

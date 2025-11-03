@@ -126,8 +126,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Make script executable
-        run: chmod +x .github/scripts/check_translations.sh
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
       - name: Check translation files
-        run: .github/scripts/check_translations.sh
+        run: python .github/scripts/check_translations.py

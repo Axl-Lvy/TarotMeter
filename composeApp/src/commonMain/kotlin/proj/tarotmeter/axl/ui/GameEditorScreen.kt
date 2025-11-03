@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
@@ -135,9 +136,9 @@ private fun RoundCard(round: Round, game: Game) {
         ) {
           Text(
             text =
-              stringResource(
-                if (round.oudlerCount != 1) Res.string.game_editor_oudler_badge_plural
-                else Res.string.game_editor_oudler_badge,
+              pluralStringResource(
+                Res.plurals.game_editor_oudler,
+                round.oudlerCount,
                 round.oudlerCount,
               ),
             style = MaterialTheme.typography.labelMedium,

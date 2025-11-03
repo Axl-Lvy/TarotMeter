@@ -32,6 +32,7 @@ import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.UserPlus
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Player
@@ -104,11 +105,7 @@ fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
         )
       } else {
         Text(
-          stringResource(
-            if (players.size == 1) Res.string.players_count_single
-            else Res.string.players_count_plural,
-            players.size,
-          ),
+          pluralStringResource(Res.plurals.players_count, players.size, players.size),
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
