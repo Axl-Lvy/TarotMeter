@@ -90,16 +90,20 @@
   <string name="settings_app_theme">Thème de l'application</string>
   <string name="settings_app_theme_description">Choisissez un thème clair, sombre ou par défaut du système.
   </string>
+  <string name="settings_app_theme_light">Clair</string>
+  <string name="settings_app_theme_dark">Sombre</string>
+  <string name="settings_app_theme_system">Système</string>
+  <string name="settings_language">Langue</string>
+  <string name="settings_language_description">Choisissez votre langue préférée.</string>
+  <string name="settings_language_english">Anglais</string>
+  <string name="settings_language_french">Français</string>
+  <string name="settings_language_default">Par défaut</string>
   <string name="settings_show_tips">Afficher les Conseils</string>
-  <string name="settings_show_tips_description">Activer ou désactiver les conseils et astuces dans
-    l'application.
+  <string name="settings_show_tips_description">Activer ou désactiver les conseils et astuces dans l'application.
   </string>
   <string name="settings_about">À propos</string>
-  <string name="settings_about_description">Tarot Meter est une application complète de suivi des scores pour les
-    parties de Tarot français.
+  <string
+    name="settings_about_description">Tarot Meter est une application complète de suivi des scores pour les parties de Tarot français.
   </string>
   <string name="settings_version">Version 1.0.0</string>
-  <string name="settings_persistence_note">Les paramètres de thème sont conservés. D'autres paramètres seront
-    ajoutés dans les versions futures.
-  </string>
 </resources>
