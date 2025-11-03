@@ -19,10 +19,20 @@ class Color:
 
 
 @dataclass(frozen=True)
+class TranslationKey:
+    """Represents a translation key with its type."""
+    name: str
+    key_type: str  # 'string' or 'plurals'
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.key_type})"
+
+
+@dataclass(frozen=True)
 class KeyDifference:
     """Represents differences between base and translation keys."""
-    missing: Set[str]
-    extra: Set[str]
+    missing: Set[TranslationKey]
+    extra: Set[TranslationKey]
 
 
 @dataclass(frozen=True)
@@ -33,7 +43,7 @@ class ValidationResult:
     error_message: Optional[str] = None
 
 
-def extract_keys_from_file(file_path: Path) -> List[str]:
+def extract_keys_from_file(file_path: Path) -> List[TranslationKey]:
     """
     Extract string and plurals keys from an XML file in order.
 
@@ -41,18 +51,27 @@ def extract_keys_from_file(file_path: Path) -> List[str]:
         file_path: Path to the XML file
 
     Returns:
-        List of key names in the order they appear in the file
+        List of TranslationKey objects in the order they appear in the file
     """
     try:
         content = file_path.read_text(encoding='utf-8')
-        return re.findall(r'<(?:string|plurals)\s+name="([^"]+)"', content)
+        keys = []
+        # Match both <string name="..."> and <plurals name="...">
+        for match in re.finditer(r'<(string|plurals)\s+name="([^"]+)"',
+                                 content):
+            key_type = match.group(1)
+            key_name = match.group(2)
+            keys.append(TranslationKey(name=key_name, key_type=key_type))
+        return keys
     except Exception as e:
         print(f"{Color.RED}Error reading {file_path}: {e}{Color.NC}")
         return []
 
 
-def get_key_differences(base_keys: List[str],
-    translation_keys: List[str]) -> KeyDifference:
+def get_key_differences(
+    base_keys: List[TranslationKey],
+    translation_keys: List[TranslationKey]
+) -> KeyDifference:
     """
     Calculate missing and extra keys between base and translation.
 
@@ -76,7 +95,7 @@ def print_key_count_mismatch(
     expected_count: int,
     actual_count: int,
     differences: KeyDifference
-):
+) -> None:
     """
     Print details about key count mismatch.
 
@@ -90,16 +109,22 @@ def print_key_count_mismatch(
           f"(expected {expected_count}, got {actual_count}){Color.NC}")
 
     if differences.missing:
-        missing_str = ', '.join(sorted(differences.missing))
+        missing_str = ', '.join(str(key) for key in sorted(differences.missing,
+                                                           key=lambda
+                                                               k: k.name))
         print(f"{Color.YELLOW}  Missing keys: {missing_str}{Color.NC}")
 
     if differences.extra:
-        extra_str = ', '.join(sorted(differences.extra))
+        extra_str = ', '.join(
+            str(key) for key in sorted(differences.extra, key=lambda k: k.name))
         print(f"{Color.YELLOW}  Extra keys: {extra_str}{Color.NC}")
 
 
-def print_key_order_mismatch(lang_code: str, base_keys: List[str],
-    translation_keys: List[str]):
+def print_key_order_mismatch(
+    lang_code: str,
+    base_keys: List[TranslationKey],
+    translation_keys: List[TranslationKey]
+) -> None:
     """
     Print details about keys being in wrong order.
 
@@ -121,7 +146,7 @@ def print_key_order_mismatch(lang_code: str, base_keys: List[str],
 def validate_translation_file(
     strings_file: Path,
     lang_code: str,
-    base_keys: List[str]
+    base_keys: List[TranslationKey]
 ) -> ValidationResult:
     """
     Validate a single translation file against the base keys.
@@ -198,8 +223,10 @@ def check_translations() -> int:
     print()
 
     base_keys = extract_keys_from_file(base_strings_file)
-    print(
-        f"{Color.YELLOW}Base file contains {len(base_keys)} string keys{Color.NC}")
+    string_count = sum(1 for key in base_keys if key.key_type == 'string')
+    plurals_count = sum(1 for key in base_keys if key.key_type == 'plurals')
+    print(f"{Color.YELLOW}Base file contains {len(base_keys)} keys "
+          f"({string_count} strings, {plurals_count} plurals){Color.NC}")
     print()
 
     translation_dirs = get_translation_directories(compose_resources_dir)
