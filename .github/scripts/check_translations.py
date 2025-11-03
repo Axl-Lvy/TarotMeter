@@ -95,7 +95,7 @@ def print_key_count_mismatch(
     expected_count: int,
     actual_count: int,
     differences: KeyDifference
-) -> None:
+):
     """
     Print details about key count mismatch.
 
@@ -109,9 +109,9 @@ def print_key_count_mismatch(
           f"(expected {expected_count}, got {actual_count}){Color.NC}")
 
     if differences.missing:
-        missing_str = ', '.join(str(key) for key in sorted(differences.missing,
-                                                           key=lambda
-                                                               k: k.name))
+        missing_str = ', '.join(str(key) for key in sorted(
+            differences.missing,
+            key=lambda k: k.name))
         print(f"{Color.YELLOW}  Missing keys: {missing_str}{Color.NC}")
 
     if differences.extra:
@@ -124,7 +124,7 @@ def print_key_order_mismatch(
     lang_code: str,
     base_keys: List[TranslationKey],
     translation_keys: List[TranslationKey]
-) -> None:
+):
     """
     Print details about keys being in wrong order.
 

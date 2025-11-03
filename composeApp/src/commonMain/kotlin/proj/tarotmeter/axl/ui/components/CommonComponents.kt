@@ -3,6 +3,7 @@ package proj.tarotmeter.axl.ui.components
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -95,8 +96,11 @@ fun TarotDropdown(
 /**
  * A segmented button group for selecting between multiple options.
  *
- * @param options List of options to choose from val scrollState = rememberSaveable { ScrollState(0)
- *   }
+ * @param options List of options to display as selectable segments.
+ * @param selectedIndex The index of the currently selected option.
+ * @param onSelect Callback invoked when an option is selected, with the selected index.
+ * @param modifier Modifier to be applied to the segmented button group.
+ * @param key Optional key to preserve scroll state across recompositions.
  * @param key Optional key to preserve scroll state across recompositions
  */
 @Composable
@@ -175,5 +179,20 @@ fun EmptyState(
       Spacer(Modifier.height(16.dp))
       Button(onClick = onAction) { Text(actionText) }
     }
+  }
+}
+
+@Composable
+fun ButtonRow(title: String, subTitle: String, content: @Composable () -> Unit) {
+  Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.weight(1f)) {
+      Text(title, style = MaterialTheme.typography.bodyLarge)
+      Text(
+        subTitle,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+    Box(modifier = Modifier.weight(1f)) { content() }
   }
 }

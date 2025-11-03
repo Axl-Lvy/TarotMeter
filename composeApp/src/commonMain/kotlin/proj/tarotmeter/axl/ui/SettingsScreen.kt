@@ -1,9 +1,7 @@
 package proj.tarotmeter.axl.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
@@ -21,6 +18,7 @@ import proj.tarotmeter.axl.core.data.config.APP_THEME_SETTING
 import proj.tarotmeter.axl.core.data.config.LANGUAGE_SETTING
 import proj.tarotmeter.axl.core.localization.Language
 import proj.tarotmeter.axl.core.localization.Localization
+import proj.tarotmeter.axl.ui.components.ButtonRow
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.SectionHeader
 import proj.tarotmeter.axl.ui.components.SegmentedButtons
@@ -90,18 +88,3 @@ fun SettingsScreen() {
 }
 
 @Composable expect fun LanguageSelection(selectedLanguage: Language, localization: Localization)
-
-@Composable
-fun ButtonRow(title: String, subTitle: String, content: @Composable () -> Unit) {
-  Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-    Column(modifier = Modifier.weight(1f)) {
-      Text(title, style = MaterialTheme.typography.bodyLarge)
-      Text(
-        subTitle,
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
-    Box(modifier = Modifier.weight(1f)) { content() }
-  }
-}

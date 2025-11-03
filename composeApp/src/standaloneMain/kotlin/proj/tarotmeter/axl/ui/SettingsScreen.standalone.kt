@@ -6,6 +6,7 @@ import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.core.data.config.LANGUAGE_SETTING
 import proj.tarotmeter.axl.core.localization.Language
 import proj.tarotmeter.axl.core.localization.Localization
+import proj.tarotmeter.axl.ui.components.ButtonRow
 import proj.tarotmeter.axl.ui.components.SegmentedButtons
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.settings_language
