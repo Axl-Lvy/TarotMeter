@@ -1,7 +1,9 @@
 package proj.tarotmeter.axl.ui.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+
+/**
+ * Global holder for scroll states that need to persist across recompositions. This allows scroll
+ * positions to survive key-based recompositions.
+ */
+private object ScrollStateHolder {
+  private val states = mutableMapOf<String, ScrollState>()
+
+  fun getOrCreate(key: String): ScrollState {
+    return states.getOrPut(key) { ScrollState(0) }
+  }
+}
 
 /**
  * A dropdown selector component with consistent styling.
@@ -83,10 +96,12 @@ fun TarotDropdown(
 /**
  * A segmented button group for selecting between multiple options.
  *
- * @param options List of options to choose from
- * @param selectedIndex Currently selected index
- * @param onSelect Callback when an option is selected
- * @param modifier Modifier to be applied to the button group
+ * @param options List of options to display as selectable segments.
+ * @param selectedIndex The index of the currently selected option.
+ * @param onSelect Callback invoked when an option is selected, with the selected index.
+ * @param modifier Modifier to be applied to the segmented button group.
+ * @param key Optional key to preserve scroll state across recompositions.
+ * @param key Optional key to preserve scroll state across recompositions
  */
 @Composable
 fun SegmentedButtons(
@@ -94,9 +109,18 @@ fun SegmentedButtons(
   selectedIndex: Int,
   onSelect: (Int) -> Unit,
   modifier: Modifier = Modifier,
+  key: String? = null,
 ) {
+  val scrollState =
+    remember(key) {
+      if (key != null) {
+        ScrollStateHolder.getOrCreate(key)
+      } else {
+        ScrollState(0)
+      }
+    }
   Row(
-    modifier = modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+    modifier = modifier.fillMaxWidth().horizontalScroll(scrollState),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     options.forEachIndexed { index, option ->
@@ -155,5 +179,20 @@ fun EmptyState(
       Spacer(Modifier.height(16.dp))
       Button(onClick = onAction) { Text(actionText) }
     }
+  }
+}
+
+@Composable
+fun ButtonRow(title: String, subTitle: String, content: @Composable () -> Unit) {
+  Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.weight(1f)) {
+      Text(title, style = MaterialTheme.typography.bodyLarge)
+      Text(
+        subTitle,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+    Box(modifier = Modifier.weight(1f)) { content() }
   }
 }

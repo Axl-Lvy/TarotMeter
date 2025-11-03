@@ -16,6 +16,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Round
 import proj.tarotmeter.axl.core.data.model.enums.Chelem
@@ -26,6 +28,8 @@ import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.ResponsiveTwoColumn
 import proj.tarotmeter.axl.ui.components.TarotDropdown
+import tarotmeter.composeapp.generated.resources.*
+import tarotmeter.composeapp.generated.resources.Res
 
 /**
  * Composable for adding a new round to a game.
@@ -43,12 +47,15 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
 
   CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      Text("Add New Round", style = MaterialTheme.typography.titleMedium)
+      Text(
+        stringResource(Res.string.round_editor_add_new),
+        style = MaterialTheme.typography.titleMedium,
+      )
 
       ResponsiveTwoColumn(
         leftContent = {
           TarotDropdown(
-            label = "Taker",
+            label = stringResource(Res.string.round_editor_label_taker),
             options = game.players.map { it.name },
             selectedIndex = takerIndex,
             onSelect = { takerIndex = it },
@@ -56,7 +63,7 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
 
           if (game.players.size == 5) {
             TarotDropdown(
-              label = "Partner",
+              label = stringResource(Res.string.round_editor_label_partner),
               options = game.players.map { it.name },
               selectedIndex = partnerIndex,
               onSelect = { partnerIndex = it },
@@ -65,15 +72,15 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
         },
         rightContent = {
           TarotDropdown(
-            label = "Contract",
+            label = stringResource(Res.string.round_editor_label_contract),
             options = Contract.entries.map { it.title },
             selectedIndex = Contract.entries.indexOf(contract),
             onSelect = { contract = Contract.entries[it] },
           )
 
           TarotDropdown(
-            label = "Oudlers",
-            options = (0..3).map { "$it Oudler${if (it != 1) "s" else ""}" },
+            label = stringResource(Res.string.round_editor_label_oudlers),
+            options = (0..3).map { pluralStringResource(Res.plurals.round_editor_oudlers, it, it) },
             selectedIndex = oudler,
             onSelect = { oudler = it },
           )
@@ -83,7 +90,7 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
       PointsInputField(pointsText)
 
       PrimaryButton(
-        text = "Add Round",
+        text = stringResource(Res.string.round_editor_button_add),
         onClick = {
           val round =
             createRound(game, takerIndex, partnerIndex, contract, oudler, pointsText.value)
@@ -116,7 +123,7 @@ private fun PointsInputField(pointsText: MutableState<String>) {
         pointsText.value = number.toString()
       }
     },
-    label = { Text("Card points (0-91)") },
+    label = { Text(stringResource(Res.string.round_editor_label_points)) },
     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     modifier = Modifier.fillMaxWidth(),
   )

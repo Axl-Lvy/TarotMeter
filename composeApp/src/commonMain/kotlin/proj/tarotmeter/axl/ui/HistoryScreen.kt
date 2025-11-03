@@ -1,18 +1,41 @@
 package proj.tarotmeter.axl.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlin.uuid.Uuid
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
-import proj.tarotmeter.axl.ui.components.*
+import proj.tarotmeter.axl.ui.components.EmptyState
+import proj.tarotmeter.axl.ui.components.PlayerAvatar
+import proj.tarotmeter.axl.ui.components.ResponsiveContainer
+import proj.tarotmeter.axl.ui.components.ScoreText
+import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.history_empty_state
+import tarotmeter.composeapp.generated.resources.history_game_count
+import tarotmeter.composeapp.generated.resources.history_game_label
+import tarotmeter.composeapp.generated.resources.history_round_count
 
 /**
  * Screen for viewing game history. Displays a list of past games that can be selected for
@@ -28,10 +51,13 @@ fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koi
   ResponsiveContainer {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
       if (games.isEmpty()) {
-        EmptyState(message = "No games yet. Start a New Game.", modifier = Modifier.weight(1f))
+        EmptyState(
+          message = stringResource(Res.string.history_empty_state),
+          modifier = Modifier.weight(1f),
+        )
       } else {
         Text(
-          "${games.size} game${if (games.size != 1) "s" else ""} played",
+          pluralStringResource(Res.plurals.history_game_count, games.size, games.size),
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -59,7 +85,7 @@ private fun GameHistoryCard(game: proj.tarotmeter.axl.core.data.model.Game, onCl
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
-          text = "Game",
+          text = stringResource(Res.string.history_game_label),
           style = MaterialTheme.typography.titleLarge,
           color = MaterialTheme.colorScheme.primary,
         )
@@ -68,7 +94,12 @@ private fun GameHistoryCard(game: proj.tarotmeter.axl.core.data.model.Game, onCl
           color = MaterialTheme.colorScheme.secondaryContainer,
         ) {
           Text(
-            text = "${game.rounds.size} round${if (game.rounds.size != 1) "s" else ""}",
+            text =
+              pluralStringResource(
+                Res.plurals.history_round_count,
+                game.rounds.size,
+                game.rounds.size,
+              ),
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
           )

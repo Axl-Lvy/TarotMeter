@@ -1,0 +1,109 @@
+<resources>
+  <!-- App Name -->
+  <string name="app_name">Tarot Meter</string>
+
+  <!-- Navigation Titles -->
+  <string name="title_home">Tarot Meter</string>
+  <string name="title_players">Joueurs</string>
+  <string name="title_settings">Paramètres</string>
+  <string name="title_new_game">Nouvelle Partie</string>
+  <string name="title_game_history">Historique des Parties</string>
+  <string name="title_game_editor">Éditeur de Partie</string>
+
+  <!-- Home Screen -->
+  <string name="home_subtitle">Suivez vos parties de Tarot avec élégance</string>
+  <string name="home_button_new_game">Nouvelle Partie</string>
+  <string name="home_button_players">Joueurs</string>
+  <string name="home_button_history">Historique</string>
+  <string name="home_button_settings">Paramètres</string>
+  <string name="home_footer_text">Pas de pub. Open source. Pour toujours.</string>
+
+  <!-- Content Descriptions -->
+  <string name="cd_github_repository">Dépôt GitHub</string>
+  <string name="cd_navigate_back">Retour</string>
+  <string name="cd_add_player">Ajouter un joueur</string>
+
+  <!-- Players Screen -->
+  <string name="players_header">Gérer les Joueurs</string>
+  <string name="players_add_new">Ajouter un Nouveau Joueur</string>
+  <string name="players_label_name">Nom du joueur</string>
+  <plurals name="players_count">
+    <item quantity="one">%1$d joueur</item>
+    <item quantity="other">%1$d joueurs</item>
+  </plurals>
+  <string name="players_empty_state">Aucun joueur pour l'instant. Ajoutez votre premier joueur ci-dessus !
+  </string>
+  <string name="players_button_cancel">Annuler</string>
+  <string name="players_button_save">Enregistrer</string>
+  <string name="players_button_rename">Renommer</string>
+  <string name="players_button_delete">Supprimer</string>
+
+  <!-- New Game Screen -->
+  <string name="new_game_header">Créer une Nouvelle Partie</string>
+  <string name="new_game_select_players">Sélectionner les Joueurs</string>
+  <plurals name="new_game_selected_count">
+    <item quantity="one">Sélectionné : %1$d joueur (3-5 requis)</item>
+    <item quantity="other">Sélectionnés : %1$d joueurs (3-5 requis)</item>
+  </plurals>
+  <string name="new_game_button_start">Commencer la Partie</string>
+  <string name="new_game_no_players">Aucun joueur disponible. Veuillez d'abord ajouter des joueurs.</string>
+
+  <!-- Round Editor -->
+  <string name="round_editor_add_new">Ajouter une Nouvelle Donne</string>
+  <string name="round_editor_label_taker">Preneur</string>
+  <string name="round_editor_label_partner">Partenaire</string>
+  <string name="round_editor_label_contract">Contrat</string>
+  <string name="round_editor_label_oudlers">Bouts</string>
+  <string name="round_editor_label_points">Points de cartes (0-91)</string>
+  <string name="round_editor_button_add">Ajouter la Donne</string>
+  <plurals name="round_editor_oudlers">
+    <item quantity="one">%1$d Bout</item>
+    <item quantity="other">%1$d Bouts</item>
+  </plurals>
+
+  <!-- Game Editor Screen -->
+  <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
+  <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !
+  </string>
+  <plurals name="game_editor_oudler">
+    <item quantity="one">%1$d Bout</item>
+    <item quantity="other">%1$d Bouts</item>
+  </plurals>
+  <string name="game_editor_taker_points">Preneur • %1$d pts</string>
+  <string name="game_editor_with">avec</string>
+
+  <!-- History Screen -->
+  <plurals name="history_game_count">
+    <item quantity="one">%1$d partie jouée</item>
+    <item quantity="other">%1$d parties jouées</item>
+  </plurals>
+  <string name="history_empty_state">Aucune partie pour l'instant. Commencez une Nouvelle Partie.</string>
+  <string name="history_game_label">Partie</string>
+  <plurals name="history_round_count">
+    <item quantity="one">%1$d donne</item>
+    <item quantity="other">%1$d donnes</item>
+  </plurals>
+
+  <!-- Settings Screen -->
+  <string name="settings_header">Paramètres</string>
+  <string name="settings_appearance">Apparence</string>
+  <string name="settings_app_theme">Thème de l'application</string>
+  <string name="settings_app_theme_description">Choisissez un thème clair, sombre ou par défaut du système.
+  </string>
+  <string name="settings_app_theme_light">Clair</string>
+  <string name="settings_app_theme_dark">Sombre</string>
+  <string name="settings_app_theme_system">Système</string>
+  <string name="settings_language">Langue</string>
+  <string name="settings_language_description">Choisissez votre langue préférée.</string>
+  <string name="settings_language_english">Anglais</string>
+  <string name="settings_language_french">Français</string>
+  <string name="settings_language_default">Par défaut</string>
+  <string name="settings_show_tips">Afficher les Conseils</string>
+  <string name="settings_show_tips_description">Activer ou désactiver les conseils et astuces dans l'application.
+  </string>
+  <string name="settings_about">À propos</string>
+  <string
+    name="settings_about_description">Tarot Meter est une application complète de suivi des scores pour les parties de Tarot français.
+  </string>
+  <string name="settings_version">Version 1.0.0</string>
+</resources>

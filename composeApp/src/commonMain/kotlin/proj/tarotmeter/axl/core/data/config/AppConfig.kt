@@ -14,4 +14,6 @@ val AUTH_ACCESS_TOKEN = StringConfigItem("AUTH_ACCESS_TOKEN")
 
 val APP_THEME_SETTING = EnumBasedConfigItem.from("appTheme", AppThemeSetting.SYSTEM)
 
+val LANGUAGE_SETTING = StringConfigItem("LANGUAGE_SETTING", "und")
+
 internal expect fun getPlatformSpecificConfig(): Settings

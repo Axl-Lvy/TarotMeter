@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
@@ -20,11 +21,7 @@ import androidx.compose.ui.unit.dp
  * @param size Size of the avatar circle
  */
 @Composable
-fun PlayerAvatar(
-  name: String,
-  modifier: Modifier = Modifier,
-  size: androidx.compose.ui.unit.Dp = 40.dp,
-) {
+fun PlayerAvatar(name: String, modifier: Modifier = Modifier, size: Dp = 40.dp) {
   val initials =
     name
       .split(' ')
@@ -84,7 +81,7 @@ fun PlayerScoresRow(playerScores: List<Pair<String, Int>>, modifier: Modifier = 
       playerScores.forEach { (name, score) ->
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
           Text(
-            text = name.split(' ').first(),
+            text = name,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
