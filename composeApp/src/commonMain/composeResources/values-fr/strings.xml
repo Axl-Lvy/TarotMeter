@@ -28,10 +28,10 @@
   <string name="players_add_new">Ajouter un Nouveau Joueur</string>
   <string name="players_label_name">Nom du joueur</string>
   <plurals name="players_count">
-    <item quantity="one">%d joueur</item>
-    <item quantity="other">%d joueurs</item>
+    <item quantity="one">%1$d joueur</item>
+    <item quantity="other">%1$d joueurs</item>
   </plurals>
-  <string name="players_empty_state">Aucun joueur pour l\'instant. Ajoutez votre premier joueur ci-dessus !
+  <string name="players_empty_state">Aucun joueur pour l'instant. Ajoutez votre premier joueur ci-dessus !
   </string>
   <string name="players_button_cancel">Annuler</string>
   <string name="players_button_save">Enregistrer</string>
@@ -42,11 +42,11 @@
   <string name="new_game_header">Créer une Nouvelle Partie</string>
   <string name="new_game_select_players">Sélectionner les Joueurs</string>
   <plurals name="new_game_selected_count">
-    <item quantity="one">Sélectionné : %d joueur (3-5 requis)</item>
-    <item quantity="other">Sélectionnés : %d joueurs (3-5 requis)</item>
+    <item quantity="one">Sélectionné : %1$d joueur (3-5 requis)</item>
+    <item quantity="other">Sélectionnés : %1$d joueurs (3-5 requis)</item>
   </plurals>
   <string name="new_game_button_start">Commencer la Partie</string>
-  <string name="new_game_no_players">Aucun joueur disponible. Veuillez d\'abord ajouter des joueurs.</string>
+  <string name="new_game_no_players">Aucun joueur disponible. Veuillez d'abord ajouter des joueurs.</string>
 
   <!-- Round Editor -->
   <string name="round_editor_add_new">Ajouter une Nouvelle Donne</string>
@@ -57,37 +57,37 @@
   <string name="round_editor_label_points">Points de cartes (0-91)</string>
   <string name="round_editor_button_add">Ajouter la Donne</string>
   <plurals name="round_editor_oudlers">
-    <item quantity="one">%d Bout</item>
-    <item quantity="other">%d Bouts</item>
+    <item quantity="one">%1$d Bout</item>
+    <item quantity="other">%1$d Bouts</item>
   </plurals>
 
   <!-- Game Editor Screen -->
-  <string name="game_editor_round_history">Historique des Donnes (%d)</string>
-  <string name="game_editor_empty_state">Aucune donne pour l\'instant. Ajoutez votre première donne ci-dessus !
+  <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
+  <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !
   </string>
   <plurals name="game_editor_oudler">
-    <item quantity="one">%d Bout</item>
-    <item quantity="other">%d Bouts</item>
+    <item quantity="one">%1$d Bout</item>
+    <item quantity="other">%1$d Bouts</item>
   </plurals>
-  <string name="game_editor_taker_points">Preneur • %d pts</string>
+  <string name="game_editor_taker_points">Preneur • %1$d pts</string>
   <string name="game_editor_with">avec</string>
 
   <!-- History Screen -->
   <plurals name="history_game_count">
-    <item quantity="one">%d partie jouée</item>
-    <item quantity="other">%d parties jouées</item>
+    <item quantity="one">%1$d partie jouée</item>
+    <item quantity="other">%1$d parties jouées</item>
   </plurals>
-  <string name="history_empty_state">Aucune partie pour l\'instant. Commencez une Nouvelle Partie.</string>
+  <string name="history_empty_state">Aucune partie pour l'instant. Commencez une Nouvelle Partie.</string>
   <string name="history_game_label">Partie</string>
   <plurals name="history_round_count">
-    <item quantity="one">%d donne</item>
-    <item quantity="other">%d donnes</item>
+    <item quantity="one">%1$d donne</item>
+    <item quantity="other">%1$d donnes</item>
   </plurals>
 
   <!-- Settings Screen -->
   <string name="settings_header">Paramètres</string>
   <string name="settings_appearance">Apparence</string>
-  <string name="settings_app_theme">Thème de l\'application</string>
+  <string name="settings_app_theme">Thème de l'application</string>
   <string name="settings_app_theme_description">Choisissez un thème clair, sombre ou par défaut du système.
   </string>
   <string name="settings_show_tips">Afficher les Conseils</string>
@@ -99,7 +99,7 @@
     parties de Tarot français.
   </string>
   <string name="settings_version">Version 1.0.0</string>
-  <string name="settings_persistence_note">Les paramètres de thème sont conservés. D\'autres paramètres seront
+  <string name="settings_persistence_note">Les paramètres de thème sont conservés. D'autres paramètres seront
     ajoutés dans les versions futures.
   </string>
 </resources>

@@ -28,8 +28,8 @@
   <string name="players_add_new">Add New Player</string>
   <string name="players_label_name">Player name</string>
   <plurals name="players_count">
-    <item quantity="one">%d player</item>
-    <item quantity="other">%d players</item>
+    <item quantity="one">%1$d player</item>
+    <item quantity="other">%1$d players</item>
   </plurals>
   <string name="players_empty_state">No players yet. Add your first player above!</string>
   <string name="players_button_cancel">Cancel</string>
@@ -41,8 +41,8 @@
   <string name="new_game_header">Create New Game</string>
   <string name="new_game_select_players">Select Players</string>
   <plurals name="new_game_selected_count">
-    <item quantity="one">Selected: %d player (3-5 required)</item>
-    <item quantity="other">Selected: %d players (3-5 required)</item>
+    <item quantity="one">Selected: %1$d player (3-5 required)</item>
+    <item quantity="other">Selected: %1$d players (3-5 required)</item>
   </plurals>
   <string name="new_game_button_start">Start Game</string>
   <string name="new_game_no_players">No players available. Please add players first.</string>
@@ -56,30 +56,30 @@
   <string name="round_editor_label_points">Card points (0-91)</string>
   <string name="round_editor_button_add">Add Round</string>
   <plurals name="round_editor_oudlers">
-    <item quantity="one">%d Oudler</item>
-    <item quantity="other">%d Oudlers</item>
+    <item quantity="one">%1$d Oudler</item>
+    <item quantity="other">%1$d Oudlers</item>
   </plurals>
 
   <!-- Game Editor Screen -->
-  <string name="game_editor_round_history">Round History (%d)</string>
+  <string name="game_editor_round_history">Round History (%1$d)</string>
   <string name="game_editor_empty_state">No rounds yet. Add your first round above!</string>
   <plurals name="game_editor_oudler">
-    <item quantity="one">%d Oudler</item>
-    <item quantity="other">%d Oudlers</item>
+    <item quantity="one">%1$d Oudler</item>
+    <item quantity="other">%1$d Oudlers</item>
   </plurals>
-  <string name="game_editor_taker_points">Taker • %d pts</string>
+  <string name="game_editor_taker_points">Taker • %1$d pts</string>
   <string name="game_editor_with">with</string>
 
   <!-- History Screen -->
   <plurals name="history_game_count">
-    <item quantity="one">%d game played</item>
-    <item quantity="other">%d games played</item>
+    <item quantity="one">%1$d game played</item>
+    <item quantity="other">%1$d games played</item>
   </plurals>
   <string name="history_empty_state">No games yet. Start a New Game.</string>
   <string name="history_game_label">Game</string>
   <plurals name="history_round_count">
-    <item quantity="one">%d round</item>
-    <item quantity="other">%d rounds</item>
+    <item quantity="one">%1$d round</item>
+    <item quantity="other">%1$d rounds</item>
   </plurals>
 
   <!-- Settings Screen -->
