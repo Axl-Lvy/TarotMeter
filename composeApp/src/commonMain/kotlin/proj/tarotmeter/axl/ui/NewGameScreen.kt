@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Player
@@ -39,8 +40,12 @@ import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.SectionHeader
-import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.new_game_button_start
+import tarotmeter.composeapp.generated.resources.new_game_header
+import tarotmeter.composeapp.generated.resources.new_game_no_players
+import tarotmeter.composeapp.generated.resources.new_game_select_players
+import tarotmeter.composeapp.generated.resources.new_game_selected_count
 
 /**
  * Screen for creating a new game. Allows selecting the number of players and starting a new game.
@@ -77,11 +82,7 @@ fun NewGameScreen(
         )
 
         Text(
-          stringResource(
-            Res.string.new_game_selected_count,
-            selectedCount,
-            if (selectedCount != 1) "s" else "",
-          ),
+          pluralStringResource(Res.plurals.new_game_selected_count, selectedCount, selectedCount),
           style = MaterialTheme.typography.bodySmall,
           color =
             if (isValidSelection) {

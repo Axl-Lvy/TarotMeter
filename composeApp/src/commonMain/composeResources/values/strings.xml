@@ -40,7 +40,10 @@
   <!-- New Game Screen -->
   <string name="new_game_header">Create New Game</string>
   <string name="new_game_select_players">Select Players</string>
-  <string name="new_game_selected_count">Selected: %d player%s (3-5 required)</string>
+  <plurals name="new_game_selected_count">
+    <item quantity="one">Selected: %d player (3-5 required)</item>
+    <item quantity="other">Selected: %d players (3-5 required)</item>
+  </plurals>
   <string name="new_game_button_start">Start Game</string>
   <string name="new_game_no_players">No players available. Please add players first.</string>
 

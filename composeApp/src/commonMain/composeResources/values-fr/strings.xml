@@ -41,7 +41,10 @@
   <!-- New Game Screen -->
   <string name="new_game_header">Créer une Nouvelle Partie</string>
   <string name="new_game_select_players">Sélectionner les Joueurs</string>
-  <string name="new_game_selected_count">Sélectionnés : %d joueur%s (3-5 requis)</string>
+  <plurals name="new_game_selected_count">
+    <item quantity="one">Sélectionné : %d joueur (3-5 requis)</item>
+    <item quantity="other">Sélectionnés : %d joueurs (3-5 requis)</item>
+  </plurals>
   <string name="new_game_button_start">Commencer la Partie</string>
   <string name="new_game_no_players">Aucun joueur disponible. Veuillez d\'abord ajouter des joueurs.</string>
 
