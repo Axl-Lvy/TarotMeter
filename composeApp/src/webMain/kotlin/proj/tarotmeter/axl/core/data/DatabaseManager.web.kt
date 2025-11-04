@@ -128,7 +128,7 @@ class LocalStorageDatabaseManager(
               round.id,
             )
           )
-          it.updatedAtInternal = DateUtil.now()
+          it.updatedAtInternal = round.updatedAt
         }
       }
       window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))

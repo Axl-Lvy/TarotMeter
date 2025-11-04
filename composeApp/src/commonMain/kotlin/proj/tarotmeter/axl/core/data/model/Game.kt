@@ -53,7 +53,7 @@ data class Game(
     checkRoundConsistent(round)
     isSorted = isSorted && (roundsInternal.isEmpty() || round.index >= roundsInternal.last().index)
     roundsInternal.add(round)
-    updatedAtInternal = DateUtil.now()
+    updatedAtInternal = round.updatedAt
   }
 
   private fun checkRoundConsistent(round: Round) {

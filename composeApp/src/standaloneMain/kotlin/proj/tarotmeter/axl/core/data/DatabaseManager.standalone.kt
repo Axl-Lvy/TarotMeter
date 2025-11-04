@@ -81,7 +81,7 @@ internal class StandaloneDatabaseManager(
         )
       )
     // touch game timestamp
-    database.getGameDao().touchGame(gameId, DateUtil.now())
+    database.getGameDao().touchGame(gameId, round.updatedAt)
     notifyChange()
   }
 

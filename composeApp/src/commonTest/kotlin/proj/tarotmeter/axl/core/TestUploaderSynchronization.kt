@@ -151,7 +151,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
         poignee = Poignee.NONE,
         petitAuBout = PetitAuBout.NONE,
         chelem = Chelem.NONE,
-        index = 0,
+        index = 4,
       )
     val r2 =
       Round(
@@ -163,7 +163,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
         poignee = Poignee.SIMPLE,
         petitAuBout = PetitAuBout.TAKER,
         chelem = Chelem.NONE,
-        index = 1,
+        index = 5,
       )
     localDb.addRound(game.id, r1)
     localDb.addRound(game.id, r2)
