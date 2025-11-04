@@ -171,9 +171,13 @@ class TestUploaderSynchronization : TestAuthenticated() {
     awaitCloudGamesMatch()
 
     val cloudGame = cloudDb.getGame(game.id)
-    assertEquals(game.id, cloudGame?.id)
-    assertEquals(players.map { it.id }.toSet(), cloudGame?.players?.map { it.id }?.toSet())
-    assertEquals(2, cloudGame?.rounds?.size)
+    assertEquals(game.id, cloudGame?.id, "Game IDs should match")
+    assertEquals(
+      players.map { it.id }.toSet(),
+      cloudGame?.players?.map { it.id }?.toSet(),
+      "Game player IDs should match",
+    )
+    assertEquals(2, cloudGame?.rounds?.size, "There should be 2 rounds in the cloud game")
   }
 }
 
