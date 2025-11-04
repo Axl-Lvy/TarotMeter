@@ -27,6 +27,7 @@ class TestScoresCalculation {
     poignee: Poignee = Poignee.NONE,
     petitAuBout: PetitAuBout = PetitAuBout.NONE,
     chelem: Chelem = Chelem.NONE,
+    index: Int = 0,
   ): Round {
     return Round(
       taker = taker,
@@ -37,6 +38,7 @@ class TestScoresCalculation {
       poignee = poignee,
       petitAuBout = petitAuBout,
       chelem = chelem,
+      index = index,
     )
   }
 

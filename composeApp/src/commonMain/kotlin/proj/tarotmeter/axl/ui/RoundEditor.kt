@@ -154,6 +154,7 @@ private fun createRound(
       poignee = Poignee.NONE,
       petitAuBout = PetitAuBout.NONE,
       chelem = Chelem.NONE,
+      index = game.rounds.size,
     )
   return round
 }

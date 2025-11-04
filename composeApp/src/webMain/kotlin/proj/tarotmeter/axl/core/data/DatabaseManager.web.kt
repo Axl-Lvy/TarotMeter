@@ -94,6 +94,7 @@ class LocalStorageDatabaseManager(
                   it.poignee,
                   it.petitAuBout,
                   it.chelem,
+                  it.index,
                   it.id,
                 )
               }
@@ -123,6 +124,7 @@ class LocalStorageDatabaseManager(
               round.poignee,
               round.petitAuBout,
               round.chelem,
+              round.index,
               round.id,
             )
           )
@@ -199,6 +201,7 @@ class LocalStorageDatabaseManager(
               poignee = round.poignee,
               petitAuBout = round.petitAuBout,
               chelem = round.chelem,
+              index = round.index,
               updatedAt = round.updatedAt,
               isDeleted = round.isDeleted,
             )

@@ -15,8 +15,24 @@ import proj.tarotmeter.axl.util.DateUtil
  */
 @Serializable
 @Immutable
-data class Player(
+class Player(
   val name: String,
   val id: Uuid = Uuid.random(),
   val updatedAt: Instant = DateUtil.now(),
-)
+) {
+
+  override fun toString(): String {
+    return "Player(id=$id, name='$name')"
+  }
+
+  override fun hashCode(): Int {
+    return id.hashCode()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is Player) return false
+    if (id != other.id) return false
+    return true
+  }
+}

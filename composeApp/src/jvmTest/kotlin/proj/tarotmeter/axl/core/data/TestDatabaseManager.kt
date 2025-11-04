@@ -129,6 +129,7 @@ class TestDatabaseManager : TestWithKoin {
         poignee = Poignee.SIMPLE,
         petitAuBout = PetitAuBout.TAKER,
         chelem = Chelem.NONE,
+        index = 0,
       )
 
     dbManager.addRound(game.id, round)
@@ -162,6 +163,7 @@ class TestDatabaseManager : TestWithKoin {
         takerPoints = 40,
         poignee = Poignee.NONE,
         petitAuBout = PetitAuBout.NONE,
+        index = 0,
         chelem = Chelem.NONE,
       )
 
@@ -174,6 +176,7 @@ class TestDatabaseManager : TestWithKoin {
         takerPoints = 55,
         poignee = Poignee.DOUBLE,
         petitAuBout = PetitAuBout.DEFENSE,
+        index = 1,
         chelem = Chelem.ANNOUNCED,
       )
 
@@ -229,6 +232,7 @@ class TestDatabaseManager : TestWithKoin {
         partner = players[1],
         oudlerCount = 3,
         takerPoints = 70,
+        index = 0,
         poignee = Poignee.TRIPLE,
         petitAuBout = PetitAuBout.DEFENSE,
         chelem = Chelem.FAILED,

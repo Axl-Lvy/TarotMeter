@@ -75,6 +75,7 @@ internal class StandaloneDatabaseManager(
           round.takerPoints,
           round.poignee,
           round.petitAuBout,
+          round.index,
           round.chelem,
           round.updatedAt,
         )
@@ -120,6 +121,7 @@ internal class StandaloneDatabaseManager(
         takerPoints = it.takerPoints,
         poignee = it.poignee,
         petitAuBout = it.petitAuBout,
+        index = it.index,
         chelem = it.chelem,
         updatedAt = it.updatedAt,
         isDeleted = it.isDeleted,

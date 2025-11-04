@@ -14,6 +14,7 @@ import proj.tarotmeter.axl.util.DateUtil
  * Represents a single round of a Tarot game.
  *
  * @property id Unique identifier for the round.
+ * @property index The index of the round in the game round list.
  * @property taker The player who takes the contract.
  * @property partner The partner of the taker, if any.
  * @property contract The contract chosen for the round.
@@ -34,6 +35,7 @@ data class Round(
   val poignee: Poignee,
   val petitAuBout: PetitAuBout,
   val chelem: Chelem,
+  val index: Int,
   val id: Uuid = Uuid.random(),
   val updatedAt: Instant = DateUtil.now(),
 ) {

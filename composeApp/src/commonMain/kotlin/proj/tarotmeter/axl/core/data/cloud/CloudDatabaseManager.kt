@@ -320,6 +320,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
             poignee = round.poignee,
             petitAuBout = round.petitAuBout,
             chelem = round.chelem,
+            index = round.index,
             gameId = game.id.toString(),
           )
         }
@@ -342,6 +343,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
           takerPoints = round.takerPoints,
           poignee = round.poignee,
           petitAuBout = round.petitAuBout,
+          index = round.index,
           chelem = round.chelem,
           gameId = gameId.toString(),
         )
@@ -429,6 +431,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
           chelem = it.chelem,
           gameId = it.gameId.toString(),
           isDeleted = it.isDeleted,
+          index = it.index,
         )
       }
     supabaseClient.from("round").upsert(dtos)

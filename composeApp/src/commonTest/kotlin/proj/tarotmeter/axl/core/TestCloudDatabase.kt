@@ -135,6 +135,7 @@ class TestCloudDatabase : TestAuthenticated() {
         poignee = Poignee.SIMPLE,
         petitAuBout = PetitAuBout.TAKER,
         chelem = Chelem.NONE,
+        index = 0,
       )
 
     databaseManager.addRound(game.id, round)
@@ -169,6 +170,7 @@ class TestCloudDatabase : TestAuthenticated() {
         poignee = Poignee.NONE,
         petitAuBout = PetitAuBout.NONE,
         chelem = Chelem.NONE,
+        index = 0,
       )
 
     val round2 =
@@ -181,6 +183,7 @@ class TestCloudDatabase : TestAuthenticated() {
         poignee = Poignee.DOUBLE,
         petitAuBout = PetitAuBout.DEFENSE,
         chelem = Chelem.ANNOUNCED,
+        index = 1,
       )
 
     databaseManager.addRound(game.id, round1)
@@ -238,6 +241,7 @@ class TestCloudDatabase : TestAuthenticated() {
         poignee = Poignee.TRIPLE,
         petitAuBout = PetitAuBout.DEFENSE,
         chelem = Chelem.FAILED,
+        index = 0,
       )
 
     databaseManager.addRound(game.id, round)
@@ -307,6 +311,7 @@ class TestCloudDatabase : TestAuthenticated() {
         poignee = Poignee.NONE,
         petitAuBout = PetitAuBout.NONE,
         chelem = Chelem.NONE,
+        index = 0,
       )
 
     val round2 =
@@ -319,6 +324,7 @@ class TestCloudDatabase : TestAuthenticated() {
         poignee = Poignee.SIMPLE,
         petitAuBout = PetitAuBout.TAKER,
         chelem = Chelem.NONE,
+        index = 1,
       )
 
     val game =

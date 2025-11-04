@@ -25,6 +25,7 @@ import proj.tarotmeter.axl.core.data.model.enums.Poignee
  * @property poignee Poignee type.
  * @property petitAuBout Petit au Bout outcome.
  * @property chelem Chelem outcome.
+ * @property index The index of the round in the game round list.
  */
 @Entity(
   foreignKeys =
@@ -66,6 +67,7 @@ data class RoundEntity(
   @ColumnInfo(name = "taker_points") val takerPoints: Int,
   val poignee: Poignee,
   @ColumnInfo(name = "petit_au_bout") val petitAuBout: PetitAuBout,
+  val index: Int,
   val chelem: Chelem,
   @ColumnInfo(name = "updated_at") val updatedAt: Instant,
   @ColumnInfo(name = "is_deleted") val isDeleted: Boolean = false,
