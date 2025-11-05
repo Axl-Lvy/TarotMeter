@@ -8,6 +8,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
@@ -29,7 +30,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   private val cloudDb: CloudDatabaseManager by inject()
 
   @AfterTest
-  fun cleanDb() = runTest {
+  fun cleanDb() = runTestWithTrueClock {
     localDb.clearLocal()
     cloudDb.clearCloud()
   }
@@ -84,7 +85,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   // --- Tests -------------------------------------------------------------------------------
 
   @Test
-  fun testBurstPlayerInsertionSynchronizesAll() = runTest {
+  fun testBurstPlayerInsertionSynchronizesAll() = runTestWithTrueClock {
     uploader.isActive = true
 
     val players = (0 until 6).map { Player("P$it") }
@@ -98,7 +99,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   }
 
   @Test
-  fun testSequentialPlayerInsertionsSynchronize() = runTest {
+  fun testSequentialPlayerInsertionsSynchronize() = runTestWithTrueClock {
     uploader.isActive = true
 
     val a = Player("A")
@@ -114,7 +115,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   }
 
   @Test
-  fun testPlayerDeletionPropagates() = runTest {
+  fun testPlayerDeletionPropagates() = runTestWithTrueClock {
     uploader.isActive = true
 
     val p = Player("ToDelete")
@@ -130,7 +131,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   }
 
   @Test
-  fun testGameAndRoundsSynchronization() = runTest {
+  fun testGameAndRoundsSynchronization() = runTestWithTrueClock {
     uploader.isActive = true
 
     val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
@@ -181,5 +182,6 @@ class TestUploaderSynchronization : TestAuthenticated() {
   }
 }
 
-private fun runTest(block: suspend () -> Unit) =
-  kotlinx.coroutines.test.runTest { withContext(Dispatchers.Default) { block() } }
+private fun runTestWithTrueClock(block: suspend () -> Unit) = runTest {
+  withContext(Dispatchers.Default) { block() }
+}
