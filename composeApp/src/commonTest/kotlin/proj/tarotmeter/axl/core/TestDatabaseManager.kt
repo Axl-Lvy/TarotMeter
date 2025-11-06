@@ -1,8 +1,14 @@
-package proj.tarotmeter.axl.core.data
+package proj.tarotmeter.axl.core
 
-import kotlin.test.*
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.koin.core.component.inject
+import proj.tarotmeter.axl.core.data.DatabaseManager
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
@@ -10,6 +16,7 @@ import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
+import proj.tarotmeter.axl.util.TestWithKoin
 
 class TestDatabaseManager : TestWithKoin {
   private val dbManager: DatabaseManager by inject()

@@ -2,6 +2,7 @@ package proj.tarotmeter.axl.core
 
 import io.kotest.assertions.nondeterministic.eventually
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -30,6 +31,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   private val cloudDb: CloudDatabaseManager by inject()
 
   @AfterTest
+  @BeforeTest
   fun cleanDb() = runTestWithTrueClock {
     localDb.clearLocal()
     cloudDb.clearCloud()
