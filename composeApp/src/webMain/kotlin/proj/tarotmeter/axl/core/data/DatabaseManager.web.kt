@@ -112,22 +112,7 @@ class LocalStorageDatabaseManager(
       val games = getGameEntities()
       games.forEach {
         if (it.id == gameId) {
-          it.roundsInternal.add(
-            RoundLocalStorage(
-              PlayerLocalStorage(round.taker.name, round.taker.id, round.taker.updatedAt),
-              round.partner?.let { partner ->
-                PlayerLocalStorage(partner.name, partner.id, partner.updatedAt)
-              },
-              round.contract,
-              round.oudlerCount,
-              round.takerPoints,
-              round.poignee,
-              round.petitAuBout,
-              round.chelem,
-              round.index,
-              round.id,
-            )
-          )
+          it.roundsInternal.add(RoundLocalStorage(round))
           it.updatedAtInternal = round.updatedAt
         }
       }

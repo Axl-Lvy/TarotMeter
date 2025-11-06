@@ -43,6 +43,23 @@ data class SupabaseRound(
   @SerialName("game_id") val gameId: String,
   @SerialName("is_deleted") val isDeleted: Boolean = false,
 ) {
+  constructor(
+    round: Round
+  ) : this(
+    roundId = round.id.toString(),
+    updatedAt = round.updatedAt,
+    taker = round.taker.id.toString(),
+    partner = round.partner?.id?.toString(),
+    contract = round.contract,
+    oudlerCount = round.oudlerCount,
+    takerPoints = round.takerPoints,
+    poignee = round.poignee,
+    petitAuBout = round.petitAuBout,
+    chelem = round.chelem,
+    index = round.index,
+    gameId = game.id.toString(),
+  )
+
   fun toRound(playerProvider: (String) -> Player) =
     Round(
       taker = playerProvider(taker),

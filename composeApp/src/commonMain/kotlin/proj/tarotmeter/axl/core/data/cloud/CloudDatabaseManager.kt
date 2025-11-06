@@ -307,47 +307,14 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
     }
     // Insert rounds in bulk
     if (game.rounds.isNotEmpty()) {
-      val roundDtos =
-        game.rounds.map { round ->
-          SupabaseRound(
-            roundId = round.id.toString(),
-            updatedAt = round.updatedAt,
-            taker = round.taker.id.toString(),
-            partner = round.partner?.id?.toString(),
-            contract = round.contract,
-            oudlerCount = round.oudlerCount,
-            takerPoints = round.takerPoints,
-            poignee = round.poignee,
-            petitAuBout = round.petitAuBout,
-            chelem = round.chelem,
-            index = round.index,
-            gameId = game.id.toString(),
-          )
-        }
+      val roundDtos = game.rounds.map { round -> SupabaseRound(round) }
       supabaseClient.from("round").insert(roundDtos)
     }
   }
 
   override suspend fun addRound(gameId: Uuid, round: Round) {
     if (authManager.user == null) return
-    supabaseClient
-      .from("round")
-      .insert(
-        SupabaseRound(
-          roundId = round.id.toString(),
-          updatedAt = round.updatedAt,
-          taker = round.taker.id.toString(),
-          partner = round.partner?.id?.toString(),
-          contract = round.contract,
-          oudlerCount = round.oudlerCount,
-          takerPoints = round.takerPoints,
-          poignee = round.poignee,
-          petitAuBout = round.petitAuBout,
-          index = round.index,
-          chelem = round.chelem,
-          gameId = gameId.toString(),
-        )
-      )
+    supabaseClient.from("round").insert(SupabaseRound(round))
   }
 
   override suspend fun deleteGame(id: Uuid) {
@@ -416,24 +383,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
 
   suspend fun upsertRoundsSync(rounds: List<RoundSync>) {
     if (rounds.isEmpty()) return
-    val dtos =
-      rounds.map {
-        SupabaseRound(
-          roundId = it.id.toString(),
-          updatedAt = it.updatedAt,
-          taker = it.takerId.toString(),
-          partner = it.partnerId?.toString(),
-          contract = it.contract,
-          oudlerCount = it.oudlerCount,
-          takerPoints = it.takerPoints,
-          poignee = it.poignee,
-          petitAuBout = it.petitAuBout,
-          chelem = it.chelem,
-          gameId = it.gameId.toString(),
-          isDeleted = it.isDeleted,
-          index = it.index,
-        )
-      }
+    val dtos = rounds.map { SupabaseRound(it) }
     supabaseClient.from("round").upsert(dtos)
   }
 }
