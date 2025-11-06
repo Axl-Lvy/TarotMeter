@@ -383,7 +383,24 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
 
   suspend fun upsertRoundsSync(rounds: List<RoundSync>) {
     if (rounds.isEmpty()) return
-    val dtos = rounds.map { SupabaseRound(it) }
+    val dtos =
+      rounds.map {
+        SupabaseRound(
+          roundId = it.id.toString(),
+          updatedAt = it.updatedAt,
+          taker = it.takerId.toString(),
+          partner = it.partnerId?.toString(),
+          contract = it.contract,
+          oudlerCount = it.oudlerCount,
+          takerPoints = it.takerPoints,
+          poignee = it.poignee,
+          petitAuBout = it.petitAuBout,
+          chelem = it.chelem,
+          gameId = it.gameId.toString(),
+          isDeleted = it.isDeleted,
+          index = it.index,
+        )
+      }
     supabaseClient.from("round").upsert(dtos)
   }
 }
