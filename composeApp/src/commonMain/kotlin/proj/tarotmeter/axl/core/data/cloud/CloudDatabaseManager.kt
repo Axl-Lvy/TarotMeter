@@ -307,14 +307,14 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
     }
     // Insert rounds in bulk
     if (game.rounds.isNotEmpty()) {
-      val roundDtos = game.rounds.map { round -> SupabaseRound(round) }
+      val roundDtos = game.rounds.map { round -> SupabaseRound(round, game.id.toString()) }
       supabaseClient.from("round").insert(roundDtos)
     }
   }
 
   override suspend fun addRound(gameId: Uuid, round: Round) {
     if (authManager.user == null) return
-    supabaseClient.from("round").insert(SupabaseRound(round))
+    supabaseClient.from("round").insert(SupabaseRound(round, gameId.toString()))
   }
 
   override suspend fun deleteGame(id: Uuid) {
