@@ -317,6 +317,24 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
     supabaseClient.from("round").insert(SupabaseRound(round, gameId.toString()))
   }
 
+  override suspend fun deleteRound(roundId: Uuid) {
+    if (authManager.user == null) return
+    supabaseClient.from("round").softDelete {
+      filterNonDeleted { eq("round_id", roundId.toString()) }
+    }
+  }
+
+  override suspend fun updateRound(round: Round) {
+    if (authManager.user == null) return
+    val oldRound =
+      supabaseClient
+        .from("round")
+        .select { filterNonDeleted { eq("round_id", round.id) } }
+        .decodeSingleOrNull<SupabaseRound>()
+    checkNotNull(oldRound) { "Impossible to update a round that is not stored in the database." }
+    supabaseClient.from("round").upsert(SupabaseRound(round, oldRound.gameId))
+  }
+
   override suspend fun deleteGame(id: Uuid) {
     if (authManager.user == null) return
     supabaseClient.from("game").softDelete { filterForUser { eq("game_id", id.toString()) } }

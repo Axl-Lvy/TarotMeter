@@ -121,6 +121,36 @@ class LocalStorageDatabaseManager(
     notifyChange()
   }
 
+  override suspend fun deleteRound(roundId: Uuid) {
+    val games = getGameEntities()
+    for (game in games) {
+      if (game.roundsInternal.removeAll { it.id == roundId }) {
+        game.updatedAtInternal = DateUtil.now()
+        withContext(coroutineDispatcher) {
+          window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+        }
+        return
+      }
+    }
+  }
+
+  override suspend fun updateRound(round: Round) {
+    val games = getGameEntities()
+    for (game in games) {
+      for (i in game.roundsInternal.indices) {
+        if (game.roundsInternal[i].id == round.id) {
+          game.roundsInternal[i] = RoundLocalStorage(round)
+          game.updatedAtInternal = round.updatedAt
+          withContext(coroutineDispatcher) {
+            window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+          }
+          return
+        }
+      }
+    }
+    throw IllegalStateException("Round with id ${round.id} not found")
+  }
+
   override suspend fun deleteGame(id: Uuid) {
     withContext(coroutineDispatcher) {
       val games =

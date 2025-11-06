@@ -85,6 +85,17 @@ internal class StandaloneDatabaseManager(
     notifyChange()
   }
 
+  override suspend fun deleteRound(roundId: Uuid) {
+    database.getGameDao().deleteRound(roundId)
+    notifyChange()
+  }
+
+  override suspend fun updateRound(round: Round) {
+    val oldRound = database.getGameDao().getRound(round.id)
+    checkNotNull(oldRound) { "Impossible to update a round that is not stored in the database." }
+    addRound(oldRound.gameId, round)
+  }
+
   override suspend fun deleteGame(id: Uuid) {
     database.getGameDao().deleteGame(id, DateUtil.now())
     notifyChange()

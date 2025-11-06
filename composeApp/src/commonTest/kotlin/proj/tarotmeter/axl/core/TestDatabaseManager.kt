@@ -295,4 +295,65 @@ class TestDatabaseManager : TestWithKoin {
     assertNotNull(retrievedGame)
     assertEquals(5, retrievedGame.players.size)
   }
+
+  @Test
+  fun testDeleteRound() = runTest {
+    val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
+    players.forEach { dbManager.insertPlayer(it) }
+
+    val game = Game(players)
+    dbManager.insertGame(game)
+
+    val round =
+      Round(
+        taker = players[0],
+        contract = Contract.GARDE,
+        partner = null,
+        oudlerCount = 2,
+        takerPoints = 48,
+        poignee = Poignee.NONE,
+        petitAuBout = PetitAuBout.NONE,
+        chelem = Chelem.NONE,
+        index = 0,
+      )
+
+    dbManager.addRound(game.id, round)
+    dbManager.deleteRound(round.id)
+
+    val updatedGame = dbManager.getGame(game.id)
+    assertNotNull(updatedGame)
+    assertTrue(updatedGame.rounds.isEmpty())
+  }
+
+  @Test
+  fun testUpdateRound() = runTest {
+    val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
+    players.forEach { dbManager.insertPlayer(it) }
+
+    val game = Game(players)
+    dbManager.insertGame(game)
+
+    val round =
+      Round(
+        taker = players[0],
+        contract = Contract.GARDE,
+        partner = null,
+        oudlerCount = 2,
+        takerPoints = 48,
+        poignee = Poignee.NONE,
+        petitAuBout = PetitAuBout.NONE,
+        chelem = Chelem.NONE,
+        index = 0,
+      )
+
+    dbManager.addRound(game.id, round)
+
+    val updatedRound = round.copy(takerPoints = 50)
+    dbManager.updateRound(updatedRound)
+
+    val updatedGame = dbManager.getGame(game.id)
+    assertNotNull(updatedGame)
+    assertEquals(1, updatedGame.rounds.size)
+    assertEquals(50, updatedGame.rounds.first().takerPoints)
+  }
 }
