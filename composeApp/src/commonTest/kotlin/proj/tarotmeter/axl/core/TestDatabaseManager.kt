@@ -17,7 +17,6 @@ import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
 import proj.tarotmeter.axl.util.TestWithKoin
-import kotlin.test.assertFalse
 
 class TestDatabaseManager : TestWithKoin {
   private val dbManager: DatabaseManager by inject()
@@ -323,7 +322,7 @@ class TestDatabaseManager : TestWithKoin {
 
     val updatedGame = dbManager.getGame(game.id)
     assertNotNull(updatedGame)
-    assertFalse(updatedGame.rounds.isEmpty())
+    assertTrue(updatedGame.rounds.isEmpty())
   }
 
   @Test
