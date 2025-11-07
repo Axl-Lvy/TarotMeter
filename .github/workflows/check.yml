@@ -40,7 +40,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: false
-          cache-cleanup: false
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
