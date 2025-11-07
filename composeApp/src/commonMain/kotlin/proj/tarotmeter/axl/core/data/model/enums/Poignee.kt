@@ -17,7 +17,7 @@ import tarotmeter.composeapp.generated.resources.tarot_poignee_triple
  *
  * @property value The bonus or value associated with the Poignée type.
  */
-enum class Poignee(val value: Int, private val stringResource: StringResource) {
+enum class Poignee(override val value: Int, private val stringResource: StringResource) : Bonus {
   /** No Poignée announced. */
   NONE(0, Res.string.tarot_poignee_none),
   /** Simple Poignée (single handful). */
@@ -34,7 +34,7 @@ enum class Poignee(val value: Int, private val stringResource: StringResource) {
   TRIPLE(40, Res.string.tarot_poignee_triple);
 
   @Composable
-  fun getDisplayName(): String {
+  override fun getDisplayName(): String {
     return stringResource(stringResource)
   }
 }

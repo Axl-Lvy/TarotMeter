@@ -103,7 +103,8 @@ fun RoundEditor(
   onValidate: (Round) -> Unit,
   onCancel: (() -> Unit)? = null,
 ) {
-  var state by remember(existingRound) { mutableStateOf(RoundEditorState.from(game, existingRound)) }
+  var state by
+    remember(existingRound) { mutableStateOf(RoundEditorState.from(game, existingRound)) }
   var showBonusDialog by remember { mutableStateOf(false) }
 
   CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -257,14 +258,14 @@ private fun BonusButton(
   val hasBonuses =
     poignee != Poignee.NONE || petitAuBout != PetitAuBout.NONE || chelem != Chelem.NONE
   val summary = buildString {
-    if (poignee != Poignee.NONE) append(getPoigneeName(poignee))
+    if (poignee != Poignee.NONE) append(poignee.getDisplayName())
     if (petitAuBout != PetitAuBout.NONE) {
       if (isNotEmpty()) append(" • ")
-      append(getPetitAuBoutName(petitAuBout))
+      append(petitAuBout.getDisplayName())
     }
     if (chelem != Chelem.NONE) {
       if (isNotEmpty()) append(" • ")
-      append(getChelemName(chelem))
+      append(chelem.getDisplayName())
     }
   }
 
@@ -321,21 +322,21 @@ private fun BonusDialog(
       Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TarotDropdown(
           label = stringResource(Res.string.tarot_poignee),
-          options = Poignee.entries.map { getPoigneeName(it) },
+          options = Poignee.entries.map { it.getDisplayName() },
           selectedIndex = Poignee.entries.indexOf(poignee),
           onSelect = { onPoigneeChange(Poignee.entries[it]) },
         )
 
         TarotDropdown(
           label = stringResource(Res.string.tarot_petit_au_bout),
-          options = PetitAuBout.entries.map { getPetitAuBoutName(it) },
+          options = PetitAuBout.entries.map { it.getDisplayName() },
           selectedIndex = PetitAuBout.entries.indexOf(petitAuBout),
           onSelect = { onPetitAuBoutChange(PetitAuBout.entries[it]) },
         )
 
         TarotDropdown(
           label = stringResource(Res.string.tarot_chelem),
-          options = Chelem.entries.map { getChelemName(it) },
+          options = Chelem.entries.map { it.getDisplayName() },
           selectedIndex = Chelem.entries.indexOf(chelem),
           onSelect = { onChelemChange(Chelem.entries[it]) },
         )
@@ -344,47 +345,6 @@ private fun BonusDialog(
     confirmButton = {
       PrimaryButton(text = stringResource(Res.string.general_ok), onClick = onDismiss)
     },
-  )
-}
-
-/** Gets the display name for a Poignée value. */
-@Composable
-private fun getPoigneeName(poignee: Poignee): String {
-  return stringResource(
-    when (poignee) {
-      Poignee.NONE -> Res.string.tarot_poignee_none
-      Poignee.SIMPLE -> Res.string.tarot_poignee_simple
-      Poignee.SIMPLE_2 -> Res.string.tarot_poignee_simple_2
-      Poignee.SIMPLE_DOUBLE -> Res.string.tarot_poignee_simple_double
-      Poignee.DOUBLE -> Res.string.tarot_poignee_double
-      Poignee.DOUBLE_2 -> Res.string.tarot_poignee_double_2
-      Poignee.TRIPLE -> Res.string.tarot_poignee_triple
-    }
-  )
-}
-
-/** Gets the display name for a Petit au Bout value. */
-@Composable
-private fun getPetitAuBoutName(petitAuBout: PetitAuBout): String {
-  return stringResource(
-    when (petitAuBout) {
-      PetitAuBout.NONE -> Res.string.tarot_petit_au_bout_none
-      PetitAuBout.TAKER -> Res.string.tarot_petit_au_bout_taker
-      PetitAuBout.DEFENSE -> Res.string.tarot_petit_au_bout_defense
-    }
-  )
-}
-
-/** Gets the display name for a Chelem value. */
-@Composable
-private fun getChelemName(chelem: Chelem): String {
-  return stringResource(
-    when (chelem) {
-      Chelem.NONE -> Res.string.tarot_chelem_none
-      Chelem.NOT_ANNOUNCED -> Res.string.tarot_chelem_not_announced
-      Chelem.ANNOUNCED -> Res.string.tarot_chelem_announced
-      Chelem.FAILED -> Res.string.tarot_chelem_failed
-    }
   )
 }
 
