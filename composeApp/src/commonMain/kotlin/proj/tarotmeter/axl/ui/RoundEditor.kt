@@ -257,17 +257,7 @@ private fun BonusButton(
 ) {
   val hasBonuses =
     poignee != Poignee.NONE || petitAuBout != PetitAuBout.NONE || chelem != Chelem.NONE
-  val summary = buildString {
-    if (poignee != Poignee.NONE) append(poignee.getDisplayName())
-    if (petitAuBout != PetitAuBout.NONE) {
-      if (isNotEmpty()) append(" • ")
-      append(petitAuBout.getDisplayName())
-    }
-    if (chelem != Chelem.NONE) {
-      if (isNotEmpty()) append(" • ")
-      append(chelem.getDisplayName())
-    }
-  }
+  val summary = computeBonusButtonSubtitle(poignee, petitAuBout, chelem)
 
   TextButton(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -281,6 +271,26 @@ private fun BonusButton(
       }
     }
   }
+}
+
+@Composable
+private fun computeBonusButtonSubtitle(
+  poignee: Poignee,
+  petitAuBout: PetitAuBout,
+  chelem: Chelem,
+): String {
+  val summary = buildString {
+    if (poignee != Poignee.NONE) append(poignee.getDisplayName())
+    if (petitAuBout != PetitAuBout.NONE) {
+      if (isNotEmpty()) append(" • ")
+      append(petitAuBout.getDisplayName())
+    }
+    if (chelem != Chelem.NONE) {
+      if (isNotEmpty()) append(" • ")
+      append(chelem.getDisplayName())
+    }
+  }
+  return summary
 }
 
 @Composable
