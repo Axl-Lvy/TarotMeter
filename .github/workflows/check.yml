@@ -94,11 +94,6 @@ jobs:
           if [[ "${GITHUB_REF_NAME}" == "master" ]]; then
             ./gradlew sonar --no-configuration-cache --no-parallel --no-daemon \
               -Dsonar.branch.name=master
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            ./gradlew sonar --no-configuration-cache --no-parallel --no-daemon \
-              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-              -Dsonar.pullrequest.base=${{ github.base_ref }}
           else
             ./gradlew sonar --no-configuration-cache --no-parallel --no-daemon
           fi

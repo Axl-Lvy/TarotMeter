@@ -48,16 +48,9 @@ fun RoundEditor(
   onCancel: (() -> Unit)? = null,
 ) {
   var takerIndex by
-    remember(existingRound) {
-      mutableStateOf(existingRound?.let { game.players.indexOf(it.taker) } ?: 0)
-    }
+    remember(existingRound) { mutableStateOf(getInitialTakerIndex(game, existingRound)) }
   var partnerIndex by
-    remember(existingRound) {
-      mutableStateOf(
-        existingRound?.partner?.let { game.players.indexOf(it) }
-          ?: if (game.players.size == 5) 1 else -1
-      )
-    }
+    remember(existingRound) { mutableStateOf(getInitialPartnerIndex(game, existingRound)) }
   var contract by
     remember(existingRound) { mutableStateOf(existingRound?.contract ?: Contract.GARDE) }
   var oudler by remember(existingRound) { mutableStateOf(existingRound?.oudlerCount ?: 1) }
@@ -66,45 +59,24 @@ fun RoundEditor(
 
   CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      Text(
-        stringResource(
-          if (existingRound == null) Res.string.round_editor_add_new
-          else Res.string.round_editor_edit
-        ),
-        style = MaterialTheme.typography.titleMedium,
-      )
+      EditorTitle(existingRound)
 
       ResponsiveTwoColumn(
         leftContent = {
-          TarotDropdown(
-            label = stringResource(Res.string.tarot_taker),
-            options = game.players.map { it.name },
-            selectedIndex = takerIndex,
-            onSelect = { takerIndex = it },
+          PlayerSelectionColumn(
+            game,
+            takerIndex,
+            partnerIndex,
+            onTakerChange = { takerIndex = it },
+            onPartnerChange = { partnerIndex = it },
           )
-
-          if (game.players.size == 5) {
-            TarotDropdown(
-              label = stringResource(Res.string.tarot_partner),
-              options = game.players.map { it.name },
-              selectedIndex = partnerIndex,
-              onSelect = { partnerIndex = it },
-            )
-          }
         },
         rightContent = {
-          TarotDropdown(
-            label = stringResource(Res.string.tarot_contract),
-            options = Contract.entries.map { it.title },
-            selectedIndex = Contract.entries.indexOf(contract),
-            onSelect = { contract = Contract.entries[it] },
-          )
-
-          TarotDropdown(
-            label = stringResource(Res.string.tarot_oudlers),
-            options = (0..3).map { pluralStringResource(Res.plurals.tarot_oudlers, it, it) },
-            selectedIndex = oudler,
-            onSelect = { oudler = it },
+          ContractAndOudlerColumn(
+            contract,
+            oudler,
+            onContractChange = { contract = it },
+            onOudlerChange = { oudler = it },
           )
         },
       )
@@ -114,26 +86,88 @@ fun RoundEditor(
       Footer(existingRound = existingRound, onCancel = onCancel) {
         val round =
           createRound(
-            game = game,
-            takerIndex = takerIndex,
-            partnerIndex = partnerIndex,
-            contract = contract,
-            oudler = oudler,
-            pointsText = pointsText.value,
-            existingRound = existingRound,
+            game,
+            takerIndex,
+            partnerIndex,
+            contract,
+            oudler,
+            pointsText.value,
+            existingRound,
           )
         onValidate(round)
-        // Reset form only if adding (not editing)
         if (existingRound == null) {
-          takerIndex = 0
-          partnerIndex = if (game.players.size == 5) 1 else -1
-          contract = Contract.GARDE
-          oudler = 1
-          pointsText.value = "41"
+          resetForm(
+            game,
+            { takerIndex = it },
+            { partnerIndex = it },
+            { contract = it },
+            { oudler = it },
+            pointsText,
+          )
         }
       }
     }
   }
+}
+
+/** Displays the editor title based on whether adding or editing. */
+@Composable
+private fun EditorTitle(existingRound: Round?) {
+  Text(
+    stringResource(
+      if (existingRound == null) Res.string.round_editor_add_new else Res.string.round_editor_edit
+    ),
+    style = MaterialTheme.typography.titleMedium,
+  )
+}
+
+/** Player selection dropdowns (taker and optional partner). */
+@Composable
+private fun PlayerSelectionColumn(
+  game: Game,
+  takerIndex: Int,
+  partnerIndex: Int,
+  onTakerChange: (Int) -> Unit,
+  onPartnerChange: (Int) -> Unit,
+) {
+  TarotDropdown(
+    label = stringResource(Res.string.tarot_taker),
+    options = game.players.map { it.name },
+    selectedIndex = takerIndex,
+    onSelect = onTakerChange,
+  )
+
+  if (game.players.size == 5) {
+    TarotDropdown(
+      label = stringResource(Res.string.tarot_partner),
+      options = game.players.map { it.name },
+      selectedIndex = partnerIndex,
+      onSelect = onPartnerChange,
+    )
+  }
+}
+
+/** Contract and oudler selection dropdowns. */
+@Composable
+private fun ContractAndOudlerColumn(
+  contract: Contract,
+  oudler: Int,
+  onContractChange: (Contract) -> Unit,
+  onOudlerChange: (Int) -> Unit,
+) {
+  TarotDropdown(
+    label = stringResource(Res.string.tarot_contract),
+    options = Contract.entries.map { it.title },
+    selectedIndex = Contract.entries.indexOf(contract),
+    onSelect = { onContractChange(Contract.entries[it]) },
+  )
+
+  TarotDropdown(
+    label = stringResource(Res.string.tarot_oudlers),
+    options = (0..3).map { pluralStringResource(Res.plurals.tarot_oudlers, it, it) },
+    selectedIndex = oudler,
+    onSelect = onOudlerChange,
+  )
 }
 
 /** Input field for card points with validation. */
@@ -206,4 +240,31 @@ private fun createRound(
       updatedAt = proj.tarotmeter.axl.util.DateUtil.now(),
     )
   return round
+}
+
+/** Gets the initial taker index from existing round or defaults to 0. */
+private fun getInitialTakerIndex(game: Game, existingRound: Round?): Int {
+  return existingRound?.let { game.players.indexOf(it.taker) } ?: 0
+}
+
+/** Gets the initial partner index from existing round or defaults based on player count. */
+private fun getInitialPartnerIndex(game: Game, existingRound: Round?): Int {
+  return existingRound?.partner?.let { game.players.indexOf(it) }
+    ?: if (game.players.size == 5) 1 else -1
+}
+
+/** Resets the form to default values after adding a round. */
+private fun resetForm(
+  game: Game,
+  setTakerIndex: (Int) -> Unit,
+  setPartnerIndex: (Int) -> Unit,
+  setContract: (Contract) -> Unit,
+  setOudler: (Int) -> Unit,
+  pointsText: MutableState<String>,
+) {
+  setTakerIndex(0)
+  setPartnerIndex(if (game.players.size == 5) 1 else -1)
+  setContract(Contract.GARDE)
+  setOudler(1)
+  pointsText.value = "41"
 }
