@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlin.uuid.Uuid
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.core.data.model.Game
@@ -30,7 +31,6 @@ import proj.tarotmeter.axl.core.data.model.enums.Poignee
 import proj.tarotmeter.axl.util.DateUtil
 import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
-import kotlin.uuid.Uuid
 
 /**
  * Holds all state for the round editor form.
