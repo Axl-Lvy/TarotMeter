@@ -29,6 +29,7 @@ jobs:
         run: gradle :composeApp:wasmJsBrowserDistribution
 
       - name: "Upload artifact"
+        id: upload-artifact
         uses: actions/upload-artifact@v4
         with:
           name: tarotmeter-wasm
@@ -39,9 +40,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.REPOSITORY_ACCESS_TOKEN }}
         run: |
-          runId="${{ github.run_id }}"
-          repo="${{ github.repository }}"
-          artifactUrl="https://github.com/$repo/actions/runs/$runId"
+          artifactUrl="${{ steps.upload-artifact.outputs.artifact-url }}"
 
           payload=$(cat <<EOF
           {
