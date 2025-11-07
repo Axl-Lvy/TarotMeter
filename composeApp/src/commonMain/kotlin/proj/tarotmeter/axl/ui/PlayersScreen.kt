@@ -172,7 +172,7 @@ private fun EditablePlayerCard(name: String, onRename: (String) -> Unit, onDelet
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (editing) {
           SecondaryButton(
-            text = stringResource(Res.string.players_button_cancel),
+            text = stringResource(Res.string.general_cancel),
             onClick = {
               editing = false
               editedName = name
@@ -180,7 +180,7 @@ private fun EditablePlayerCard(name: String, onRename: (String) -> Unit, onDelet
             modifier = Modifier.weight(1f),
           )
           PrimaryButton(
-            text = stringResource(Res.string.players_button_save),
+            text = stringResource(Res.string.general_save),
             onClick = { renamePlayer() },
             modifier = Modifier.weight(1f),
             enabled = editedName.trim().isNotEmpty(),
@@ -197,7 +197,7 @@ private fun EditablePlayerCard(name: String, onRename: (String) -> Unit, onDelet
             colors =
               ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
           ) {
-            Text(stringResource(Res.string.players_button_delete))
+            Text(stringResource(Res.string.general_delete))
           }
         }
       }

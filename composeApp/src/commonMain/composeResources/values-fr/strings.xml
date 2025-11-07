@@ -2,6 +2,28 @@
   <!-- App Name -->
   <string name="app_name">Tarot Meter</string>
 
+  <!-- General Strings -->
+  <string name="general_ok">OK</string>
+  <string name="general_yes">Oui</string>
+  <string name="general_no">Non</string>
+  <string name="general_delete">Supprimer</string>
+  <string name="general_save">Sauvegarder</string>
+  <string name="general_cancel">Annuler</string>
+  <string name="game_editor_with">Avec</string>
+
+  <!-- Tarot Specific Terms -->
+  <string name="tarot_taker">Preneur</string>
+  <string name="tarot_partner">Partenaire</string>
+  <string name="tarot_contract">Contrat</string>
+  <string name="tarot_oudlers">Bouts</string>
+  <string name="tarot_points">Points de cartes (0-91)</string>
+  <string name="tarot_add">Ajouter la Donne</string>
+  <string name="tarot_save">Enregistrer les Modifications</string>
+  <plurals name="tarot_oudlers">
+    <item quantity="one">%1$d Bout</item>
+    <item quantity="other">%1$d Bouts</item>
+  </plurals>
+
   <!-- Navigation Titles -->
   <string name="title_home">Tarot Meter</string>
   <string name="title_players">Joueurs</string>
@@ -22,6 +44,7 @@
   <string name="cd_github_repository">Dépôt GitHub</string>
   <string name="cd_navigate_back">Retour</string>
   <string name="cd_add_player">Ajouter un joueur</string>
+  <string name="cd_edit">Modifier</string>
 
   <!-- Players Screen -->
   <string name="players_header">Gérer les Joueurs</string>
@@ -33,10 +56,7 @@
   </plurals>
   <string name="players_empty_state">Aucun joueur pour l'instant. Ajoutez votre premier joueur ci-dessus !
   </string>
-  <string name="players_button_cancel">Annuler</string>
-  <string name="players_button_save">Enregistrer</string>
   <string name="players_button_rename">Renommer</string>
-  <string name="players_button_delete">Supprimer</string>
 
   <!-- New Game Screen -->
   <string name="new_game_header">Créer une Nouvelle Partie</string>
@@ -50,27 +70,17 @@
 
   <!-- Round Editor -->
   <string name="round_editor_add_new">Ajouter une Nouvelle Donne</string>
-  <string name="round_editor_label_taker">Preneur</string>
-  <string name="round_editor_label_partner">Partenaire</string>
-  <string name="round_editor_label_contract">Contrat</string>
-  <string name="round_editor_label_oudlers">Bouts</string>
-  <string name="round_editor_label_points">Points de cartes (0-91)</string>
-  <string name="round_editor_button_add">Ajouter la Donne</string>
-  <plurals name="round_editor_oudlers">
-    <item quantity="one">%1$d Bout</item>
-    <item quantity="other">%1$d Bouts</item>
-  </plurals>
+  <string name="round_editor_edit">Modifier la Donne</string>
 
   <!-- Game Editor Screen -->
   <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
   <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !
   </string>
-  <plurals name="game_editor_oudler">
-    <item quantity="one">%1$d Bout</item>
-    <item quantity="other">%1$d Bouts</item>
-  </plurals>
+  <string name="game_editor_edit_round">Modifier la Donne</string>
+  <string name="game_editor_delete_round">Supprimer la Donne</string>
+  <string name="game_editor_delete_confirm_title">Supprimer la Donne ?</string>
+  <string name="game_editor_delete_confirm_message">Êtes-vous sûr de vouloir supprimer cette donne ? Cette action est irréversible.</string>
   <string name="game_editor_taker_points">Preneur • %1$d pts</string>
-  <string name="game_editor_with">avec</string>
 
   <!-- History Screen -->
   <plurals name="history_game_count">

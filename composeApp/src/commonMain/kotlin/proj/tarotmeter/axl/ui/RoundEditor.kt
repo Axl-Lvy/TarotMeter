@@ -2,11 +2,13 @@ package proj.tarotmeter.axl.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -32,30 +34,50 @@ import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
 
 /**
- * Composable for adding a new round to a game.
+ * Composable for adding or editing a round to a game.
  *
  * @param game The current game
- * @param onAdd Callback when a new round is created
+ * @param existingRound The round to edit, or null to create a new round
+ * @param onValidate Callback when a round is created or updated
  */
 @Composable
-fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
-  var takerIndex by remember { mutableStateOf(0) }
-  var partnerIndex by remember { mutableStateOf(if (game.players.size == 5) 1 else -1) }
-  var contract by remember { mutableStateOf(Contract.GARDE) }
-  var oudler by remember { mutableStateOf(1) }
-  val pointsText = remember { mutableStateOf("41") }
+fun RoundEditor(
+  game: Game,
+  existingRound: Round? = null,
+  onValidate: (Round) -> Unit,
+  onCancel: (() -> Unit)? = null,
+) {
+  var takerIndex by
+    remember(existingRound) {
+      mutableStateOf(existingRound?.let { game.players.indexOf(it.taker) } ?: 0)
+    }
+  var partnerIndex by
+    remember(existingRound) {
+      mutableStateOf(
+        existingRound?.partner?.let { game.players.indexOf(it) }
+          ?: if (game.players.size == 5) 1 else -1
+      )
+    }
+  var contract by
+    remember(existingRound) { mutableStateOf(existingRound?.contract ?: Contract.GARDE) }
+  var oudler by remember(existingRound) { mutableStateOf(existingRound?.oudlerCount ?: 1) }
+  val pointsText =
+    remember(existingRound) { mutableStateOf(existingRound?.takerPoints?.toString() ?: "41") }
 
   CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
       Text(
-        stringResource(Res.string.round_editor_add_new),
+        stringResource(
+          if (existingRound == null) Res.string.round_editor_add_new
+          else Res.string.round_editor_edit
+        ),
         style = MaterialTheme.typography.titleMedium,
       )
 
       ResponsiveTwoColumn(
         leftContent = {
           TarotDropdown(
-            label = stringResource(Res.string.round_editor_label_taker),
+            label = stringResource(Res.string.tarot_taker),
             options = game.players.map { it.name },
             selectedIndex = takerIndex,
             onSelect = { takerIndex = it },
@@ -63,7 +85,7 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
 
           if (game.players.size == 5) {
             TarotDropdown(
-              label = stringResource(Res.string.round_editor_label_partner),
+              label = stringResource(Res.string.tarot_partner),
               options = game.players.map { it.name },
               selectedIndex = partnerIndex,
               onSelect = { partnerIndex = it },
@@ -72,15 +94,15 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
         },
         rightContent = {
           TarotDropdown(
-            label = stringResource(Res.string.round_editor_label_contract),
+            label = stringResource(Res.string.tarot_contract),
             options = Contract.entries.map { it.title },
             selectedIndex = Contract.entries.indexOf(contract),
             onSelect = { contract = Contract.entries[it] },
           )
 
           TarotDropdown(
-            label = stringResource(Res.string.round_editor_label_oudlers),
-            options = (0..3).map { pluralStringResource(Res.plurals.round_editor_oudlers, it, it) },
+            label = stringResource(Res.string.tarot_oudlers),
+            options = (0..3).map { pluralStringResource(Res.plurals.tarot_oudlers, it, it) },
             selectedIndex = oudler,
             onSelect = { oudler = it },
           )
@@ -89,21 +111,42 @@ fun RoundEditor(game: Game, onAdd: (Round) -> Unit) {
 
       PointsInputField(pointsText)
 
-      PrimaryButton(
-        text = stringResource(Res.string.round_editor_button_add),
-        onClick = {
-          val round =
-            createRound(game, takerIndex, partnerIndex, contract, oudler, pointsText.value)
-          onAdd(round)
-          // Reset form
-          takerIndex = 0
-          partnerIndex = if (game.players.size == 5) 1 else -1
-          contract = Contract.GARDE
-          oudler = 1
-          pointsText.value = "41"
-        },
-        modifier = Modifier.fillMaxWidth(),
-      )
+      Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
+        if (onCancel != null) {
+          TextButton(onClick = { onCancel() }, modifier = Modifier.weight(1f)) {
+            Text(stringResource(Res.string.general_cancel))
+          }
+        }
+
+        PrimaryButton(
+          text =
+            stringResource(
+              if (existingRound == null) Res.string.tarot_add else Res.string.tarot_save
+            ),
+          onClick = {
+            val round =
+              createRound(
+                game = game,
+                takerIndex = takerIndex,
+                partnerIndex = partnerIndex,
+                contract = contract,
+                oudler = oudler,
+                pointsText = pointsText.value,
+                existingRound = existingRound,
+              )
+            onValidate(round)
+            // Reset form only if adding (not editing)
+            if (existingRound == null) {
+              takerIndex = 0
+              partnerIndex = if (game.players.size == 5) 1 else -1
+              contract = Contract.GARDE
+              oudler = 1
+              pointsText.value = "41"
+            }
+          },
+          modifier = Modifier.weight(1f),
+        )
+      }
     }
   }
 }
@@ -123,7 +166,7 @@ private fun PointsInputField(pointsText: MutableState<String>) {
         pointsText.value = number.toString()
       }
     },
-    label = { Text(stringResource(Res.string.round_editor_label_points)) },
+    label = { Text(stringResource(Res.string.tarot_points)) },
     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     modifier = Modifier.fillMaxWidth(),
   )
@@ -137,6 +180,7 @@ private fun createRound(
   contract: Contract,
   oudler: Int,
   pointsText: String,
+  existingRound: Round? = null,
 ): Round {
   val taker = game.players[takerIndex.coerceIn(0, game.players.lastIndex)]
   val partner =
@@ -154,7 +198,9 @@ private fun createRound(
       poignee = Poignee.NONE,
       petitAuBout = PetitAuBout.NONE,
       chelem = Chelem.NONE,
-      index = game.rounds.size,
+      index = existingRound?.index ?: game.rounds.size,
+      id = existingRound?.id ?: kotlin.uuid.Uuid.random(),
+      updatedAt = proj.tarotmeter.axl.util.DateUtil.now(),
     )
   return round
 }

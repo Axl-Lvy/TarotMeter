@@ -52,4 +52,12 @@ class GamesProvider : KoinComponent {
     game.addRound(round)
     databaseManager.addRound(gameId, round)
   }
+
+  suspend fun deleteRound(roundId: Uuid) {
+    databaseManager.deleteRound(roundId)
+  }
+
+  suspend fun updateRound(round: Round) {
+    databaseManager.updateRound(round)
+  }
 }

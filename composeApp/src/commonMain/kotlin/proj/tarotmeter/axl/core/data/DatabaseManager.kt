@@ -85,6 +85,7 @@ interface DatabaseManager {
    * Updates an existing round in the database.
    *
    * @param round The round to update.
+   * @throws IllegalStateException If the round does not exist.
    */
   suspend fun updateRound(round: Round)
 }
