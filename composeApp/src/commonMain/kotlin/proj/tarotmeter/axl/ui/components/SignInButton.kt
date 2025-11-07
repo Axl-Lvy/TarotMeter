@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,9 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import compose.icons.FontAwesomeIcons
-import compose.icons.fontawesomeicons.Regular
-import compose.icons.fontawesomeicons.regular.CheckCircle
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -37,21 +35,24 @@ import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.config.KEEP_LOGGED_IN
 import proj.tarotmeter.axl.ui.theme.GOOD_TINT
 import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.general_cancel
 import tarotmeter.composeapp.generated.resources.general_no
 import tarotmeter.composeapp.generated.resources.general_yes
 import tarotmeter.composeapp.generated.resources.settings_account_email
 import tarotmeter.composeapp.generated.resources.settings_account_invalid_credentials
+import tarotmeter.composeapp.generated.resources.settings_account_logged_in
 import tarotmeter.composeapp.generated.resources.settings_account_login
 import tarotmeter.composeapp.generated.resources.settings_account_login_failed
+import tarotmeter.composeapp.generated.resources.settings_account_logout
+import tarotmeter.composeapp.generated.resources.settings_account_logout_confirmation_question
 import tarotmeter.composeapp.generated.resources.settings_account_password
-import tarotmeter.composeapp.generated.resources.settings_account_sign_out_confirmation_question
 import tarotmeter.composeapp.generated.resources.settings_account_stayed_logged_in_question
 
 /** A button that allows the user to sign in or sign out. */
 @Composable
 fun SignInButton(modifier: Modifier = Modifier, authManager: AuthManager = koinInject()) {
   var showSignInDialog by rememberSaveable { mutableStateOf(false) }
-  val signOutDialog = remember { ConfirmationDialog(okText = Res.string.settings_account_login) }
+  val signOutDialog = remember { ConfirmationDialog(okText = Res.string.settings_account_logout) }
   val staySignedInDialog = remember {
     ConfirmationDialog(okText = Res.string.general_yes, Res.string.general_no)
   }
@@ -79,7 +80,7 @@ fun SignInButton(modifier: Modifier = Modifier, authManager: AuthManager = koinI
       if (!isSignedIn) {
         showSignInDialog = true
       } else {
-        signOutDialog.show(Res.string.settings_account_sign_out_confirmation_question) {
+        signOutDialog.show(Res.string.settings_account_logout_confirmation_question) {
           coroutineScope.launch {
             KEEP_LOGGED_IN.reset()
             authManager.signOut()
@@ -98,14 +99,14 @@ fun SignInButton(modifier: Modifier = Modifier, authManager: AuthManager = koinI
     elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
   ) {
     if (isSignedIn) {
-      val icon = FontAwesomeIcons.Regular.CheckCircle
+      val icon = Icons.Filled.CheckCircle
       Icon(
         icon,
         contentDescription = icon.name,
         tint = GOOD_TINT,
         modifier = Modifier.padding(end = 8.dp),
       )
-      Text(stringResource(Res.string.settings_account_login), color = GOOD_TINT)
+      Text(stringResource(Res.string.settings_account_logged_in), color = GOOD_TINT)
     } else {
       val icon = Icons.Filled.AccountCircle
       Icon(
@@ -114,7 +115,10 @@ fun SignInButton(modifier: Modifier = Modifier, authManager: AuthManager = koinI
         tint = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.padding(end = 8.dp),
       )
-      Text("Sign in", color = MaterialTheme.colorScheme.onPrimary)
+      Text(
+        stringResource(Res.string.settings_account_login),
+        color = MaterialTheme.colorScheme.onPrimary,
+      )
     }
   }
 
@@ -129,6 +133,16 @@ fun SignInButton(modifier: Modifier = Modifier, authManager: AuthManager = koinI
   }
 }
 
+/**
+ * Displays a dialog for user sign-in, allowing entry of email and password.
+ *
+ * Presents a form for the user to enter their credentials, handles authentication via
+ * [authManager], and displays any sign-in errors. The dialog can be dismissed via the [dismiss]
+ * callback.
+ *
+ * @param dismiss Called when the dialog should be closed, either by user action or after successful
+ *   sign-in.
+ */
 @Composable
 private fun SignInDialog(dismiss: () -> Unit, authManager: AuthManager = koinInject()) {
   val coroutineScope = rememberCoroutineScope()
@@ -171,18 +185,20 @@ private fun SignInDialog(dismiss: () -> Unit, authManager: AuthManager = koinInj
             }
             if (signInError == null) {
               dismiss()
-              signInError = null
             }
             isSigningIn = false
           }
         },
         enabled = !isSigningIn,
       ) {
-        if (isSigningIn) CircularProgressIndicator() else Text("Sign In")
+        if (isSigningIn) CircularProgressIndicator()
+        else Text(stringResource(Res.string.settings_account_login))
       }
     },
     dismissButton = {
-      TextButton(onClick = { dismiss() }, enabled = !isSigningIn) { Text("Cancel") }
+      TextButton(onClick = { dismiss() }, enabled = !isSigningIn) {
+        Text(stringResource(Res.string.general_cancel))
+      }
     },
   )
 }

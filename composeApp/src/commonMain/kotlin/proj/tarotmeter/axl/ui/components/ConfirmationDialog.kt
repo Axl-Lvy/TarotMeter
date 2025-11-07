@@ -44,6 +44,15 @@ class ConfirmationDialog(
     show = true
   }
 
+  /**
+   * Renders the confirmation dialog if it is currently shown.
+   *
+   * This composable displays the dialog with the provided content and handles confirmation and
+   * cancellation actions. The dialog is only visible when triggered via [show]. On confirmation,
+   * the provided action is executed and the dialog is dismissed.
+   *
+   * **This method should be called as soon as the [ConfirmationDialog] is instantiated**
+   */
   @Composable
   fun DrawDialog() {
     if (show) {

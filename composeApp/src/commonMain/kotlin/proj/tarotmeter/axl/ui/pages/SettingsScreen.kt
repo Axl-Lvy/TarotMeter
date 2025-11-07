@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,10 +40,14 @@ import tarotmeter.composeapp.generated.resources.settings_version
 fun SettingsScreen() {
   val localization = koinInject<Localization>()
   val selectedLanguage by derivedStateOf { Language.fromIso(LANGUAGE_SETTING.value) }
+  val scrollState = rememberScrollState()
 
   // Force recomposition when language changes
   key(LANGUAGE_SETTING.value) {
-    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(
+      Modifier.fillMaxSize().verticalScroll(scrollState),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
       CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           SectionHeader(stringResource(Res.string.settings_appearance))

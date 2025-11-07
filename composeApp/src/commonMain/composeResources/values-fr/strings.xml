@@ -138,7 +138,7 @@
   <string name="settings_account_login_failed">Échec de la connexion.</string>
   <string name="settings_account_invalid_credentials">E-mail ou mot de passe invalide</string>
   <string name="settings_account_stayed_logged_in_question">Rester connecté ?</string>
-  <string name="settings_account_sign_out_confirmation_question">Êtes-vous sûr de vouloir vous déconnecter ?</string>
+  <string name="settings_account_logout_confirmation_question">Êtes-vous sûr de vouloir vous déconnecter ?</string>
   <string
     name="settings_about_description">Tarot Meter est une application complète de suivi des scores pour les parties de Tarot français.
   </string>
