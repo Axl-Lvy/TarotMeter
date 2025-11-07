@@ -17,7 +17,6 @@ import proj.tarotmeter.axl.ui.pages.SettingsScreen
  * Main navigation part for the application. Defines all navigation routes and their corresponding
  * composable screens.
  *
- * @param app The application state shared across screens
  * @param navController Controller for navigation between screens
  * @param startDestination The initial route to display, defaults to Home
  */
