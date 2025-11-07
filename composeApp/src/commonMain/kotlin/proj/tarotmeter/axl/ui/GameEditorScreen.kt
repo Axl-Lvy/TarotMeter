@@ -285,7 +285,7 @@ private fun BoxScope.RoundCardActions(
       horizontalArrangement = Arrangement.SpaceEvenly,
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      TextButton(onClick = { showActions.value = false }) {
+      TextButton(onClick = { showActions.value = false }, modifier = Modifier.weight(1f)) {
         Column(
           verticalArrangement = Arrangement.spacedBy(4.dp),
           horizontalAlignment = Alignment.CenterHorizontally,
@@ -306,7 +306,7 @@ private fun BoxScope.RoundCardActions(
         onClick = {
           showActions.value = false
           onEdit()
-        }
+        }, modifier = Modifier.weight(1f)
       ) {
         Column(
           verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -318,7 +318,7 @@ private fun BoxScope.RoundCardActions(
             modifier = Modifier.size(24.dp),
           )
           Text(
-            stringResource(Res.string.game_editor_edit_round),
+            stringResource(Res.string.game_editor_edit),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
           )
@@ -328,7 +328,7 @@ private fun BoxScope.RoundCardActions(
         onClick = {
           showActions.value = false
           onDelete()
-        }
+        }, modifier = Modifier.weight(1f)
       ) {
         Column(
           verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -341,7 +341,7 @@ private fun BoxScope.RoundCardActions(
             modifier = Modifier.size(24.dp),
           )
           Text(
-            stringResource(Res.string.game_editor_delete_round),
+            stringResource(Res.string.general_delete),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.error,
           )

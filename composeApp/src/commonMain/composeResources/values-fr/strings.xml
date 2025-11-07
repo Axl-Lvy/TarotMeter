@@ -76,8 +76,7 @@
   <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
   <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !
   </string>
-  <string name="game_editor_edit_round">Modifier la Donne</string>
-  <string name="game_editor_delete_round">Supprimer la Donne</string>
+  <string name="game_editor_edit">Modifier</string>
   <string name="game_editor_delete_confirm_title">Supprimer la Donne ?</string>
   <string name="game_editor_delete_confirm_message">Êtes-vous sûr de vouloir supprimer cette donne ? Cette action est irréversible.</string>
   <string name="game_editor_taker_points">Preneur • %1$d pts</string>
