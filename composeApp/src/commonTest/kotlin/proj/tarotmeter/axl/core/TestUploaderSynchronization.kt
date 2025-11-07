@@ -2,12 +2,14 @@ package proj.tarotmeter.axl.core
 
 import io.kotest.assertions.nondeterministic.eventually
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
@@ -29,7 +31,8 @@ class TestUploaderSynchronization : TestAuthenticated() {
   private val cloudDb: CloudDatabaseManager by inject()
 
   @AfterTest
-  fun cleanDb() = runTest {
+  @BeforeTest
+  fun cleanDb() = runTestWithTrueClock {
     localDb.clearLocal()
     cloudDb.clearCloud()
   }
@@ -84,7 +87,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   // --- Tests -------------------------------------------------------------------------------
 
   @Test
-  fun testBurstPlayerInsertionSynchronizesAll() = runTest {
+  fun testBurstPlayerInsertionSynchronizesAll() = runTestWithTrueClock {
     uploader.isActive = true
 
     val players = (0 until 6).map { Player("P$it") }
@@ -98,7 +101,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   }
 
   @Test
-  fun testSequentialPlayerInsertionsSynchronize() = runTest {
+  fun testSequentialPlayerInsertionsSynchronize() = runTestWithTrueClock {
     uploader.isActive = true
 
     val a = Player("A")
@@ -114,7 +117,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   }
 
   @Test
-  fun testPlayerDeletionPropagates() = runTest {
+  fun testPlayerDeletionPropagates() = runTestWithTrueClock {
     uploader.isActive = true
 
     val p = Player("ToDelete")
@@ -130,7 +133,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
   }
 
   @Test
-  fun testGameAndRoundsSynchronization() = runTest {
+  fun testGameAndRoundsSynchronization() = runTestWithTrueClock {
     uploader.isActive = true
 
     val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
@@ -151,6 +154,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
         poignee = Poignee.NONE,
         petitAuBout = PetitAuBout.NONE,
         chelem = Chelem.NONE,
+        index = 4,
       )
     val r2 =
       Round(
@@ -162,6 +166,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
         poignee = Poignee.SIMPLE,
         petitAuBout = PetitAuBout.TAKER,
         chelem = Chelem.NONE,
+        index = 5,
       )
     localDb.addRound(game.id, r1)
     localDb.addRound(game.id, r2)
@@ -169,11 +174,16 @@ class TestUploaderSynchronization : TestAuthenticated() {
     awaitCloudGamesMatch()
 
     val cloudGame = cloudDb.getGame(game.id)
-    assertEquals(game.id, cloudGame?.id)
-    assertEquals(players.map { it.id }.toSet(), cloudGame?.players?.map { it.id }?.toSet())
-    assertEquals(2, cloudGame?.rounds?.size)
+    assertEquals(game.id, cloudGame?.id, "Game IDs should match")
+    assertEquals(
+      players.map { it.id }.toSet(),
+      cloudGame?.players?.map { it.id }?.toSet(),
+      "Game player IDs should match",
+    )
+    assertEquals(2, cloudGame?.rounds?.size, "There should be 2 rounds in the cloud game")
   }
 }
 
-private fun runTest(block: suspend () -> Unit) =
-  kotlinx.coroutines.test.runTest { withContext(Dispatchers.Default) { block() } }
+private fun runTestWithTrueClock(block: suspend () -> Unit) = runTest {
+  withContext(Dispatchers.Default) { block() }
+}

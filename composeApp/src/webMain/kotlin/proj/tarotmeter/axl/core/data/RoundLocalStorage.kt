@@ -22,14 +22,30 @@ data class RoundLocalStorage(
   val poignee: Poignee,
   val petitAuBout: PetitAuBout,
   val chelem: Chelem,
+  val index: Int,
   val id: Uuid = Uuid.random(),
   val updatedAt: Instant = DateUtil.now(),
   val isDeleted: Boolean = false,
 ) {
+  constructor(
+    round: Round
+  ) : this(
+    PlayerLocalStorage(round.taker.name, round.taker.id, round.taker.updatedAt),
+    round.partner?.let { partner ->
+      PlayerLocalStorage(partner.name, partner.id, partner.updatedAt)
+    },
+    round.contract,
+    round.oudlerCount,
+    round.takerPoints,
+    round.poignee,
+    round.petitAuBout,
+    round.chelem,
+    round.index,
+    round.id,
+  )
+
   fun toRound() =
     Round(
-      id = id,
-      updatedAt = updatedAt,
       taker = taker.toPlayer(),
       partner = partner?.toPlayer(),
       contract = contract,
@@ -38,5 +54,8 @@ data class RoundLocalStorage(
       poignee = poignee,
       petitAuBout = petitAuBout,
       chelem = chelem,
+      index = index,
+      id = id,
+      updatedAt = updatedAt,
     )
 }

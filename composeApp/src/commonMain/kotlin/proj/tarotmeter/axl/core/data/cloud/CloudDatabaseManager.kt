@@ -307,45 +307,32 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
     }
     // Insert rounds in bulk
     if (game.rounds.isNotEmpty()) {
-      val roundDtos =
-        game.rounds.map { round ->
-          SupabaseRound(
-            roundId = round.id.toString(),
-            updatedAt = round.updatedAt,
-            taker = round.taker.id.toString(),
-            partner = round.partner?.id?.toString(),
-            contract = round.contract,
-            oudlerCount = round.oudlerCount,
-            takerPoints = round.takerPoints,
-            poignee = round.poignee,
-            petitAuBout = round.petitAuBout,
-            chelem = round.chelem,
-            gameId = game.id.toString(),
-          )
-        }
+      val roundDtos = game.rounds.map { round -> SupabaseRound(round, game.id.toString()) }
       supabaseClient.from("round").insert(roundDtos)
     }
   }
 
   override suspend fun addRound(gameId: Uuid, round: Round) {
     if (authManager.user == null) return
-    supabaseClient
-      .from("round")
-      .insert(
-        SupabaseRound(
-          roundId = round.id.toString(),
-          updatedAt = round.updatedAt,
-          taker = round.taker.id.toString(),
-          partner = round.partner?.id?.toString(),
-          contract = round.contract,
-          oudlerCount = round.oudlerCount,
-          takerPoints = round.takerPoints,
-          poignee = round.poignee,
-          petitAuBout = round.petitAuBout,
-          chelem = round.chelem,
-          gameId = gameId.toString(),
-        )
-      )
+    supabaseClient.from("round").insert(SupabaseRound(round, gameId.toString()))
+  }
+
+  override suspend fun deleteRound(roundId: Uuid) {
+    if (authManager.user == null) return
+    supabaseClient.from("round").softDelete {
+      filterNonDeleted { eq("round_id", roundId.toString()) }
+    }
+  }
+
+  override suspend fun updateRound(round: Round) {
+    if (authManager.user == null) return
+    val oldRound =
+      supabaseClient
+        .from("round")
+        .select { filterNonDeleted { eq("round_id", round.id) } }
+        .decodeSingleOrNull<SupabaseRound>()
+    checkNotNull(oldRound) { "Impossible to update a round that is not stored in the database." }
+    supabaseClient.from("round").upsert(SupabaseRound(round, oldRound.gameId))
   }
 
   override suspend fun deleteGame(id: Uuid) {
@@ -429,6 +416,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
           chelem = it.chelem,
           gameId = it.gameId.toString(),
           isDeleted = it.isDeleted,
+          index = it.index,
         )
       }
     supabaseClient.from("round").upsert(dtos)

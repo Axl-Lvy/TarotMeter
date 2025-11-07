@@ -24,6 +24,7 @@ import proj.tarotmeter.axl.core.data.model.enums.Poignee
  * @property poignee Poignee type.
  * @property petitAuBout Petit au Bout outcome.
  * @property chelem Chelem outcome.
+ * @property index The index of the round in the game round list.
  * @property gameId Foreign key to Game.
  */
 @Serializable
@@ -38,13 +39,30 @@ data class SupabaseRound(
   val poignee: Poignee,
   @SerialName("petit_au_bout") val petitAuBout: PetitAuBout,
   val chelem: Chelem,
+  val index: Int,
   @SerialName("game_id") val gameId: String,
   @SerialName("is_deleted") val isDeleted: Boolean = false,
 ) {
+  constructor(
+    round: Round,
+    gameId: String,
+  ) : this(
+    roundId = round.id.toString(),
+    updatedAt = round.updatedAt,
+    taker = round.taker.id.toString(),
+    partner = round.partner?.id?.toString(),
+    contract = round.contract,
+    oudlerCount = round.oudlerCount,
+    takerPoints = round.takerPoints,
+    poignee = round.poignee,
+    petitAuBout = round.petitAuBout,
+    chelem = round.chelem,
+    index = round.index,
+    gameId = gameId,
+  )
+
   fun toRound(playerProvider: (String) -> Player) =
     Round(
-      id = Uuid.parse(roundId),
-      updatedAt = updatedAt,
       taker = playerProvider(taker),
       partner = partner?.let { playerProvider(partner) },
       contract = contract,
@@ -53,5 +71,8 @@ data class SupabaseRound(
       poignee = poignee,
       petitAuBout = petitAuBout,
       chelem = chelem,
+      index = index,
+      id = Uuid.parse(roundId),
+      updatedAt = updatedAt,
     )
 }

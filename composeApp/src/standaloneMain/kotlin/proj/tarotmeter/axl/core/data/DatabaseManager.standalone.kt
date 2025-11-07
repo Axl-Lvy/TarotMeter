@@ -75,13 +75,25 @@ internal class StandaloneDatabaseManager(
           round.takerPoints,
           round.poignee,
           round.petitAuBout,
+          round.index,
           round.chelem,
           round.updatedAt,
         )
       )
     // touch game timestamp
-    database.getGameDao().touchGame(gameId, DateUtil.now())
+    database.getGameDao().touchGame(gameId, round.updatedAt)
     notifyChange()
+  }
+
+  override suspend fun deleteRound(roundId: Uuid) {
+    database.getGameDao().deleteRound(roundId)
+    notifyChange()
+  }
+
+  override suspend fun updateRound(round: Round) {
+    val oldRound = database.getGameDao().getRound(round.id)
+    checkNotNull(oldRound) { "Impossible to update a round that is not stored in the database." }
+    addRound(oldRound.gameId, round)
   }
 
   override suspend fun deleteGame(id: Uuid) {
@@ -120,6 +132,7 @@ internal class StandaloneDatabaseManager(
         takerPoints = it.takerPoints,
         poignee = it.poignee,
         petitAuBout = it.petitAuBout,
+        index = it.index,
         chelem = it.chelem,
         updatedAt = it.updatedAt,
         isDeleted = it.isDeleted,

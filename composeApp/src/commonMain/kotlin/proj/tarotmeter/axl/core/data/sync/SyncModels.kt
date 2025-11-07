@@ -36,6 +36,7 @@ data class RoundSync(
   val poignee: Poignee,
   val petitAuBout: PetitAuBout,
   val chelem: Chelem,
+  val index: Int,
   val updatedAt: Instant,
   val isDeleted: Boolean,
 )

@@ -31,6 +31,7 @@ data class RoundWithRefs(
       round.poignee,
       round.petitAuBout,
       round.chelem,
+      round.index,
       round.id,
       round.updatedAt,
     )

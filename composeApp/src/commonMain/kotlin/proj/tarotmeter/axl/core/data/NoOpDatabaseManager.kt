@@ -45,4 +45,12 @@ object NoOpDatabaseManager : DatabaseManager {
   override suspend fun deleteGame(id: Uuid) {
     /* Nothing to do */
   }
+
+  override suspend fun updateRound(round: Round) {
+    /* Nothing to do */
+  }
+
+  override suspend fun deleteRound(roundId: Uuid) {
+    /* Nothing to do */
+  }
 }

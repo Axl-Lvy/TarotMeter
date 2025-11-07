@@ -60,6 +60,13 @@ interface DatabaseManager {
   suspend fun insertGame(game: Game)
 
   /**
+   * Removes a game from the database.
+   *
+   * @param id The game ID to remove.
+   */
+  suspend fun deleteGame(id: Uuid)
+
+  /**
    * Adds a round to an existing game.
    *
    * @param gameId The game ID.
@@ -68,11 +75,19 @@ interface DatabaseManager {
   suspend fun addRound(gameId: Uuid, round: Round)
 
   /**
-   * Removes a game from the database.
+   * Deletes a round from the database.
    *
-   * @param id The game ID to remove.
+   * @param roundId The round ID to delete.
    */
-  suspend fun deleteGame(id: Uuid)
+  suspend fun deleteRound(roundId: Uuid)
+
+  /**
+   * Updates an existing round in the database.
+   *
+   * @param round The round to update.
+   * @throws IllegalStateException If the round does not exist.
+   */
+  suspend fun updateRound(round: Round)
 }
 
 /**

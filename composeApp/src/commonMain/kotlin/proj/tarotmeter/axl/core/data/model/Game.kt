@@ -11,7 +11,7 @@ import proj.tarotmeter.axl.util.DateUtil
  *
  * @property id unique game id, should be autoincrement.
  * @property players list of players in the game.
- * @property rounds list of rounds played in the game.
+ * @property rounds list of rounds played in the game, sorted by their index.
  * @property startedAt timestamp when the game started.
  * @property updatedAt timestamp when the game was last edited.
  */
@@ -23,8 +23,16 @@ data class Game(
   val startedAt: Instant = DateUtil.now(),
   private var updatedAtInternal: Instant = DateUtil.now(),
 ) {
+  private var isSorted: Boolean = false
+
   val rounds: List<Round>
-    get() = roundsInternal
+    get() {
+      if (!isSorted) {
+        roundsInternal.sortBy { it.index }
+        isSorted = true
+      }
+      return roundsInternal
+    }
 
   val updatedAt: Instant
     get() = updatedAtInternal
@@ -43,8 +51,9 @@ data class Game(
    */
   fun addRound(round: Round) {
     checkRoundConsistent(round)
+    isSorted = isSorted && (roundsInternal.isEmpty() || round.index >= roundsInternal.last().index)
     roundsInternal.add(round)
-    updatedAtInternal = DateUtil.now()
+    updatedAtInternal = round.updatedAt
   }
 
   private fun checkRoundConsistent(round: Round) {

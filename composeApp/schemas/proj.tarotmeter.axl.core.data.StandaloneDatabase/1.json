@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d6358fb7abb64d130281363761ac1afa",
+    "identityHash": "b9508e3d79c3f81cf9817aaadffb5b7b",
     "entities": [
       {
         "tableName": "PlayerEntity",
@@ -62,7 +62,7 @@
       },
       {
         "tableName": "RoundEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`round_id` TEXT NOT NULL, `game_id` TEXT NOT NULL, `taker_id` TEXT NOT NULL, `partner_id` TEXT, `contract` TEXT NOT NULL, `oudler_count` INTEGER NOT NULL, `taker_points` INTEGER NOT NULL, `poignee` TEXT NOT NULL, `petit_au_bout` TEXT NOT NULL, `chelem` TEXT NOT NULL, `updated_at` INTEGER NOT NULL, `is_deleted` INTEGER NOT NULL, PRIMARY KEY(`round_id`), FOREIGN KEY(`game_id`) REFERENCES `GameEntity`(`game_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`taker_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`partner_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`round_id` TEXT NOT NULL, `game_id` TEXT NOT NULL, `taker_id` TEXT NOT NULL, `partner_id` TEXT, `contract` TEXT NOT NULL, `oudler_count` INTEGER NOT NULL, `taker_points` INTEGER NOT NULL, `poignee` TEXT NOT NULL, `petit_au_bout` TEXT NOT NULL, `index` INTEGER NOT NULL, `chelem` TEXT NOT NULL, `updated_at` INTEGER NOT NULL, `is_deleted` INTEGER NOT NULL, PRIMARY KEY(`round_id`), FOREIGN KEY(`game_id`) REFERENCES `GameEntity`(`game_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`taker_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`partner_id`) REFERENCES `PlayerEntity`(`player_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -115,6 +115,12 @@
             "fieldPath": "petitAuBout",
             "columnName": "petit_au_bout",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "index",
+            "columnName": "index",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -341,7 +347,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd6358fb7abb64d130281363761ac1afa')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b9508e3d79c3f81cf9817aaadffb5b7b')"
     ]
   }
 }

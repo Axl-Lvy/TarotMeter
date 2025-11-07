@@ -1,8 +1,14 @@
-package proj.tarotmeter.axl.core.data
+package proj.tarotmeter.axl.core
 
-import kotlin.test.*
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.koin.core.component.inject
+import proj.tarotmeter.axl.core.data.DatabaseManager
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
@@ -10,6 +16,7 @@ import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
+import proj.tarotmeter.axl.util.TestWithKoin
 
 class TestDatabaseManager : TestWithKoin {
   private val dbManager: DatabaseManager by inject()
@@ -129,6 +136,7 @@ class TestDatabaseManager : TestWithKoin {
         poignee = Poignee.SIMPLE,
         petitAuBout = PetitAuBout.TAKER,
         chelem = Chelem.NONE,
+        index = 0,
       )
 
     dbManager.addRound(game.id, round)
@@ -162,6 +170,7 @@ class TestDatabaseManager : TestWithKoin {
         takerPoints = 40,
         poignee = Poignee.NONE,
         petitAuBout = PetitAuBout.NONE,
+        index = 0,
         chelem = Chelem.NONE,
       )
 
@@ -174,6 +183,7 @@ class TestDatabaseManager : TestWithKoin {
         takerPoints = 55,
         poignee = Poignee.DOUBLE,
         petitAuBout = PetitAuBout.DEFENSE,
+        index = 1,
         chelem = Chelem.ANNOUNCED,
       )
 
@@ -229,6 +239,7 @@ class TestDatabaseManager : TestWithKoin {
         partner = players[1],
         oudlerCount = 3,
         takerPoints = 70,
+        index = 0,
         poignee = Poignee.TRIPLE,
         petitAuBout = PetitAuBout.DEFENSE,
         chelem = Chelem.FAILED,
@@ -283,5 +294,66 @@ class TestDatabaseManager : TestWithKoin {
     val retrievedGame = dbManager.getGame(game.id)
     assertNotNull(retrievedGame)
     assertEquals(5, retrievedGame.players.size)
+  }
+
+  @Test
+  fun testDeleteRound() = runTest {
+    val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
+    players.forEach { dbManager.insertPlayer(it) }
+
+    val game = Game(players)
+    dbManager.insertGame(game)
+
+    val round =
+      Round(
+        taker = players[0],
+        contract = Contract.GARDE,
+        partner = null,
+        oudlerCount = 2,
+        takerPoints = 48,
+        poignee = Poignee.NONE,
+        petitAuBout = PetitAuBout.NONE,
+        chelem = Chelem.NONE,
+        index = 0,
+      )
+
+    dbManager.addRound(game.id, round)
+    dbManager.deleteRound(round.id)
+
+    val updatedGame = dbManager.getGame(game.id)
+    assertNotNull(updatedGame)
+    assertTrue(updatedGame.rounds.isEmpty())
+  }
+
+  @Test
+  fun testUpdateRound() = runTest {
+    val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
+    players.forEach { dbManager.insertPlayer(it) }
+
+    val game = Game(players)
+    dbManager.insertGame(game)
+
+    val round =
+      Round(
+        taker = players[0],
+        contract = Contract.GARDE,
+        partner = null,
+        oudlerCount = 2,
+        takerPoints = 48,
+        poignee = Poignee.NONE,
+        petitAuBout = PetitAuBout.NONE,
+        chelem = Chelem.NONE,
+        index = 0,
+      )
+
+    dbManager.addRound(game.id, round)
+
+    val updatedRound = round.copy(takerPoints = 50)
+    dbManager.updateRound(updatedRound)
+
+    val updatedGame = dbManager.getGame(game.id)
+    assertNotNull(updatedGame)
+    assertEquals(1, updatedGame.rounds.size)
+    assertEquals(50, updatedGame.rounds.first().takerPoints)
   }
 }

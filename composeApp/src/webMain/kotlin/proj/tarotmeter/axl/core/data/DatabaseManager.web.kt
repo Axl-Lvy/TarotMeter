@@ -94,6 +94,7 @@ class LocalStorageDatabaseManager(
                   it.poignee,
                   it.petitAuBout,
                   it.chelem,
+                  it.index,
                   it.id,
                 )
               }
@@ -111,27 +112,43 @@ class LocalStorageDatabaseManager(
       val games = getGameEntities()
       games.forEach {
         if (it.id == gameId) {
-          it.roundsInternal.add(
-            RoundLocalStorage(
-              PlayerLocalStorage(round.taker.name, round.taker.id, round.taker.updatedAt),
-              round.partner?.let { partner ->
-                PlayerLocalStorage(partner.name, partner.id, partner.updatedAt)
-              },
-              round.contract,
-              round.oudlerCount,
-              round.takerPoints,
-              round.poignee,
-              round.petitAuBout,
-              round.chelem,
-              round.id,
-            )
-          )
-          it.updatedAtInternal = DateUtil.now()
+          it.roundsInternal.add(RoundLocalStorage(round))
+          it.updatedAtInternal = round.updatedAt
         }
       }
       window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
     }
     notifyChange()
+  }
+
+  override suspend fun deleteRound(roundId: Uuid) {
+    val games = getGameEntities()
+    for (game in games) {
+      if (game.roundsInternal.removeAll { it.id == roundId }) {
+        game.updatedAtInternal = DateUtil.now()
+        withContext(coroutineDispatcher) {
+          window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+        }
+        return
+      }
+    }
+  }
+
+  override suspend fun updateRound(round: Round) {
+    val games = getGameEntities()
+    for (game in games) {
+      for (i in game.roundsInternal.indices) {
+        if (game.roundsInternal[i].id == round.id) {
+          game.roundsInternal[i] = RoundLocalStorage(round)
+          game.updatedAtInternal = round.updatedAt
+          withContext(coroutineDispatcher) {
+            window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+          }
+          return
+        }
+      }
+    }
+    throw IllegalStateException("Round with id ${round.id} not found")
   }
 
   override suspend fun deleteGame(id: Uuid) {
@@ -199,6 +216,7 @@ class LocalStorageDatabaseManager(
               poignee = round.poignee,
               petitAuBout = round.petitAuBout,
               chelem = round.chelem,
+              index = round.index,
               updatedAt = round.updatedAt,
               isDeleted = round.isDeleted,
             )

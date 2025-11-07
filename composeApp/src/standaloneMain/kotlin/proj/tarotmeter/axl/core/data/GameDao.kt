@@ -7,6 +7,7 @@ import proj.tarotmeter.axl.core.data.entity.GameEntity
 import proj.tarotmeter.axl.core.data.entity.GamePlayerCrossRef
 import proj.tarotmeter.axl.core.data.entity.GameWithRefs
 import proj.tarotmeter.axl.core.data.entity.RoundEntity
+import proj.tarotmeter.axl.util.DateUtil
 
 /** Data Access Object for Game operations. */
 @Dao
@@ -110,5 +111,14 @@ interface GameDao {
   @Query("UPDATE GameEntity SET updated_at = :now WHERE game_id = :gameId")
   suspend fun touchGame(gameId: Uuid, now: Instant)
 
+  /** Delete all games (for testing purposes). */
   @Query("DELETE FROM GameEntity") suspend fun clearGames()
+
+  /** Marks a round as deleted. */
+  @Query("UPDATE RoundEntity SET is_deleted = TRUE, updated_at = :now WHERE round_id = :roundId")
+  suspend fun deleteRound(roundId: Uuid, now: Instant = DateUtil.now())
+
+  /** Retrieves a specific round by ID. */
+  @Query("SELECT * FROM RoundEntity WHERE round_id = :roundId")
+  suspend fun getRound(roundId: Uuid): RoundEntity?
 }
