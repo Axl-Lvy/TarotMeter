@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
  * @param onClick Callback when button is clicked
  * @param modifier Modifier to be applied to the button
  * @param enabled Whether the button is enabled
+ * @param maxLines Maximum number of lines for the button text
  */
 @Composable
 fun PrimaryButton(
@@ -21,6 +22,7 @@ fun PrimaryButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  maxLines: Int = Int.MAX_VALUE,
 ) {
   Button(
     onClick = onClick,
@@ -28,7 +30,7 @@ fun PrimaryButton(
     shape = RoundedCornerShape(12.dp),
     enabled = enabled,
   ) {
-    Text(text, style = MaterialTheme.typography.titleMedium)
+    Text(text, style = MaterialTheme.typography.titleMedium, maxLines = maxLines)
   }
 }
 
