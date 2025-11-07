@@ -2,8 +2,8 @@ name: Send new artifact to main website
 on:
   pull_request:
     types: [ opened, synchronize, reopened, edited ]
-    push:
-      branches: [ master ]
+  push:
+    branches: [ master ]
 
 jobs:
   build-and-send:
