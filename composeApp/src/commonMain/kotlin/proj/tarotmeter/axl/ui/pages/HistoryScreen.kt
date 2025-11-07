@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.ui
+package proj.tarotmeter.axl.ui.pages
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,8 +25,10 @@ import kotlin.uuid.Uuid
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
+import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
@@ -45,7 +47,7 @@ import tarotmeter.composeapp.generated.resources.history_round_count
  */
 @Composable
 fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koinInject()) {
-  var games by remember { mutableStateOf(emptyList<proj.tarotmeter.axl.core.data.model.Game>()) }
+  var games by remember { mutableStateOf(emptyList<Game>()) }
   LaunchedEffect(Unit) { games = gamesProvider.getGames() }
 
   ResponsiveContainer {
@@ -76,8 +78,8 @@ fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koi
 }
 
 @Composable
-private fun GameHistoryCard(game: proj.tarotmeter.axl.core.data.model.Game, onClick: () -> Unit) {
-  proj.tarotmeter.axl.ui.components.CustomElevatedCard(onClick = onClick) {
+private fun GameHistoryCard(game: Game, onClick: () -> Unit) {
+  CustomElevatedCard(onClick = onClick) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
       Row(
         modifier = Modifier.fillMaxWidth(),

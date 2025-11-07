@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.ui
+package proj.tarotmeter.axl.ui.pages
 
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable

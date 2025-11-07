@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.ui
+package proj.tarotmeter.axl.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlin.uuid.Uuid
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.core.data.model.Game
@@ -27,10 +28,7 @@ import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
-import proj.tarotmeter.axl.ui.components.CustomElevatedCard
-import proj.tarotmeter.axl.ui.components.PrimaryButton
-import proj.tarotmeter.axl.ui.components.ResponsiveTwoColumn
-import proj.tarotmeter.axl.ui.components.TarotDropdown
+import proj.tarotmeter.axl.util.DateUtil
 import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
 
@@ -376,7 +374,7 @@ private fun createRound(game: Game, state: RoundEditorState, existingRound: Roun
     petitAuBout = state.petitAuBout,
     chelem = state.chelem,
     index = existingRound?.index ?: game.rounds.size,
-    id = existingRound?.id ?: kotlin.uuid.Uuid.random(),
-    updatedAt = proj.tarotmeter.axl.util.DateUtil.now(),
+    id = existingRound?.id ?: Uuid.random(),
+    updatedAt = DateUtil.now(),
   )
 }
