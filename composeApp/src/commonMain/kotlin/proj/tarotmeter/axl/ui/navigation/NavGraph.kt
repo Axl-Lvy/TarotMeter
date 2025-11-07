@@ -6,12 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import kotlin.uuid.Uuid
-import proj.tarotmeter.axl.ui.GameEditorScreen
-import proj.tarotmeter.axl.ui.HistoryScreen
-import proj.tarotmeter.axl.ui.HomeScreen
-import proj.tarotmeter.axl.ui.NewGameScreen
-import proj.tarotmeter.axl.ui.PlayersScreen
-import proj.tarotmeter.axl.ui.SettingsScreen
+import proj.tarotmeter.axl.ui.pages.GameEditorScreen
+import proj.tarotmeter.axl.ui.pages.HistoryScreen
+import proj.tarotmeter.axl.ui.pages.HomeScreen
+import proj.tarotmeter.axl.ui.pages.NewGameScreen
+import proj.tarotmeter.axl.ui.pages.PlayersScreen
+import proj.tarotmeter.axl.ui.pages.SettingsScreen
 
 /**
  * Main navigation part for the application. Defines all navigation routes and their corresponding

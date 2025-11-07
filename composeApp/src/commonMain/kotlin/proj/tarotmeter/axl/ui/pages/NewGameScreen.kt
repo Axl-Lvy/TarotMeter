@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.ui
+package proj.tarotmeter.axl.ui.pages
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

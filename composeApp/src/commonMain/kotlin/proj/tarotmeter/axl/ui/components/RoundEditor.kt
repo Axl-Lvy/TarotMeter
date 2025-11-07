@@ -1,4 +1,4 @@
-package proj.tarotmeter.axl.ui
+package proj.tarotmeter.axl.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,12 +27,10 @@ import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
-import proj.tarotmeter.axl.ui.components.CustomElevatedCard
-import proj.tarotmeter.axl.ui.components.PrimaryButton
-import proj.tarotmeter.axl.ui.components.ResponsiveTwoColumn
-import proj.tarotmeter.axl.ui.components.TarotDropdown
+import proj.tarotmeter.axl.util.DateUtil
 import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
+import kotlin.uuid.Uuid
 
 /**
  * Holds all state for the round editor form.
@@ -376,7 +374,7 @@ private fun createRound(game: Game, state: RoundEditorState, existingRound: Roun
     petitAuBout = state.petitAuBout,
     chelem = state.chelem,
     index = existingRound?.index ?: game.rounds.size,
-    id = existingRound?.id ?: kotlin.uuid.Uuid.random(),
-    updatedAt = proj.tarotmeter.axl.util.DateUtil.now(),
+    id = existingRound?.id ?: Uuid.random(),
+    updatedAt = DateUtil.now(),
   )
 }
