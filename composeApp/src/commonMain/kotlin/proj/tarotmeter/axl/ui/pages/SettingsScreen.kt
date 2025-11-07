@@ -22,14 +22,15 @@ import proj.tarotmeter.axl.ui.components.ButtonRow
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.SectionHeader
 import proj.tarotmeter.axl.ui.components.SegmentedButtons
+import proj.tarotmeter.axl.ui.components.SignInButton
 import proj.tarotmeter.axl.ui.theme.AppThemeSetting
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.settings_about
 import tarotmeter.composeapp.generated.resources.settings_about_description
+import tarotmeter.composeapp.generated.resources.settings_account
 import tarotmeter.composeapp.generated.resources.settings_app_theme
 import tarotmeter.composeapp.generated.resources.settings_app_theme_description
 import tarotmeter.composeapp.generated.resources.settings_appearance
-import tarotmeter.composeapp.generated.resources.settings_header
 import tarotmeter.composeapp.generated.resources.settings_version
 
 /** Screen for application settings. Allows choosing theme and toggling hints. */
@@ -41,14 +42,9 @@ fun SettingsScreen() {
   // Force recomposition when language changes
   key(LANGUAGE_SETTING.value) {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      SectionHeader(stringResource(Res.string.settings_header))
-
       CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-          Text(
-            stringResource(Res.string.settings_appearance),
-            style = MaterialTheme.typography.titleMedium,
-          )
+          SectionHeader(stringResource(Res.string.settings_appearance))
 
           ButtonRow(
             stringResource(Res.string.settings_app_theme),
@@ -68,10 +64,7 @@ fun SettingsScreen() {
 
       CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text(
-            stringResource(Res.string.settings_about),
-            style = MaterialTheme.typography.titleMedium,
-          )
+          SectionHeader(stringResource(Res.string.settings_about))
           Text(
             stringResource(Res.string.settings_about_description),
             style = MaterialTheme.typography.bodyMedium,
@@ -81,6 +74,13 @@ fun SettingsScreen() {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
+        }
+      }
+
+      CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          SectionHeader(stringResource(Res.string.settings_account))
+          SignInButton()
         }
       }
     }
