@@ -111,41 +111,26 @@ fun RoundEditor(
 
       PointsInputField(pointsText)
 
-      Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
-        if (onCancel != null) {
-          TextButton(onClick = { onCancel() }, modifier = Modifier.weight(1f)) {
-            Text(stringResource(Res.string.general_cancel))
-          }
+      Footer(existingRound = existingRound, onCancel = onCancel) {
+        val round =
+          createRound(
+            game = game,
+            takerIndex = takerIndex,
+            partnerIndex = partnerIndex,
+            contract = contract,
+            oudler = oudler,
+            pointsText = pointsText.value,
+            existingRound = existingRound,
+          )
+        onValidate(round)
+        // Reset form only if adding (not editing)
+        if (existingRound == null) {
+          takerIndex = 0
+          partnerIndex = if (game.players.size == 5) 1 else -1
+          contract = Contract.GARDE
+          oudler = 1
+          pointsText.value = "41"
         }
-
-        PrimaryButton(
-          text =
-            stringResource(
-              if (existingRound == null) Res.string.tarot_add else Res.string.tarot_save
-            ),
-          onClick = {
-            val round =
-              createRound(
-                game = game,
-                takerIndex = takerIndex,
-                partnerIndex = partnerIndex,
-                contract = contract,
-                oudler = oudler,
-                pointsText = pointsText.value,
-                existingRound = existingRound,
-              )
-            onValidate(round)
-            // Reset form only if adding (not editing)
-            if (existingRound == null) {
-              takerIndex = 0
-              partnerIndex = if (game.players.size == 5) 1 else -1
-              contract = Contract.GARDE
-              oudler = 1
-              pointsText.value = "41"
-            }
-          },
-          modifier = Modifier.weight(1f),
-        )
       }
     }
   }
@@ -170,6 +155,24 @@ private fun PointsInputField(pointsText: MutableState<String>) {
     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     modifier = Modifier.fillMaxWidth(),
   )
+}
+
+@Composable
+private fun Footer(onCancel: (() -> Unit)?, existingRound: Round?, onValidate: () -> Unit) {
+  Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
+    if (onCancel != null) {
+      TextButton(onClick = { onCancel() }, modifier = Modifier.weight(1f)) {
+        Text(stringResource(Res.string.general_cancel))
+      }
+    }
+
+    PrimaryButton(
+      text =
+        stringResource(if (existingRound == null) Res.string.tarot_add else Res.string.tarot_save),
+      onClick = onValidate,
+      modifier = Modifier.weight(1f),
+    )
+  }
 }
 
 /** Creates a Round object from the provided parameters. */
