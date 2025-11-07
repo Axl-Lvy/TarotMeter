@@ -306,7 +306,8 @@ private fun BoxScope.RoundCardActions(
         onClick = {
           showActions.value = false
           onEdit()
-        }, modifier = Modifier.weight(1f)
+        },
+        modifier = Modifier.weight(1f),
       ) {
         Column(
           verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -328,7 +329,8 @@ private fun BoxScope.RoundCardActions(
         onClick = {
           showActions.value = false
           onDelete()
-        }, modifier = Modifier.weight(1f)
+        },
+        modifier = Modifier.weight(1f),
       ) {
         Column(
           verticalArrangement = Arrangement.spacedBy(4.dp),
