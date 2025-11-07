@@ -83,6 +83,7 @@ kotlin {
       implementation(libs.navigation.compose)
       implementation(libs.compose.icons.awesome)
       implementation(libs.compose.icons.simple)
+      implementation(libs.material.icons.extended)
 
       // Utilities
       implementation(libs.multiplatform.settings)
