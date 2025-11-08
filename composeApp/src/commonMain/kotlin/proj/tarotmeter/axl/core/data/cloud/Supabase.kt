@@ -6,7 +6,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import proj.tarotmeter.axl.util.generated.Secrets
 
-private const val url = "https://apmpzzywzeofkfzlxrod.supabase.co"
+private const val url = "https://hqvnegakqcgltmrzvoxi.supabase.co"
 
 /**
  * Creates the supabase client
@@ -16,6 +16,6 @@ private const val url = "https://apmpzzywzeofkfzlxrod.supabase.co"
 fun createSupabaseClient(): SupabaseClient {
   return createSupabaseClient(supabaseUrl = url, supabaseKey = Secrets.supabaseApiKey) {
     install(Auth)
-    install(Postgrest)
+    install(Postgrest) { defaultSchema = "tarot_meter" }
   }
 }
