@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import kotlin.uuid.Uuid
+import proj.tarotmeter.axl.ui.pages.ConfirmEmailScreen
 import proj.tarotmeter.axl.ui.pages.GameEditorScreen
 import proj.tarotmeter.axl.ui.pages.HistoryScreen
 import proj.tarotmeter.axl.ui.pages.HomeScreen
@@ -47,6 +48,10 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
     composable<Route.Game> { backStackEntry ->
       val id = backStackEntry.toRoute<Route.Game>().id
       GameEditorScreen(gameId = Uuid.parseHex(id))
+    }
+    composable<Route.ConfirmEmail> { backStackEntry ->
+      val tokenHash = backStackEntry.toRoute<Route.ConfirmEmail>().tokenHash
+      ConfirmEmailScreen(tokenHash = tokenHash)
     }
   }
 }

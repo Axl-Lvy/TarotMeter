@@ -135,8 +135,22 @@
   <string name="settings_account_invalid_credentials">Invalid email or password</string>
   <string name="settings_account_stayed_logged_in_question">Stay logged in?</string>
   <string name="settings_account_logout_confirmation_question">Are you sure you want to sign out?</string>
+  <string name="settings_account_sign_up">Create Axl account</string>
+  <string name="settings_account_sign_up_failed">Sign up failed.</string>
+  <string name="settings_account_sign_up_success_title">Verify your email</string>
+  <string name="settings_account_sign_up_success_message">A verification email has been sent to your email address. Please check your inbox and follow the instructions to activate your account.</string>
+  <string name="settings_account_sign_up_success_ok">OK</string>
   <string
     name="settings_about_description">Tarot Meter is a comprehensive score tracking application for French Tarot games.
   </string>
   <string name="settings_version">Version 1.0.0</string>
+
+  <!-- Email Confirmation Screen -->
+  <string name="confirm_email_pending_title">Verify your email address</string>
+  <string name="confirm_email_pending_message">Click the button below to verify your email and activate your account.</string>
+  <string name="confirm_email_button_verify">Verify Email</string>
+  <string name="confirm_email_verifying">Verifying your email…</string>
+  <string name="confirm_email_success_title">Email verified successfully!</string>
+  <string name="confirm_email_success_message">You are now connected</string>
+  <string name="confirm_email_error_title">Verification failed</string>
 </resources>
