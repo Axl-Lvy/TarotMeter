@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -18,10 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import compose.icons.FontAwesomeIcons
-import compose.icons.fontawesomeicons.Regular
-import compose.icons.fontawesomeicons.regular.ArrowAltCircleLeft
 import org.jetbrains.compose.resources.stringResource
+import proj.tarotmeter.axl.ui.components.BackButton
 import proj.tarotmeter.axl.ui.navigation.AppNavHost
 import proj.tarotmeter.axl.ui.navigation.Route
 import tarotmeter.composeapp.generated.resources.*
@@ -49,22 +45,11 @@ fun AppScaffold(onNavHostReady: suspend (NavController) -> Unit) {
       else -> stringResource(Res.string.title_home)
     }
 
-  val showBackButton = route != Route.Home.route
-
   Scaffold(
     topBar = {
       TopAppBar(
         title = { Text(title) },
-        navigationIcon = {
-          if (showBackButton) {
-            IconButton(onClick = { navController.popBackStack() }) {
-              Icon(
-                imageVector = FontAwesomeIcons.Regular.ArrowAltCircleLeft,
-                contentDescription = stringResource(Res.string.cd_navigate_back),
-              )
-            }
-          }
-        },
+        navigationIcon = { BackButton(route) { navController.popBackStack() } },
         colors =
           TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
