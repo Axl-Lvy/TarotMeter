@@ -42,6 +42,7 @@ fun AppScaffold(initialRoute: String? = null, onNavHostReady: suspend (NavContro
       route == Route.NewGame.route -> stringResource(Res.string.title_new_game)
       route == Route.History.route -> stringResource(Res.string.title_game_history)
       route.startsWith(Route.Game.ROUTE) -> stringResource(Res.string.title_game_editor)
+      route.startsWith(Route.ConfirmEmail.ROUTE) -> stringResource(Res.string.title_confirm_email)
       else -> stringResource(Res.string.title_home)
     }
 

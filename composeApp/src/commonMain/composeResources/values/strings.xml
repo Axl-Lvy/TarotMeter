@@ -49,6 +49,7 @@
   <string name="title_new_game">New Game</string>
   <string name="title_game_history">Game History</string>
   <string name="title_game_editor">Game Editor</string>
+  <string name="title_confirm_email">Confirm Email</string>
 
   <!-- Home Screen -->
   <string name="home_subtitle">Track your Tarot games with elegance</string>
