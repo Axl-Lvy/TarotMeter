@@ -49,6 +49,7 @@
   <string name="title_new_game">Nouvelle Partie</string>
   <string name="title_game_history">Historique des Parties</string>
   <string name="title_game_editor">Éditeur de Partie</string>
+  <string name="title_confirm_email">Confirmer l'Email</string>
 
   <!-- Home Screen -->
   <string name="home_subtitle">Suivez vos parties de Tarot avec élégance</string>

@@ -22,6 +22,17 @@ jobs:
   jvm-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure tests checkbox is checked
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || "";
+            if (!body.includes('- [x] Run Tests')) {
+              core.setFailed('The "Run Tests" box must be checked in the PR description.');
+            }
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -102,7 +113,7 @@ jobs:
   format-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Ensure tests checkbox is checked
+      - name: Ensure format checkbox is checked
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
