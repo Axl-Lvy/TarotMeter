@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
     super.onNewIntent(intent)
     setIntent(intent)
     // Handle deeplink when app is already running
-    handleDeepLink(intent)?.let { route ->
+    handleDeepLink(intent)?.let {
       // Navigation will be handled via onNavHostReady callback in App
       recreate()
     }
