@@ -178,7 +178,6 @@ private fun AuthDialog(
   dismiss: () -> Unit,
   authAction: suspend (String, String) -> Unit,
   onSuccess: (() -> Unit)? = null,
-  authManager: AuthManager = koinInject(),
 ) {
   val coroutineScope = rememberCoroutineScope()
   var email by rememberSaveable { mutableStateOf("") }
@@ -254,7 +253,7 @@ private fun ErrorPayload(signInError: String?) {
 
 /** A button that allows the user to sign up for a new account. */
 @Composable
-fun SignUpButton(modifier: Modifier = Modifier, authManager: AuthManager = koinInject()) {
+fun SignUpButton(modifier: Modifier = Modifier) {
   var showSignUpDialog by rememberSaveable { mutableStateOf(false) }
   var showSuccessDialog by rememberSaveable { mutableStateOf(false) }
 

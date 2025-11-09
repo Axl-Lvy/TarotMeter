@@ -113,6 +113,12 @@ class AuthManager() : KoinComponent {
     }
   }
 
+  /**
+   * Sign up with email.
+   *
+   * @param providedEmail email
+   * @param providedPassword password
+   */
   suspend fun signUpWithEmail(providedEmail: String, providedPassword: String) {
     supabaseClient.auth.signUpWith(
       provider = Email,
