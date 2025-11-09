@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.builtin.Email
@@ -127,5 +128,9 @@ class AuthManager() : KoinComponent {
       email = providedEmail
       password = providedPassword
     }
+  }
+
+  suspend fun verifyEmail(tokenHash: String) {
+    supabaseClient.auth.verifyEmailOtp(OtpType.Email.EMAIL, tokenHash = tokenHash)
   }
 }
