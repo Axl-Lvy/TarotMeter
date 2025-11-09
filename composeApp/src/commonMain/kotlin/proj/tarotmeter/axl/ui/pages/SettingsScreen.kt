@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.config.APP_THEME_SETTING
 import proj.tarotmeter.axl.core.data.config.LANGUAGE_SETTING
 import proj.tarotmeter.axl.core.localization.Language
@@ -25,6 +26,7 @@ import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.SectionHeader
 import proj.tarotmeter.axl.ui.components.SegmentedButtons
 import proj.tarotmeter.axl.ui.components.SignInButton
+import proj.tarotmeter.axl.ui.components.SignUpButton
 import proj.tarotmeter.axl.ui.theme.AppThemeSetting
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.settings_about
@@ -39,8 +41,10 @@ import tarotmeter.composeapp.generated.resources.settings_version
 @Composable
 fun SettingsScreen() {
   val localization = koinInject<Localization>()
+  val authManager = koinInject<AuthManager>()
   val selectedLanguage by derivedStateOf { Language.fromIso(LANGUAGE_SETTING.value) }
   val scrollState = rememberScrollState()
+  val isSignedIn = authManager.user != null
 
   // Force recomposition when language changes
   key(LANGUAGE_SETTING.value) {
@@ -87,6 +91,9 @@ fun SettingsScreen() {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           SectionHeader(stringResource(Res.string.settings_account))
           SignInButton()
+          if (!isSignedIn) {
+            SignUpButton()
+          }
         }
       }
     }

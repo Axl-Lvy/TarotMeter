@@ -139,6 +139,11 @@
   <string name="settings_account_invalid_credentials">E-mail ou mot de passe invalide</string>
   <string name="settings_account_stayed_logged_in_question">Rester connecté ?</string>
   <string name="settings_account_logout_confirmation_question">Êtes-vous sûr de vouloir vous déconnecter ?</string>
+  <string name="settings_account_sign_up">S'inscrire</string>
+  <string name="settings_account_sign_up_failed">L'inscription a échoué.</string>
+  <string name="settings_account_sign_up_success_title">Vérifiez votre e-mail</string>
+  <string name="settings_account_sign_up_success_message">Un e-mail de vérification a été envoyé à votre adresse. Veuillez consulter votre boîte de réception et suivre les instructions pour activer votre compte.</string>
+  <string name="settings_account_sign_up_success_ok">OK</string>
   <string
     name="settings_about_description">Tarot Meter est une application complète de suivi des scores pour les parties de Tarot français.
   </string>

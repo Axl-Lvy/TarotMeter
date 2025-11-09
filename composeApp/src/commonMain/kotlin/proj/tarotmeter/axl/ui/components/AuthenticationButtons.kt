@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,6 +47,11 @@ import tarotmeter.composeapp.generated.resources.settings_account_login_failed
 import tarotmeter.composeapp.generated.resources.settings_account_logout
 import tarotmeter.composeapp.generated.resources.settings_account_logout_confirmation_question
 import tarotmeter.composeapp.generated.resources.settings_account_password
+import tarotmeter.composeapp.generated.resources.settings_account_sign_up
+import tarotmeter.composeapp.generated.resources.settings_account_sign_up_failed
+import tarotmeter.composeapp.generated.resources.settings_account_sign_up_success_message
+import tarotmeter.composeapp.generated.resources.settings_account_sign_up_success_ok
+import tarotmeter.composeapp.generated.resources.settings_account_sign_up_success_title
 import tarotmeter.composeapp.generated.resources.settings_account_stayed_logged_in_question
 
 /** A button that allows the user to sign in or sign out. */
@@ -145,14 +151,43 @@ fun SignInButton(modifier: Modifier = Modifier, authManager: AuthManager = koinI
  */
 @Composable
 private fun SignInDialog(dismiss: () -> Unit, authManager: AuthManager = koinInject()) {
+  AuthDialog(
+    titleRes = Res.string.settings_account_login,
+    buttonTextRes = Res.string.settings_account_login,
+    errorFallbackRes = Res.string.settings_account_login_failed,
+    dismiss = dismiss,
+    authAction = { email, password -> authManager.signInFromEmail(email, password) },
+  )
+}
+
+/**
+ * Displays a dialog for user authentication, allowing entry of email and password.
+ *
+ * @param titleRes Resource for the dialog title.
+ * @param buttonTextRes Resource for the confirm button text.
+ * @param errorFallbackRes Resource for fallback error message.
+ * @param dismiss Called when the dialog should be closed.
+ * @param authAction Suspend function that performs the authentication action.
+ * @param onSuccess Optional callback for successful authentication.
+ */
+@Composable
+private fun AuthDialog(
+  titleRes: org.jetbrains.compose.resources.StringResource,
+  buttonTextRes: org.jetbrains.compose.resources.StringResource,
+  errorFallbackRes: org.jetbrains.compose.resources.StringResource,
+  dismiss: () -> Unit,
+  authAction: suspend (String, String) -> Unit,
+  onSuccess: (() -> Unit)? = null,
+  authManager: AuthManager = koinInject(),
+) {
   val coroutineScope = rememberCoroutineScope()
   var email by rememberSaveable { mutableStateOf("") }
   var password by rememberSaveable { mutableStateOf("") }
-  var signInError by rememberSaveable { mutableStateOf<String?>(null) }
-  var isSigningIn by rememberSaveable { mutableStateOf(false) }
+  var authError by rememberSaveable { mutableStateOf<String?>(null) }
+  var isProcessing by rememberSaveable { mutableStateOf(false) }
   AlertDialog(
     onDismissRequest = { dismiss() },
-    title = { Text(stringResource(Res.string.settings_account_login)) },
+    title = { Text(stringResource(titleRes)) },
     text = {
       Column {
         OutlinedTextField(
@@ -169,34 +204,34 @@ private fun SignInDialog(dismiss: () -> Unit, authManager: AuthManager = koinInj
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
           modifier = Modifier.fillMaxWidth(),
         )
-        ErrorPayload(signInError)
+        ErrorPayload(authError)
       }
     },
     confirmButton = {
       TextButton(
         onClick = {
           coroutineScope.launch {
-            isSigningIn = true
+            isProcessing = true
             try {
-              authManager.signInFromEmail(email, password)
-              signInError = null
+              authAction(email, password)
+              authError = null
             } catch (e: Exception) {
-              signInError = e.message ?: getString(Res.string.settings_account_login_failed)
+              authError = e.message ?: getString(errorFallbackRes)
             }
-            if (signInError == null) {
+            if (authError == null) {
+              onSuccess?.invoke()
               dismiss()
             }
-            isSigningIn = false
+            isProcessing = false
           }
         },
-        enabled = !isSigningIn,
+        enabled = !isProcessing,
       ) {
-        if (isSigningIn) CircularProgressIndicator()
-        else Text(stringResource(Res.string.settings_account_login))
+        if (isProcessing) CircularProgressIndicator() else Text(stringResource(buttonTextRes))
       }
     },
     dismissButton = {
-      TextButton(onClick = { dismiss() }, enabled = !isSigningIn) {
+      TextButton(onClick = { dismiss() }, enabled = !isProcessing) {
         Text(stringResource(Res.string.general_cancel))
       }
     },
@@ -215,4 +250,86 @@ private fun ErrorPayload(signInError: String?) {
       Text(signInError, color = MaterialTheme.colorScheme.error)
     }
   }
+}
+
+/** A button that allows the user to sign up for a new account. */
+@Composable
+fun SignUpButton(modifier: Modifier = Modifier, authManager: AuthManager = koinInject()) {
+  var showSignUpDialog by rememberSaveable { mutableStateOf(false) }
+  var showSuccessDialog by rememberSaveable { mutableStateOf(false) }
+
+  Button(
+    onClick = { showSignUpDialog = true },
+    modifier = modifier.fillMaxWidth().padding(bottom = 8.dp),
+    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+    shape = ButtonDefaults.shape,
+    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
+  ) {
+    val icon = Icons.Filled.PersonAdd
+    Icon(
+      icon,
+      contentDescription = icon.name,
+      tint = MaterialTheme.colorScheme.onSecondary,
+      modifier = Modifier.padding(end = 8.dp),
+    )
+    Text(
+      stringResource(Res.string.settings_account_sign_up),
+      color = MaterialTheme.colorScheme.onSecondary,
+    )
+  }
+
+  if (showSignUpDialog) {
+    SignUpDialog(
+      dismiss = { showSignUpDialog = false },
+      onSuccess = {
+        showSignUpDialog = false
+        showSuccessDialog = true
+      },
+    )
+  }
+
+  if (showSuccessDialog) {
+    SignUpSuccessDialog(dismiss = { showSuccessDialog = false })
+  }
+}
+
+/**
+ * Displays a dialog for user sign-up.
+ *
+ * @param dismiss Called when the dialog should be closed.
+ * @param onSuccess Called when sign-up is successful.
+ */
+@Composable
+private fun SignUpDialog(
+  dismiss: () -> Unit,
+  onSuccess: () -> Unit,
+  authManager: AuthManager = koinInject(),
+) {
+  AuthDialog(
+    titleRes = Res.string.settings_account_sign_up,
+    buttonTextRes = Res.string.settings_account_sign_up,
+    errorFallbackRes = Res.string.settings_account_sign_up_failed,
+    dismiss = dismiss,
+    authAction = { email, password -> authManager.signUpWithEmail(email, password) },
+    onSuccess = onSuccess,
+  )
+}
+
+/**
+ * Displays a success dialog after sign-up, informing the user to check their email.
+ *
+ * @param dismiss Called when the dialog should be closed.
+ */
+@Composable
+private fun SignUpSuccessDialog(dismiss: () -> Unit) {
+  AlertDialog(
+    onDismissRequest = { dismiss() },
+    title = { Text(stringResource(Res.string.settings_account_sign_up_success_title)) },
+    text = { Text(stringResource(Res.string.settings_account_sign_up_success_message)) },
+    confirmButton = {
+      TextButton(onClick = { dismiss() }) {
+        Text(stringResource(Res.string.settings_account_sign_up_success_ok))
+      }
+    },
+  )
 }

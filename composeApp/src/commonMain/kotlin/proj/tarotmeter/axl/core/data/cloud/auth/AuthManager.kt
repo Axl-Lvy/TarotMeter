@@ -112,4 +112,14 @@ class AuthManager() : KoinComponent {
       }
     }
   }
+
+  suspend fun signUpWithEmail(providedEmail: String, providedPassword: String) {
+    supabaseClient.auth.signUpWith(
+      provider = Email,
+      redirectUrl = "https://www.axl-lvy.fr/confirm-email?app=tarotmeter",
+    ) {
+      email = providedEmail
+      password = providedPassword
+    }
+  }
 }
