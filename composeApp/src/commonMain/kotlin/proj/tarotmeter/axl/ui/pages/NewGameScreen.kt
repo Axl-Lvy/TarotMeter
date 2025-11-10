@@ -69,7 +69,7 @@ fun NewGameScreen(
   LaunchedEffect(Unit) { availablePlayers = playersProvider.getPlayers() }
 
   val selectedCount = selectedPlayers.size
-  val isValidSelection = selectedCount in 3..5 && gameName.isNotBlank()
+  val isValidSelection = selectedCount in 3..5 && gameName.trim().isNotBlank()
 
   Column(
     Modifier.fillMaxSize(),

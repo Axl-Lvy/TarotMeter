@@ -49,11 +49,11 @@ fun GameRenameDialog(
     confirmButton = {
       TextButton(
         onClick = {
-          if (gameName.isNotBlank()) {
-            onConfirm(gameName)
+          if (gameName.trim().isNotBlank()) {
+            onConfirm(gameName.trim())
           }
         },
-        enabled = gameName.isNotBlank(),
+        enabled = gameName.trim().isNotBlank(),
       ) {
         Text(stringResource(Res.string.general_save))
       }
