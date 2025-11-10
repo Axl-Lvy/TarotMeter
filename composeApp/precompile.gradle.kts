@@ -19,6 +19,9 @@ val generateSecretsTask by
         else -> null
       }
 
+    // Declare input file (if it exists)
+    propsFile?.let { inputs.file(it) }
+
     // If no local.properties file is found, properties will be empty
     val properties =
       if (propsFile == null) {
@@ -32,6 +35,7 @@ val generateSecretsTask by
 
     // Create target directory and file
     val (secretsPackageDir, secretsFile) = getGeneratedFileName(projectDirValue)
+    outputs.file(secretsFile)
 
     if (!secretsPackageDir.exists()) {
       secretsPackageDir.mkdirs()
