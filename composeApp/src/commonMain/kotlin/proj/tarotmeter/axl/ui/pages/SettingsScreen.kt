@@ -56,13 +56,10 @@ import tarotmeter.composeapp.generated.resources.settings_version
 fun SettingsScreen() {
   val localization = koinInject<Localization>()
   val authManager = koinInject<AuthManager>()
-  val downloader = koinInject<Downloader>()
   val selectedLanguage by derivedStateOf { Language.fromIso(LANGUAGE_SETTING.value) }
   val scrollState = rememberScrollState()
   val isSignedIn = authManager.user != null
-  val coroutineScope = rememberCoroutineScope()
   val snackbarHostState = remember { SnackbarHostState() }
-  var isDownloading by rememberSaveable { mutableStateOf(false) }
 
   // Force recomposition when language changes
   key(LANGUAGE_SETTING.value) {
@@ -113,34 +110,44 @@ fun SettingsScreen() {
             SignUpButton()
           }
           if (isSignedIn) {
-            PrimaryButton(
-              text = stringResource(Res.string.settings_account_download_data),
-              onClick = {
-                coroutineScope.launch {
-                  isDownloading = true
-                  try {
-                    downloader.downloadData()
-                    snackbarHostState.showSnackbar(
-                      message = getString(Res.string.settings_account_download_success)
-                    )
-                  } catch (e: Exception) {
-                    snackbarHostState.showSnackbar(
-                      message = getString(Res.string.settings_account_download_failed)
-                    )
-                  } finally {
-                    isDownloading = false
-                  }
-                }
-              },
-              modifier = Modifier.fillMaxWidth(),
-              enabled = !isDownloading,
-            )
+            DownloadButton(snackbarHostState)
           }
         }
       }
       SnackbarHost(hostState = snackbarHostState)
     }
   }
+}
+
+@Composable
+private fun DownloadButton(
+  snackbarHostState: SnackbarHostState,
+  downloader: Downloader = koinInject(),
+) {
+  var isDownloading by rememberSaveable { mutableStateOf(false) }
+  val coroutineScope = rememberCoroutineScope()
+  PrimaryButton(
+    text = stringResource(Res.string.settings_account_download_data),
+    onClick = {
+      coroutineScope.launch {
+        isDownloading = true
+        try {
+          downloader.downloadData()
+          snackbarHostState.showSnackbar(
+            message = getString(Res.string.settings_account_download_success)
+          )
+        } catch (_: Exception) {
+          snackbarHostState.showSnackbar(
+            message = getString(Res.string.settings_account_download_failed)
+          )
+        } finally {
+          isDownloading = false
+        }
+      }
+    },
+    modifier = Modifier.fillMaxWidth(),
+    enabled = !isDownloading,
+  )
 }
 
 @Composable expect fun LanguageSelection(selectedLanguage: Language, localization: Localization)
