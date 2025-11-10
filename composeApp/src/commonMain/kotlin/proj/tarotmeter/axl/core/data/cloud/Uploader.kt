@@ -26,6 +26,7 @@ class Uploader : KoinComponent {
     get() = authManager.user != null && !forceDeactivate
 
   fun notifyChange() {
+    LOGGER.d { if (isActive) "Notifying changes" else "Uploader not active" }
     if (!isActive) return
     scope.launch { triggerUpload() }
   }
@@ -33,7 +34,7 @@ class Uploader : KoinComponent {
   suspend fun pauseUploadsDoing(block: suspend () -> Unit) {
     uploadMutex.withLock {
       val oldDeactivateFlag = forceDeactivate
-      forceDeactivate = false
+      forceDeactivate = true
       try {
         block()
       } finally {

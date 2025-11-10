@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.core.data.cloud
 
+import co.touchlab.kermit.Logger
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
@@ -51,6 +52,9 @@ class Downloader : KoinComponent {
       val localPlayers = runCatching { localDatabaseManager.getPlayers() }.getOrDefault(emptyList())
       val localGames = runCatching { localDatabaseManager.getGames() }.getOrDefault(emptyList())
       // Deletions (players not in remote)
+      LOGGER.d {
+        "Merging downloaded data: ${remotePlayers.size} remote players, ${localPlayers.size} local players"
+      }
       localPlayers
         .filter { it.id !in remotePlayerIds }
         .forEach { localDatabaseManager.deletePlayer(it.id) }
@@ -99,3 +103,5 @@ class Downloader : KoinComponent {
 
   suspend fun getPlayers() = localDatabaseManager.getPlayers()
 }
+
+private val LOGGER = Logger.withTag(Downloader::class.qualifiedName.toString())

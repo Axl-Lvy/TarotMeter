@@ -13,7 +13,6 @@ abstract class LocalDatabaseManager : DatabaseManager, KoinComponent {
   private val uploader: Uploader by inject()
 
   protected fun notifyChange() {
-    LOGGER.d { "Notifying changes" }
     uploader.notifyChange()
   }
 

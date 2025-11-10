@@ -1,6 +1,5 @@
 package proj.tarotmeter.axl.core
 
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,13 +21,13 @@ class TestDownloaderSynchronization : TestAuthenticated() {
   private val localDb: LocalDatabaseManager by inject()
   private val uploader: Uploader by inject()
 
-  @AfterTest
   @BeforeTest
   fun cleanup() = runTest {
     uploader.forceDeactivate = true
     localDb.clear()
     cloudDb.hardDeleteGames()
     cloudDb.hardDeletePlayers()
+    uploader.forceDeactivate = false
   }
 
   @Test
