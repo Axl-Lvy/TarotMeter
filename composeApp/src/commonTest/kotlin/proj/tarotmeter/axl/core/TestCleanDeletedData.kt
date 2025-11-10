@@ -13,7 +13,6 @@ import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.CloudDatabaseManager
-import proj.tarotmeter.axl.core.data.cloud.Uploader
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
@@ -26,7 +25,6 @@ import proj.tarotmeter.axl.util.TestAuthenticated
 
 /** Tests for cleaning deleted data after successful upload synchronization. */
 class TestCleanDeletedData : TestAuthenticated() {
-  private val uploader: Uploader by inject()
   private val localDb: LocalDatabaseManager by inject()
   private val cloudDb: CloudDatabaseManager by inject()
 
@@ -75,8 +73,10 @@ class TestCleanDeletedData : TestAuthenticated() {
 
     awaitCloudPlayerAbsent(player.id.toString())
 
-    val playersIncludingDeleted = localDb.getPlayersUpdatedSince(Instant.DISTANT_PAST)
-    assertTrue(playersIncludingDeleted.none { it.id == player.id && it.isDeleted })
+    eventually(TEST_TIMEOUT) {
+      val playersIncludingDeleted = localDb.getPlayersUpdatedSince(Instant.DISTANT_PAST)
+      assertTrue(playersIncludingDeleted.none { it.id == player.id && it.isDeleted })
+    }
   }
 
   @Test
