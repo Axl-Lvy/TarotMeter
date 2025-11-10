@@ -25,13 +25,18 @@ import proj.tarotmeter.axl.core.data.model.Game
 class Downloader : KoinComponent {
   private val localDatabaseManager: LocalDatabaseManager by inject()
   private val cloudDatabaseManager: CloudDatabaseManager by inject()
+  private val uploader: Uploader by inject()
 
   /**
    * Performs a download.
    *
    * @param clearLocal Whether to clear the local store before applying remote state (default true).
    */
-  suspend fun downloadData(clearLocal: Boolean = true) {
+  suspend fun downloadData(clearLocal: Boolean = false) {
+    uploader.pauseUploadsDoing { doDownloadData(clearLocal = clearLocal) }
+  }
+
+  private suspend fun doDownloadData(clearLocal: Boolean = false) {
     // Fetch remote state first so we don't wipe local data if network fails mid-way.
     val remotePlayers = runCatching { cloudDatabaseManager.getPlayers() }.getOrDefault(emptyList())
     val remoteGames = runCatching { cloudDatabaseManager.getGames() }.getOrDefault(emptyList())
@@ -48,7 +53,7 @@ class Downloader : KoinComponent {
       // Deletions (players not in remote)
       localPlayers
         .filter { it.id !in remotePlayerIds }
-        .forEach { player -> runCatching { localDatabaseManager.deletePlayer(player.id) } }
+        .forEach { localDatabaseManager.deletePlayer(it.id) }
       // Deletions (games not in remote)
       localGames
         .filter { it.id !in remoteGameIds }

@@ -59,7 +59,7 @@ class AuthManager() : KoinComponent {
     if (refreshToken.isNotEmpty()) {
       try {
         supabaseClient.auth.refreshSession(refreshToken = refreshToken)
-      } catch (e: AuthRestException) {
+      } catch (_: AuthRestException) {
         KEEP_LOGGED_IN.reset()
         updateSavedTokens()
       }
@@ -114,6 +114,14 @@ class AuthManager() : KoinComponent {
     }
   }
 
+  fun registerAuthenticationListener(listener: suspend () -> Unit) {
+    registerListener {
+      if (it is SessionStatus.Authenticated) {
+        listener()
+      }
+    }
+  }
+
   /**
    * Sign up with email.
    *
@@ -123,7 +131,7 @@ class AuthManager() : KoinComponent {
   suspend fun signUpWithEmail(providedEmail: String, providedPassword: String) {
     supabaseClient.auth.signUpWith(
       provider = Email,
-      redirectUrl = "https://www.axl-lvy.fr/confirm-email?app=tarotmeter",
+      redirectUrl = "https://www.axl-lvy.fr/tarotmeter#confirm-email",
     ) {
       email = providedEmail
       password = providedPassword

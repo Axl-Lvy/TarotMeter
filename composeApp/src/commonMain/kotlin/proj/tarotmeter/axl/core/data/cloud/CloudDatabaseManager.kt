@@ -91,6 +91,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
           name = player.name,
           updatedAt = player.updatedAt,
           userId = user.id,
+          isDeleted = false,
         )
       )
   }
@@ -278,6 +279,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
             name = player.name,
             updatedAt = player.updatedAt,
             userId = user.id,
+            isDeleted = false,
           )
         }
       supabaseClient.from("player").upsert(playerDtos)
@@ -291,6 +293,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
           userId = user.id,
           updatedAt = game.updatedAt,
           createdAt = game.startedAt,
+          isDeleted = false,
         )
       )
     // Insert cross-references for each player in bulk
@@ -301,6 +304,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
             playerId = player.id.toString(),
             updatedAt = game.updatedAt,
             gameId = game.id.toString(),
+            isDeleted = false,
           )
         }
       supabaseClient.from("game_cross_player").insert(crossRefs)

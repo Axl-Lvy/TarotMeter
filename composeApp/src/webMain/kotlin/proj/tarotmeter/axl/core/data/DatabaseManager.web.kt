@@ -231,6 +231,24 @@ class LocalStorageDatabaseManager(
     }
     notifyChange()
   }
+
+  override suspend fun cleanDeletedData(dateLimit: Instant) {
+    withContext(coroutineDispatcher) {
+      // Remove deleted players
+      val players = getPlayerEntities().filter { !it.isDeleted && it.updatedAt <= dateLimit }
+      window.localStorage.setItem(PLAYERS_KEY, json.encodeToString(players))
+
+      // Remove deleted games and rounds
+      val games =
+        getGameEntities()
+          .filter { !it.isDeleted && it.updatedAtInternal <= dateLimit }
+          .map { game ->
+            game.copy(roundsInternal = game.roundsInternal.filter { !it.isDeleted }.toMutableList())
+          }
+      window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+    }
+    notifyChange()
+  }
 }
 
 actual fun getPlatformSpecificDatabaseManager(): DatabaseManager {

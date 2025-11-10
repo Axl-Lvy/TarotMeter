@@ -141,6 +141,10 @@
   <string name="settings_account_sign_up_success_title">Verify your email</string>
   <string name="settings_account_sign_up_success_message">A verification email has been sent to your email address. Please check your inbox and follow the instructions to activate your account.</string>
   <string name="settings_account_sign_up_success_ok">OK</string>
+  <string name="settings_account_download_data">Download Cloud Data</string>
+  <string name="settings_account_download_data_description">Sync your data from the cloud</string>
+  <string name="settings_account_download_success">Data downloaded successfully</string>
+  <string name="settings_account_download_failed">Download failed</string>
   <string
     name="settings_about_description">Tarot Meter is a comprehensive score tracking application for French Tarot games.
   </string>

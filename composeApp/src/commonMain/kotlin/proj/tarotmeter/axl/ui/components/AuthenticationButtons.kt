@@ -70,7 +70,7 @@ fun SignInButton(modifier: Modifier = Modifier, authManager: AuthManager = koinI
   staySignedInDialog.DrawDialog()
 
   if (canShowStaySignedInDialog) {
-    if (authManager.user != null) {
+    if (isSignedIn) {
       staySignedInDialog.show(Res.string.settings_account_stayed_logged_in_question) {
         KEEP_LOGGED_IN.value = true
         authManager.updateSavedTokens()
