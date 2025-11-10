@@ -43,6 +43,16 @@ class GamesProvider : KoinComponent {
   suspend fun getGames(): List<Game> = databaseManager.getGames()
 
   /**
+   * Renames an existing game.
+   *
+   * @param id The id of the game to rename.
+   * @param newName The new name for the game.
+   */
+  suspend fun renameGame(id: Uuid, newName: String) {
+    databaseManager.renameGame(id, newName)
+  }
+
+  /**
    * Adds a [round] to a game.
    *
    * @param gameId The id of the game to add the round to.

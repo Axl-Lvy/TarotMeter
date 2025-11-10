@@ -111,6 +111,9 @@
     <item quantity="one">%1$d round</item>
     <item quantity="other">%1$d rounds</item>
   </plurals>
+  <string name="history_rename_game">Rename Game</string>
+  <string name="history_rename_game_label">Game Name</string>
+  <string name="history_rename_game_placeholder">Enter new game name</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Settings</string>

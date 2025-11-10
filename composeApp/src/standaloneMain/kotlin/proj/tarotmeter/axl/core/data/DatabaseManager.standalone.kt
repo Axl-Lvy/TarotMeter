@@ -61,6 +61,11 @@ internal class StandaloneDatabaseManager(
     notifyChange()
   }
 
+  override suspend fun renameGame(id: Uuid, newName: String) {
+    database.getGameDao().renameGame(id, newName, DateUtil.now())
+    notifyChange()
+  }
+
   override suspend fun addRound(gameId: Uuid, round: Round) {
     insertPlayer(round.taker)
     round.partner?.let { insertPlayer(it) }

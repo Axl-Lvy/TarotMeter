@@ -324,6 +324,13 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
     supabaseClient.from("round").insert(SupabaseRound(round, gameId.toString()))
   }
 
+  override suspend fun renameGame(id: Uuid, newName: String) {
+    if (authManager.user == null) return
+    supabaseClient.from("game").update(mapOf("name" to newName)) {
+      filterForUser { eq("game_id", id.toString()) }
+    }
+  }
+
   override suspend fun deleteRound(roundId: Uuid) {
     if (authManager.user == null) return
     supabaseClient.from("round").softDelete {

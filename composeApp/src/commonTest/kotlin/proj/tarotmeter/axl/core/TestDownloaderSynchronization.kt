@@ -1,6 +1,7 @@
 package proj.tarotmeter.axl.core
 
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -22,8 +23,9 @@ class TestDownloaderSynchronization : TestAuthenticated() {
   private val uploader: Uploader by inject()
 
   @AfterTest
+  @BeforeTest
   fun cleanup() = runTest {
-    uploader.isActive = false
+    uploader.forceDeactivate = true
     localDb.clear()
     cloudDb.hardDeleteGames()
     cloudDb.hardDeletePlayers()
@@ -31,7 +33,7 @@ class TestDownloaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testFullRefreshDownloadsRemoteState() = runTest {
-    uploader.isActive = false
+    uploader.forceDeactivate = true
     // Prepare remote state
     val players = listOf(Player("R1"), Player("R2"), Player("R3"))
     players.forEach { cloudDb.insertPlayer(it) }
@@ -52,7 +54,7 @@ class TestDownloaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testMergeModeAppliesRemoteDeletions() = runTest {
-    uploader.isActive = false
+    uploader.forceDeactivate = true
     // Remote initial
     val a = Player("A")
     val b = Player("B")
@@ -79,7 +81,7 @@ class TestDownloaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testMergeModeAddsNewRemoteEntitiesAndDeletesOld() = runTest {
-    uploader.isActive = false
+    uploader.forceDeactivate = true
     val p1 = Player("P1")
     val p2 = Player("P2")
     cloudDb.insertPlayer(p1)
@@ -104,7 +106,7 @@ class TestDownloaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testMergeRemovesDeletedGame() = runTest {
-    uploader.isActive = false
+    uploader.forceDeactivate = true
     val players = listOf(Player("G1"), Player("G2"), Player("G3"))
     players.forEach { cloudDb.insertPlayer(it) }
     val game = Game(players, name = "Test Game")

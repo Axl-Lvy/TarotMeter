@@ -122,6 +122,19 @@ class LocalStorageDatabaseManager(
     notifyChange()
   }
 
+  override suspend fun renameGame(id: Uuid, newName: String) {
+    withContext(coroutineDispatcher) {
+      val games = getGameEntities()
+      val game = games.find { it.id == id }
+      if (game != null) {
+        val updatedGame = game.copy(name = newName, updatedAtInternal = DateUtil.now())
+        val updatedGames = games.map { if (it.id == id) updatedGame else it }
+        window.localStorage.setItem(GAMES_KEY, json.encodeToString(updatedGames))
+      }
+    }
+    notifyChange()
+  }
+
   override suspend fun deleteRound(roundId: Uuid) {
     val games = getGameEntities()
     for (game in games) {

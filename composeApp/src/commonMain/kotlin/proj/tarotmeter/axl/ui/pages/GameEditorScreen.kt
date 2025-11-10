@@ -50,6 +50,7 @@ import proj.tarotmeter.axl.core.data.model.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
+import proj.tarotmeter.axl.ui.components.GameRenameDialog
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.RoundEditor
@@ -69,6 +70,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   var editingRound by remember { mutableStateOf<Round?>(null) }
   var showDeleteDialog by remember { mutableStateOf(false) }
   var roundToDelete by remember { mutableStateOf<Round?>(null) }
+  var showRenameDialog by remember { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(gameId) { game = gamesProvider.getGame(gameId) }
@@ -83,6 +85,28 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
 
   Column(Modifier.fillMaxSize()) {
     Spacer(modifier = Modifier.size(16.dp))
+
+    // Game name header with rename button
+    Row(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = currentGame.name,
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.primary,
+      )
+      TextButton(onClick = { showRenameDialog = true }) {
+        Icon(
+          imageVector = FontAwesomeIcons.Regular.Edit,
+          contentDescription = stringResource(Res.string.history_rename_game),
+          modifier = Modifier.size(20.dp),
+        )
+      }
+    }
+
+    Spacer(modifier = Modifier.size(8.dp))
     // Fixed scores at the top
     PlayerScoresRow(
       playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
@@ -153,6 +177,21 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
       onDismiss = {
         showDeleteDialog = false
         roundToDelete = null
+      },
+    )
+  }
+
+  // Rename game dialog
+  if (showRenameDialog) {
+    GameRenameDialog(
+      currentName = currentGame.name,
+      onDismiss = { showRenameDialog = false },
+      onConfirm = { newName ->
+        coroutineScope.launch {
+          gamesProvider.renameGame(gameId, newName)
+          game = gamesProvider.getGame(gameId)
+          showRenameDialog = false
+        }
       },
     )
   }

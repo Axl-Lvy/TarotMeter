@@ -1,7 +1,6 @@
 package proj.tarotmeter.axl.core.data.cloud
 
 import co.touchlab.kermit.Logger
-import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,36 +20,29 @@ class Uploader : KoinComponent {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
   private val uploadMutex = Mutex()
 
-  var isActive = false
-    set(value) {
-      field = value
-      if (value) {
-        notifyChange()
-      }
-    }
+  var forceDeactivate: Boolean = false
 
-  init {
-    authManager.registerListener { isActive = it is SessionStatus.Authenticated }
-  }
+  val isActive
+    get() = authManager.user != null && !forceDeactivate
 
   fun notifyChange() {
     if (!isActive) return
-    scope.launch { triggerUploadLoop() }
+    scope.launch { triggerUpload() }
   }
 
   suspend fun pauseUploadsDoing(block: suspend () -> Unit) {
     uploadMutex.withLock {
-      val oldIsActive = isActive
-      isActive = false
+      val oldDeactivateFlag = forceDeactivate
+      forceDeactivate = false
       try {
         block()
       } finally {
-        isActive = oldIsActive
+        forceDeactivate = oldDeactivateFlag
       }
     }
   }
 
-  private suspend fun triggerUploadLoop() {
+  private suspend fun triggerUpload() {
     uploadMutex.withLock { uploadUnsyncedData() }
   }
 

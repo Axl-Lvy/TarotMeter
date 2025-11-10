@@ -113,6 +113,9 @@
     <item quantity="one">%1$d donne</item>
     <item quantity="other">%1$d donnes</item>
   </plurals>
+  <string name="history_rename_game">Renommer la Partie</string>
+  <string name="history_rename_game_label">Nom de la Partie</string>
+  <string name="history_rename_game_placeholder">Entrez le nouveau nom de la partie</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Paramètres</string>
