@@ -104,4 +104,4 @@ class Downloader : KoinComponent {
   suspend fun getPlayers() = localDatabaseManager.getPlayers()
 }
 
-private val LOGGER = Logger.withTag(Downloader::class.qualifiedName.toString())
+private val LOGGER = Logger.withTag("Downloader")
