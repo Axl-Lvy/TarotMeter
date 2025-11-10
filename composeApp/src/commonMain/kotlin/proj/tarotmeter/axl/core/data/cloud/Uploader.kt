@@ -18,11 +18,6 @@ class Uploader : KoinComponent {
   private val cloudDatabaseManager: CloudDatabaseManager by inject()
   private val localDatabaseManager: LocalDatabaseManager by inject()
   private val authManager: AuthManager by inject()
-
-  init {
-    authManager.registerListener { isActive = it is SessionStatus.Authenticated }
-  }
-
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
   private val uploadMutex = Mutex()
 
@@ -33,6 +28,10 @@ class Uploader : KoinComponent {
         notifyChange()
       }
     }
+
+  init {
+    authManager.registerListener { isActive = it is SessionStatus.Authenticated }
+  }
 
   fun notifyChange() {
     if (!isActive) return

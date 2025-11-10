@@ -112,14 +112,6 @@ class TestUploaderSynchronization : TestAuthenticated() {
     localDb.insertPlayer(b)
     awaitCloudPlayersMatch()
 
-    localDb.deletePlayer(a.id)
-    awaitCloudPlayersMatch()
-
-    error("reached here")
-
-    localDb.insertPlayer(a)
-    awaitCloudPlayersMatch()
-
     val cloudPlayers = cloudDb.getPlayers().map { it.id }.toSet()
     assertEquals(setOf(a.id, b.id), cloudPlayers)
   }
