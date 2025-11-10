@@ -186,11 +186,14 @@ private fun EditablePlayerCard(name: String, onRename: (String) -> Unit, onDelet
             enabled = editedName.trim().isNotEmpty(),
           )
         } else {
-          SecondaryButton(
-            text = stringResource(Res.string.players_button_rename),
+          OutlinedButton(
             onClick = { editing = true },
             modifier = Modifier.weight(1f),
-          )
+            colors =
+              ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+          ) {
+            Text(stringResource(Res.string.players_button_rename))
+          }
           OutlinedButton(
             onClick = onDelete,
             modifier = Modifier.weight(1f),

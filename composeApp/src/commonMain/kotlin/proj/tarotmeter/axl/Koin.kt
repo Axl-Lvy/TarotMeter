@@ -8,6 +8,7 @@ import proj.tarotmeter.axl.core.data.DatabaseManager
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.CloudDatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.Downloader
+import proj.tarotmeter.axl.core.data.cloud.ForeignerGamesManager
 import proj.tarotmeter.axl.core.data.cloud.Uploader
 import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.cloud.createSupabaseClient
@@ -35,6 +36,7 @@ fun initKoinModules(): Array<Module> {
     singleOf(::CloudDatabaseManager)
     singleOf(::Uploader)
     singleOf(::Downloader)
+    singleOf(::ForeignerGamesManager)
   }
 
   val providerModule = module {
