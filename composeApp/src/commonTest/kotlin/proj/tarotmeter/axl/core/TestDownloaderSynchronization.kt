@@ -13,6 +13,7 @@ import proj.tarotmeter.axl.core.data.cloud.Uploader
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.util.TestAuthenticated
+import kotlin.test.AfterTest
 
 /** Tests covering the downloader logic (full refresh + merge) including deletions. */
 class TestDownloaderSynchronization : TestAuthenticated() {
@@ -21,6 +22,7 @@ class TestDownloaderSynchronization : TestAuthenticated() {
   private val localDb: LocalDatabaseManager by inject()
   private val uploader: Uploader by inject()
 
+  @AfterTest
   @BeforeTest
   fun cleanup() = runTest {
     uploader.forceDeactivate = true
