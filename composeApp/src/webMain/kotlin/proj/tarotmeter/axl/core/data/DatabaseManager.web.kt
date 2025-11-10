@@ -99,6 +99,7 @@ class LocalStorageDatabaseManager(
                 )
               }
               .toMutableList(),
+            game.name,
             game.startedAt,
             game.updatedAt,
           )
@@ -191,6 +192,7 @@ class LocalStorageDatabaseManager(
         .map { game ->
           GameSync(
             id = game.id,
+            name = game.name,
             startedAt = game.startedAt,
             updatedAt = game.updatedAtInternal,
             isDeleted = game.isDeleted,

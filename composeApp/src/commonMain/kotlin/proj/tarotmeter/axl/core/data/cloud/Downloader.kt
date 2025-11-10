@@ -71,6 +71,7 @@ class Downloader : KoinComponent {
         Game(
           players = game.players,
           id = game.id,
+          name = game.name,
           // empty rounds list for initial insert (web implementation stores provided rounds; we
           // avoid duplicates in merge/full refresh)
           roundsInternal = mutableListOf(),

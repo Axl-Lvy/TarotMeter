@@ -35,7 +35,7 @@ class TestDownloaderSynchronization : TestAuthenticated() {
     // Prepare remote state
     val players = listOf(Player("R1"), Player("R2"), Player("R3"))
     players.forEach { cloudDb.insertPlayer(it) }
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     cloudDb.insertGame(game)
 
     // Local initially empty
@@ -107,7 +107,7 @@ class TestDownloaderSynchronization : TestAuthenticated() {
     uploader.isActive = false
     val players = listOf(Player("G1"), Player("G2"), Player("G3"))
     players.forEach { cloudDb.insertPlayer(it) }
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     cloudDb.insertGame(game)
     downloader.downloadData(clearLocal = true)
     assertEquals(1, localDb.getGames().size)

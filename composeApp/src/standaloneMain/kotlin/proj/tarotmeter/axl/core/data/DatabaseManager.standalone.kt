@@ -54,7 +54,7 @@ internal class StandaloneDatabaseManager(
     for (player in game.players) {
       insertPlayer(player)
     }
-    database.getGameDao().insertGame(GameEntity(game.id, game.startedAt, game.updatedAt))
+    database.getGameDao().insertGame(GameEntity(game.id, game.name, game.startedAt, game.updatedAt))
     for (player in game.players) {
       database.getGameDao().insertGamePlayerCrossRef(GamePlayerCrossRef(game.id, player.id))
     }
@@ -114,6 +114,7 @@ internal class StandaloneDatabaseManager(
     return dao.getGamesUpdatedSince(since).map { gameEntity ->
       GameSync(
         id = gameEntity.id,
+        name = gameEntity.name,
         startedAt = gameEntity.startedAt,
         updatedAt = gameEntity.updatedAt,
         isDeleted = gameEntity.isDeleted,

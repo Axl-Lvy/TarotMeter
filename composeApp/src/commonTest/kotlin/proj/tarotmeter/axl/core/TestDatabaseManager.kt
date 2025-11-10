@@ -84,7 +84,7 @@ class TestDatabaseManager : TestWithKoin {
 
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val games = dbManager.getGames()
@@ -101,7 +101,7 @@ class TestDatabaseManager : TestWithKoin {
 
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val retrievedGame = dbManager.getGame(game.id)
@@ -123,7 +123,7 @@ class TestDatabaseManager : TestWithKoin {
 
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val round =
@@ -158,7 +158,7 @@ class TestDatabaseManager : TestWithKoin {
 
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val round1 =
@@ -201,7 +201,7 @@ class TestDatabaseManager : TestWithKoin {
 
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val gamesBeforeRemoval = dbManager.getGames()
@@ -229,7 +229,7 @@ class TestDatabaseManager : TestWithKoin {
 
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val round =
@@ -267,7 +267,7 @@ class TestDatabaseManager : TestWithKoin {
 
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val retrievedGame = dbManager.getGame(game.id)
@@ -288,7 +288,7 @@ class TestDatabaseManager : TestWithKoin {
 
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val retrievedGame = dbManager.getGame(game.id)
@@ -301,7 +301,7 @@ class TestDatabaseManager : TestWithKoin {
     val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val round =
@@ -330,7 +330,7 @@ class TestDatabaseManager : TestWithKoin {
     val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
     players.forEach { dbManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     dbManager.insertGame(game)
 
     val round =

@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +44,8 @@ import proj.tarotmeter.axl.ui.components.SectionHeader
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.new_game_button_start
 import tarotmeter.composeapp.generated.resources.new_game_header
+import tarotmeter.composeapp.generated.resources.new_game_name_label
+import tarotmeter.composeapp.generated.resources.new_game_name_placeholder
 import tarotmeter.composeapp.generated.resources.new_game_no_players
 import tarotmeter.composeapp.generated.resources.new_game_select_players
 import tarotmeter.composeapp.generated.resources.new_game_selected_count
@@ -60,12 +63,13 @@ fun NewGameScreen(
 ) {
   var availablePlayers by remember { mutableStateOf(emptyList<Player>()) }
   val selectedPlayers = remember { mutableStateSetOf<Player>() }
+  var gameName by remember { mutableStateOf("") }
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) { availablePlayers = playersProvider.getPlayers() }
 
   val selectedCount = selectedPlayers.size
-  val isValidSelection = selectedCount in 3..5
+  val isValidSelection = selectedCount in 3..5 && gameName.isNotBlank()
 
   Column(
     Modifier.fillMaxSize(),
@@ -79,6 +83,15 @@ fun NewGameScreen(
         Text(
           stringResource(Res.string.new_game_select_players),
           style = MaterialTheme.typography.titleMedium,
+        )
+
+        OutlinedTextField(
+          value = gameName,
+          onValueChange = { gameName = it },
+          label = { Text(stringResource(Res.string.new_game_name_label)) },
+          placeholder = { Text(stringResource(Res.string.new_game_name_placeholder)) },
+          modifier = Modifier.fillMaxWidth(),
+          singleLine = true,
         )
 
         Text(
@@ -98,7 +111,7 @@ fun NewGameScreen(
           text = stringResource(Res.string.new_game_button_start),
           onClick = {
             coroutineScope.launch {
-              val game = gamesProvider.createGame(selectedPlayers)
+              val game = gamesProvider.createGame(selectedPlayers, gameName)
               onGameCreated(game.id)
             }
           },

@@ -16,12 +16,13 @@ class GamesProvider : KoinComponent {
    * Creates a new game.
    *
    * @param players The players involved in this game.
+   * @param name Name for the game.
    * @return The created [Game].
    * @throws IllegalArgumentException if the number of players is not between 3 and 5.
    */
-  suspend fun createGame(players: Set<Player>): Game {
+  suspend fun createGame(players: Set<Player>, name: String): Game {
     require(players.size in 3..5) { "A game must have between 3 and 5 players." }
-    val game = Game(players = players.toList())
+    val game = Game(players = players.toList(), name = name)
     databaseManager.insertGame(game)
     return game
   }

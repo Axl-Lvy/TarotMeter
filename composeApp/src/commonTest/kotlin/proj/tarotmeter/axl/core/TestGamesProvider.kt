@@ -42,7 +42,7 @@ class TestGamesProvider : TestWithKoin {
   fun testCreateGameWithValidPlayers() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
 
-    val game = gamesProvider.createGame(players)
+    val game = gamesProvider.createGame(players, "Test Game")
 
     assertNotNull(game)
     assertEquals(3, game.players.size)
@@ -54,7 +54,7 @@ class TestGamesProvider : TestWithKoin {
   fun testCreateGameWithFourPlayers() = runTest {
     val players = setOf(Player("Player1"), Player("Player2"), Player("Player3"), Player("Player4"))
 
-    val game = gamesProvider.createGame(players)
+    val game = gamesProvider.createGame(players, "Test Game")
 
     assertNotNull(game)
     assertEquals(4, game.players.size)
@@ -71,7 +71,7 @@ class TestGamesProvider : TestWithKoin {
         Player("Player5"),
       )
 
-    val game = gamesProvider.createGame(players)
+    val game = gamesProvider.createGame(players, "Test Game")
 
     assertNotNull(game)
     assertEquals(5, game.players.size)
@@ -81,7 +81,7 @@ class TestGamesProvider : TestWithKoin {
   fun testCreateGameWithTooFewPlayers() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"))
 
-    assertFailsWith<IllegalArgumentException> { gamesProvider.createGame(players) }
+    assertFailsWith<IllegalArgumentException> { gamesProvider.createGame(players, "Test Game") }
   }
 
   @Test
@@ -96,13 +96,13 @@ class TestGamesProvider : TestWithKoin {
         Player("Player6"),
       )
 
-    assertFailsWith<IllegalArgumentException> { gamesProvider.createGame(players) }
+    assertFailsWith<IllegalArgumentException> { gamesProvider.createGame(players, "Test Game") }
   }
 
   @Test
   fun testGetGameById() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
-    val createdGame = gamesProvider.createGame(players)
+    val createdGame = gamesProvider.createGame(players, "Test Game")
 
     val retrievedGame = gamesProvider.getGame(createdGame.id)
 
@@ -125,8 +125,8 @@ class TestGamesProvider : TestWithKoin {
     val players1 = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
     val players2 = setOf(Player("Dave"), Player("Eve"), Player("Frank"))
 
-    val game1 = gamesProvider.createGame(players1)
-    val game2 = gamesProvider.createGame(players2)
+    val game1 = gamesProvider.createGame(players1, "Test Game")
+    val game2 = gamesProvider.createGame(players2, "Test Game")
 
     val allGames = gamesProvider.getGames()
 
@@ -145,7 +145,7 @@ class TestGamesProvider : TestWithKoin {
   @Test
   fun testAddRoundToGame() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
-    val game = gamesProvider.createGame(players)
+    val game = gamesProvider.createGame(players, "Test Game")
 
     val round =
       Round(
@@ -172,7 +172,7 @@ class TestGamesProvider : TestWithKoin {
   @Test
   fun testAddMultipleRoundsToGame() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"), Player("Dave"))
-    val game = gamesProvider.createGame(players)
+    val game = gamesProvider.createGame(players, "Test Game")
 
     val round1 =
       Round(
@@ -220,7 +220,7 @@ class TestGamesProvider : TestWithKoin {
         Player("Player4"),
         Player("Player5"),
       )
-    val game = gamesProvider.createGame(players)
+    val game = gamesProvider.createGame(players, "Test Game")
 
     val round =
       Round(
@@ -251,7 +251,7 @@ class TestGamesProvider : TestWithKoin {
   fun testAddRoundToNonExistentGame() = runTest {
     val nonExistentId = kotlin.uuid.Uuid.random()
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
-    val game = gamesProvider.createGame(players)
+    val game = gamesProvider.createGame(players, "Test Game")
 
     val round =
       Round(
@@ -275,7 +275,7 @@ class TestGamesProvider : TestWithKoin {
   @Test
   fun testRoundIndexIncrements() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
-    val game = gamesProvider.createGame(players)
+    val game = gamesProvider.createGame(players, "Test Game")
 
     val round1 =
       Round(

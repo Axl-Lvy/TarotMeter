@@ -88,7 +88,7 @@ class TestCleanDeletedData : TestAuthenticated() {
     val players = listOf(Player("A"), Player("B"), Player("C"))
     players.forEach { localDb.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
 
     eventually(TEST_TIMEOUT) { assertTrue { cloudDb.getGames().any { it.id == game.id } } }
@@ -108,7 +108,7 @@ class TestCleanDeletedData : TestAuthenticated() {
     val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
     players.forEach { localDb.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
 
     val round =
@@ -155,8 +155,8 @@ class TestCleanDeletedData : TestAuthenticated() {
     localDb.insertPlayer(player3)
     localDb.insertPlayer(player4)
 
-    val game1 = Game(listOf(player1, player2, player3))
-    val game2 = Game(listOf(player2, player3, player4))
+    val game1 = Game(listOf(player1, player2, player3), name = "Test Game 1")
+    val game2 = Game(listOf(player2, player3, player4), name = "Test Game 2")
 
     localDb.insertGame(game1)
     localDb.insertGame(game2)
@@ -228,7 +228,7 @@ class TestCleanDeletedData : TestAuthenticated() {
     val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
     players.forEach { localDb.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
 
     val round1 =

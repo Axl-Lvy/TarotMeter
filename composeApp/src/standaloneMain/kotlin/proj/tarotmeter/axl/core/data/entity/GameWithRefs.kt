@@ -31,6 +31,7 @@ data class GameWithRefs(
   fun toGame(): Game {
     return Game(
       players.map { it.toPlayer() },
+      game.name,
       game.id,
       rounds.filter { !it.round.isDeleted }.map { it.toRound() }.toMutableList(),
       game.startedAt,

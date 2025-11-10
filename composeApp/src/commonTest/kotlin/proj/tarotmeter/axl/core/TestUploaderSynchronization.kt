@@ -140,7 +140,7 @@ class TestUploaderSynchronization : TestAuthenticated() {
     players.forEach { localDb.insertPlayer(it) }
     awaitCloudPlayersMatch()
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
 
     // Add rounds after insertion
