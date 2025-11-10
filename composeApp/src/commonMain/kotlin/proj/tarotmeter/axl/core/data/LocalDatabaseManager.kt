@@ -31,4 +31,4 @@ abstract class LocalDatabaseManager : DatabaseManager, KoinComponent {
   abstract suspend fun cleanDeletedData(dateLimit: Instant)
 }
 
-private val LOGGER = Logger.withTag(LocalDatabaseManager::class.qualifiedName.toString())
+private val LOGGER = Logger.withTag("LocalDatabaseManager")

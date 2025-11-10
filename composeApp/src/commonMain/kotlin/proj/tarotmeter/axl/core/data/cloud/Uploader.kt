@@ -81,4 +81,4 @@ class Uploader : KoinComponent {
   }
 }
 
-private val LOGGER = Logger.withTag(Uploader::class.qualifiedName.toString())
+private val LOGGER = Logger.withTag("Uploader")
