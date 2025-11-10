@@ -27,6 +27,9 @@ abstract class LocalDatabaseManager : DatabaseManager, KoinComponent {
   abstract suspend fun getRoundsUpdatedSince(since: Instant): List<RoundSync>
 
   abstract suspend fun clear()
+
+  /** Permanently removes all data marked as deleted from the local database. */
+  abstract suspend fun cleanDeletedData(dateLimit: Instant)
 }
 
 private val LOGGER = Logger.withTag(LocalDatabaseManager::class.qualifiedName.toString())

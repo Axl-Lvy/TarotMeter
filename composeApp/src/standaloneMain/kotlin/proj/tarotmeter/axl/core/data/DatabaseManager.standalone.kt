@@ -147,6 +147,12 @@ internal class StandaloneDatabaseManager(
     database.getGameDao().clearGamePlayerCrossRef()
     database.getGameDao().clearGames()
   }
+
+  override suspend fun cleanDeletedData(dateLimit: Instant) {
+    database.getGameDao().cleanDeletedRounds(dateLimit)
+    database.getGameDao().cleanDeletedGames(dateLimit)
+    database.getPlayerDao().cleanDeletedPlayers(dateLimit)
+  }
 }
 
 actual fun getPlatformSpecificDatabaseManager(): DatabaseManager {

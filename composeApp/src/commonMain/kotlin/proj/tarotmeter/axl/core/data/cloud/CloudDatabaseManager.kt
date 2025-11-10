@@ -369,10 +369,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
           isDeleted = it.isDeleted,
         )
       }
-    supabaseClient.from("player").upsert(dtos) {
-      onConflict = "player_id"
-      ignoreDuplicates = false
-    }
+    supabaseClient.from("player").upsert(dtos)
   }
 
   suspend fun upsertGamesSync(games: List<GameSync>) {

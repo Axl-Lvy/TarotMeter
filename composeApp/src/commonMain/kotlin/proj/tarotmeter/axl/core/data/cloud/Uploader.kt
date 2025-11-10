@@ -38,6 +38,18 @@ class Uploader : KoinComponent {
     scope.launch { triggerUploadLoop() }
   }
 
+  suspend fun pauseUploadsDoing(block: suspend () -> Unit) {
+    uploadMutex.withLock {
+      val oldIsActive = isActive
+      isActive = false
+      try {
+        block()
+      } finally {
+        isActive = oldIsActive
+      }
+    }
+  }
+
   private suspend fun triggerUploadLoop() {
     uploadMutex.withLock { uploadUnsyncedData() }
   }
@@ -65,6 +77,8 @@ class Uploader : KoinComponent {
             .maxOrNull()
         if (maxUpdatedAt != null) {
           LAST_SYNC.value = maxUpdatedAt
+          // Clean up deleted data after successful upload
+          localDatabaseManager.cleanDeletedData(maxUpdatedAt)
         }
         LOGGER.i {
           "Uploaded data successfully. Players: ${players.size}, Games: ${games.size}, Rounds: ${rounds.size}"

@@ -65,4 +65,8 @@ interface PlayerDao {
   suspend fun getPlayersUpdatedSince(since: Instant): List<PlayerEntity>
 
   @Query("DELETE FROM PlayerEntity") suspend fun clearPlayers()
+
+  /** Permanently removes all players marked as deleted. */
+  @Query("DELETE FROM PlayerEntity WHERE is_deleted = true AND updated_at <= :dateLimit")
+  suspend fun cleanDeletedPlayers(dateLimit: Instant)
 }

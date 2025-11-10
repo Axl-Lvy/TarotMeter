@@ -137,4 +137,12 @@ interface GameDao {
 
   @Query("UPDATE RoundEntity SET is_deleted = TRUE, updated_at = :now WHERE game_id = :gameId")
   suspend fun deleteRoundsForGame(gameId: Uuid, now: Instant = DateUtil.now())
+
+  /** Permanently removes all games marked as deleted. */
+  @Query("DELETE FROM GameEntity WHERE is_deleted = true AND updated_at <= :dateLimit")
+  suspend fun cleanDeletedGames(dateLimit: Instant)
+
+  /** Permanently removes all rounds marked as deleted. */
+  @Query("DELETE FROM RoundEntity WHERE is_deleted = true AND updated_at <= :dateLimit")
+  suspend fun cleanDeletedRounds(dateLimit: Instant)
 }
