@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.core
 
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,7 +14,6 @@ import proj.tarotmeter.axl.core.data.cloud.Uploader
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.util.TestAuthenticated
-import kotlin.test.AfterTest
 
 /** Tests covering the downloader logic (full refresh + merge) including deletions. */
 class TestDownloaderSynchronization : TestAuthenticated() {
