@@ -1,5 +1,7 @@
 package proj.tarotmeter.axl.core.data.cloud
 
+import co.touchlab.kermit.Logger
+import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -9,14 +11,19 @@ import kotlinx.coroutines.sync.withLock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
+import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.config.LAST_SYNC
 
 class Uploader : KoinComponent {
   private val cloudDatabaseManager: CloudDatabaseManager by inject()
   private val localDatabaseManager: LocalDatabaseManager by inject()
+  private val authManager: AuthManager by inject()
+
+  init {
+    authManager.registerListener { isActive = it is SessionStatus.Authenticated }
+  }
 
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-
   private val uploadMutex = Mutex()
 
   var isActive = false
@@ -60,9 +67,12 @@ class Uploader : KoinComponent {
         if (maxUpdatedAt != null) {
           LAST_SYNC.value = maxUpdatedAt
         }
+        LOGGER.i {
+          "Uploaded data successfully. Players: ${players.size}, Games: ${games.size}, Rounds: ${rounds.size}"
+        }
       }
-      .onFailure {
-        // Swallow: next notifyChange will retry with same LAST_SYNC
-      }
+      .onFailure { LOGGER.e { "Failed to upload data: ${it.message}" } }
   }
 }
+
+private val LOGGER = Logger.withTag(Uploader::class.qualifiedName.toString())

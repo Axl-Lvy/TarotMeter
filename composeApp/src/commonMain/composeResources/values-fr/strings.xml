@@ -145,6 +145,10 @@
   <string name="settings_account_sign_up_success_title">Vérifiez votre e-mail</string>
   <string name="settings_account_sign_up_success_message">Un e-mail de vérification a été envoyé à votre adresse. Veuillez consulter votre boîte de réception et suivre les instructions pour activer votre compte.</string>
   <string name="settings_account_sign_up_success_ok">OK</string>
+  <string name="settings_account_download_data">Télécharger les données du cloud</string>
+  <string name="settings_account_download_data_description">Synchroniser vos données depuis le cloud</string>
+  <string name="settings_account_download_success">Données téléchargées avec succès</string>
+  <string name="settings_account_download_failed">Échec du téléchargement</string>
   <string
     name="settings_about_description">Tarot Meter est une application complète de suivi des scores pour les parties de Tarot français.
   </string>

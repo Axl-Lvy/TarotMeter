@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.core.data
 
+import co.touchlab.kermit.Logger
 import kotlin.time.Instant
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -12,6 +13,7 @@ abstract class LocalDatabaseManager : DatabaseManager, KoinComponent {
   private val uploader: Uploader by inject()
 
   protected fun notifyChange() {
+    LOGGER.d { "Notifying changes" }
     uploader.notifyChange()
   }
 
@@ -26,3 +28,5 @@ abstract class LocalDatabaseManager : DatabaseManager, KoinComponent {
 
   abstract suspend fun clear()
 }
+
+private val LOGGER = Logger.withTag(LocalDatabaseManager::class.qualifiedName.toString())

@@ -35,7 +35,9 @@ internal class StandaloneDatabaseManager(
 
   override suspend fun deletePlayer(id: Uuid) {
     val now = DateUtil.now()
+    val deletedGames = database.getGameDao().getGameIdsFromPlayer(id)
     database.getGameDao().deleteGamesFromPlayer(id, now)
+    deletedGames.forEach { database.getGameDao().deleteRoundsForGame(it) }
     database.getPlayerDao().deletePlayer(id, now)
     notifyChange()
   }

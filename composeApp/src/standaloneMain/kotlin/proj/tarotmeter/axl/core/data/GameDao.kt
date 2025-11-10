@@ -84,6 +84,19 @@ interface GameDao {
   suspend fun deleteGamesFromPlayer(playerId: Uuid, now: Instant)
 
   /**
+   * Retrieves game IDs associated with a specific player.
+   *
+   * Careful, some games may be marked as deleted.
+   *
+   * @param playerId The player ID.
+   * @return List of game IDs.
+   */
+  @Query(
+    "SELECT game_id FROM GamePlayerCrossRef WHERE player_id = :playerId AND is_deleted = false"
+  )
+  suspend fun getGameIdsFromPlayer(playerId: Uuid): List<Uuid>
+
+  /**
    * Deletes all games associated with a specific player.
    *
    * @param playerId The player ID.
@@ -121,4 +134,7 @@ interface GameDao {
   /** Retrieves a specific round by ID. */
   @Query("SELECT * FROM RoundEntity WHERE round_id = :roundId")
   suspend fun getRound(roundId: Uuid): RoundEntity?
+
+  @Query("UPDATE RoundEntity SET is_deleted = TRUE, updated_at = :now WHERE game_id = :gameId")
+  suspend fun deleteRoundsForGame(gameId: Uuid, now: Instant = DateUtil.now())
 }

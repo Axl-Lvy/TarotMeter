@@ -87,6 +87,7 @@ kotlin {
 
       // Utilities
       implementation(libs.multiplatform.settings)
+      implementation(libs.kermit.logging)
 
       // Backend and networking
       implementation(libs.ktor.client.core)

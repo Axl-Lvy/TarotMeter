@@ -4,33 +4,26 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
-import proj.tarotmeter.axl.ui.components.PrimaryButton
 import tarotmeter.composeapp.generated.resources.Res
-import tarotmeter.composeapp.generated.resources.confirm_email_button_verify
 import tarotmeter.composeapp.generated.resources.confirm_email_error_title
-import tarotmeter.composeapp.generated.resources.confirm_email_pending_message
-import tarotmeter.composeapp.generated.resources.confirm_email_pending_title
 import tarotmeter.composeapp.generated.resources.confirm_email_success_message
 import tarotmeter.composeapp.generated.resources.confirm_email_success_title
 import tarotmeter.composeapp.generated.resources.confirm_email_verifying
@@ -44,19 +37,17 @@ import tarotmeter.composeapp.generated.resources.confirm_email_verifying
 @Composable
 fun ConfirmEmailScreen(tokenHash: String) {
   val authManager = koinInject<AuthManager>()
-  val coroutineScope = rememberCoroutineScope()
 
-  var verificationState by remember { mutableStateOf<VerificationState>(VerificationState.Pending) }
+  var verificationState by remember {
+    mutableStateOf<VerificationState>(VerificationState.Verifying)
+  }
 
-  val onVerifyClick: () -> Unit = {
-    verificationState = VerificationState.Verifying
-    coroutineScope.launch {
-      try {
-        authManager.verifyEmail(tokenHash)
-        verificationState = VerificationState.Success
-      } catch (e: Exception) {
-        verificationState = VerificationState.Error(e.message ?: "Unknown error")
-      }
+  LaunchedEffect(Unit) {
+    try {
+      authManager.verifyEmail(tokenHash)
+      verificationState = VerificationState.Success
+    } catch (e: Exception) {
+      verificationState = VerificationState.Error(e.message ?: "Unknown error")
     }
   }
 
@@ -65,26 +56,7 @@ fun ConfirmEmailScreen(tokenHash: String) {
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    when (verificationState) {
-      is VerificationState.Pending -> {
-        Text(
-          text = stringResource(Res.string.confirm_email_pending_title),
-          style = MaterialTheme.typography.headlineSmall,
-          textAlign = TextAlign.Center,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-          text = stringResource(Res.string.confirm_email_pending_message),
-          style = MaterialTheme.typography.bodyLarge,
-          textAlign = TextAlign.Center,
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        PrimaryButton(
-          text = stringResource(Res.string.confirm_email_button_verify),
-          onClick = onVerifyClick,
-          modifier = Modifier.fillMaxWidth().widthIn(max = 400.dp),
-        )
-      }
+    when (val currentState = verificationState) {
       is VerificationState.Verifying -> {
         CircularProgressIndicator()
         Spacer(modifier = Modifier.height(16.dp))
@@ -117,7 +89,7 @@ fun ConfirmEmailScreen(tokenHash: String) {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-          text = (verificationState as VerificationState.Error).message,
+          text = currentState.message,
           style = MaterialTheme.typography.bodyLarge,
           textAlign = TextAlign.Center,
         )
@@ -128,9 +100,6 @@ fun ConfirmEmailScreen(tokenHash: String) {
 
 /** Represents the state of email verification. */
 private sealed interface VerificationState {
-  /** Email verification is pending user action. */
-  data object Pending : VerificationState
-
   /** Email verification is in progress. */
   data object Verifying : VerificationState
 
