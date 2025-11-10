@@ -60,6 +60,7 @@ internal expect fun databaseBuilder(): RoomDatabase.Builder<StandaloneDatabase>
  */
 internal fun getStandaloneLocalDatabase(): StandaloneDatabase {
   return databaseBuilder()
+    .fallbackToDestructiveMigration(true)
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()

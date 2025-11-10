@@ -13,7 +13,6 @@ import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.CloudDatabaseManager
-import proj.tarotmeter.axl.core.data.cloud.Uploader
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
@@ -26,7 +25,6 @@ import proj.tarotmeter.axl.util.TestAuthenticated
 
 /** Tests for cleaning deleted data after successful upload synchronization. */
 class TestCleanDeletedData : TestAuthenticated() {
-  private val uploader: Uploader by inject()
   private val localDb: LocalDatabaseManager by inject()
   private val cloudDb: CloudDatabaseManager by inject()
 
@@ -66,8 +64,6 @@ class TestCleanDeletedData : TestAuthenticated() {
 
   @Test
   fun testDeletedPlayerIsCleanedAfterUpload() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val player = Player("ToDelete")
     localDb.insertPlayer(player)
 
@@ -77,18 +73,18 @@ class TestCleanDeletedData : TestAuthenticated() {
 
     awaitCloudPlayerAbsent(player.id.toString())
 
-    val playersIncludingDeleted = localDb.getPlayersUpdatedSince(Instant.DISTANT_PAST)
-    assertTrue(playersIncludingDeleted.none { it.id == player.id && it.isDeleted })
+    eventually(TEST_TIMEOUT) {
+      val playersIncludingDeleted = localDb.getPlayersUpdatedSince(Instant.DISTANT_PAST)
+      assertTrue(playersIncludingDeleted.none { it.id == player.id && it.isDeleted })
+    }
   }
 
   @Test
   fun testDeletedGameIsCleanedAfterUpload() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val players = listOf(Player("A"), Player("B"), Player("C"))
     players.forEach { localDb.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
 
     eventually(TEST_TIMEOUT) { assertTrue { cloudDb.getGames().any { it.id == game.id } } }
@@ -103,12 +99,10 @@ class TestCleanDeletedData : TestAuthenticated() {
 
   @Test
   fun testDeletedRoundIsCleanedAfterUpload() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
     players.forEach { localDb.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
 
     val round =
@@ -143,8 +137,6 @@ class TestCleanDeletedData : TestAuthenticated() {
 
   @Test
   fun testMultipleDeletedEntitiesCleanedAfterUpload() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val player1 = Player("Player1")
     val player2 = Player("Player2")
     val player3 = Player("Player3")
@@ -155,8 +147,8 @@ class TestCleanDeletedData : TestAuthenticated() {
     localDb.insertPlayer(player3)
     localDb.insertPlayer(player4)
 
-    val game1 = Game(listOf(player1, player2, player3))
-    val game2 = Game(listOf(player2, player3, player4))
+    val game1 = Game(listOf(player1, player2, player3), name = "Test Game 1")
+    val game2 = Game(listOf(player2, player3, player4), name = "Test Game 2")
 
     localDb.insertGame(game1)
     localDb.insertGame(game2)
@@ -184,8 +176,6 @@ class TestCleanDeletedData : TestAuthenticated() {
 
   @Test
   fun testCleanDeletedDataDoesNotAffectActiveData() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val activePlayer = Player("Active")
     val deletedPlayer = Player("Deleted")
 
@@ -206,8 +196,6 @@ class TestCleanDeletedData : TestAuthenticated() {
 
   @Test
   fun testManualCleanDeletedDataCall() = runTestWithTrueClock {
-    uploader.isActive = false
-
     val player = Player("ToDelete")
     localDb.insertPlayer(player)
     localDb.deletePlayer(player.id)
@@ -223,12 +211,10 @@ class TestCleanDeletedData : TestAuthenticated() {
 
   @Test
   fun testDeletedGameWithRoundsCleanedTogether() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
     players.forEach { localDb.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
 
     val round1 =

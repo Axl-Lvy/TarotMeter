@@ -12,12 +12,14 @@ import proj.tarotmeter.axl.util.DateUtil
  * @property id unique game id, should be autoincrement.
  * @property players list of players in the game.
  * @property rounds list of rounds played in the game, sorted by their index.
+ * @property name name for the game.
  * @property startedAt timestamp when the game started.
  * @property updatedAt timestamp when the game was last edited.
  */
 @Serializable
 data class Game(
   val players: List<Player>,
+  val name: String,
   val id: Uuid = Uuid.random(),
   private val roundsInternal: MutableList<Round> = mutableStateListOf(),
   val startedAt: Instant = DateUtil.now(),

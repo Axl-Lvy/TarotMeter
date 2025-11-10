@@ -38,6 +38,10 @@ object NoOpDatabaseManager : DatabaseManager {
     /* Nothing to do */
   }
 
+  override suspend fun renameGame(id: Uuid, newName: String) {
+    /* Nothing to do */
+  }
+
   override suspend fun addRound(gameId: Uuid, round: Round) {
     /* Nothing to do */
   }

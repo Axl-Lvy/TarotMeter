@@ -16,12 +16,13 @@ class GamesProvider : KoinComponent {
    * Creates a new game.
    *
    * @param players The players involved in this game.
+   * @param name Name for the game.
    * @return The created [Game].
    * @throws IllegalArgumentException if the number of players is not between 3 and 5.
    */
-  suspend fun createGame(players: Set<Player>): Game {
+  suspend fun createGame(players: Set<Player>, name: String): Game {
     require(players.size in 3..5) { "A game must have between 3 and 5 players." }
-    val game = Game(players = players.toList())
+    val game = Game(players = players.toList(), name = name)
     databaseManager.insertGame(game)
     return game
   }
@@ -40,6 +41,16 @@ class GamesProvider : KoinComponent {
    * @return The list of all [games][Game].
    */
   suspend fun getGames(): List<Game> = databaseManager.getGames()
+
+  /**
+   * Renames an existing game.
+   *
+   * @param id The id of the game to rename.
+   * @param newName The new name for the game.
+   */
+  suspend fun renameGame(id: Uuid, newName: String) {
+    databaseManager.renameGame(id, newName)
+  }
 
   /**
    * Adds a [round] to a game.

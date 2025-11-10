@@ -11,12 +11,14 @@ import kotlin.uuid.Uuid
  * Room entity for Game.
  *
  * @property id Unique game identifier.
+ * @property name Name for the game.
  * @property startedAt Timestamp when the game was started.
  * @property updatedAt Timestamp when the game was last updated.
  */
 @Entity(indices = [Index(value = ["game_id"])])
 data class GameEntity(
   @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "game_id") val id: Uuid,
+  @ColumnInfo(name = "name") val name: String,
   @ColumnInfo(name = "started_at") val startedAt: Instant,
   @ColumnInfo(name = "updated_at") val updatedAt: Instant,
   @ColumnInfo(name = "is_deleted") val isDeleted: Boolean = false,

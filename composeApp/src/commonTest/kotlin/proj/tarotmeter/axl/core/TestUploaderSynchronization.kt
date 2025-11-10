@@ -88,8 +88,6 @@ class TestUploaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testBurstPlayerInsertionSynchronizesAll() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val players = (0 until 6).map { Player("P$it") }
     players.forEach { localDb.insertPlayer(it) }
 
@@ -102,8 +100,6 @@ class TestUploaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testSequentialPlayerInsertionsSynchronize() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val a = Player("A")
     localDb.insertPlayer(a)
     awaitCloudPlayersMatch()
@@ -118,8 +114,6 @@ class TestUploaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testPlayerDeletionPropagates() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val p = Player("ToDelete")
     localDb.insertPlayer(p)
     awaitCloudPlayersMatch()
@@ -134,13 +128,11 @@ class TestUploaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testGameAndRoundsSynchronization() = runTestWithTrueClock {
-    uploader.isActive = true
-
     val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
     players.forEach { localDb.insertPlayer(it) }
     awaitCloudPlayersMatch()
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
 
     // Add rounds after insertion

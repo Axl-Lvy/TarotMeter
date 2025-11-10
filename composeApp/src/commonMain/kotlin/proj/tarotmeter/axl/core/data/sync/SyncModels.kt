@@ -18,6 +18,7 @@ data class PlayerSync(
 /** Lightweight sync row representing a Game (including soft-deleted ones) with its player ids. */
 data class GameSync(
   val id: Uuid,
+  val name: String,
   val startedAt: Instant,
   val updatedAt: Instant,
   val isDeleted: Boolean,

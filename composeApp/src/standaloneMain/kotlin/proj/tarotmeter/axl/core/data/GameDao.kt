@@ -74,6 +74,18 @@ interface GameDao {
   suspend fun deleteGame(id: Uuid, now: Instant)
 
   /**
+   * Renames a game by ID.
+   *
+   * @param id The game ID to rename.
+   * @param newName The new name for the game.
+   * @param now The current timestamp.
+   */
+  @Query(
+    "UPDATE GameEntity SET name = :newName, updated_at = :now WHERE game_id = :id AND is_deleted = false"
+  )
+  suspend fun renameGame(id: Uuid, newName: String, now: Instant)
+
+  /**
    * Deletes all games associated with a specific player.
    *
    * @param playerId The player ID.

@@ -60,6 +60,14 @@ interface DatabaseManager {
   suspend fun insertGame(game: Game)
 
   /**
+   * Renames an existing game.
+   *
+   * @param id The game's ID.
+   * @param newName The new name for the game.
+   */
+  suspend fun renameGame(id: Uuid, newName: String)
+
+  /**
    * Removes a game from the database.
    *
    * @param id The game ID to remove.

@@ -79,6 +79,8 @@
   <!-- New Game Screen -->
   <string name="new_game_header">Create New Game</string>
   <string name="new_game_select_players">Select Players</string>
+  <string name="new_game_name_label">Game Name</string>
+  <string name="new_game_name_placeholder">Enter a name for this game</string>
   <plurals name="new_game_selected_count">
     <item quantity="one">Selected: %1$d player (3-5 required)</item>
     <item quantity="other">Selected: %1$d players (3-5 required)</item>
@@ -109,6 +111,9 @@
     <item quantity="one">%1$d round</item>
     <item quantity="other">%1$d rounds</item>
   </plurals>
+  <string name="history_rename_game">Rename Game</string>
+  <string name="history_rename_game_label">Game Name</string>
+  <string name="history_rename_game_placeholder">Enter new game name</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Settings</string>

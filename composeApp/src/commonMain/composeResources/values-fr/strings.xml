@@ -80,6 +80,8 @@
   <!-- New Game Screen -->
   <string name="new_game_header">Créer une Nouvelle Partie</string>
   <string name="new_game_select_players">Sélectionner les Joueurs</string>
+  <string name="new_game_name_label">Nom de la Partie</string>
+  <string name="new_game_name_placeholder">Entrez un nom pour cette partie</string>
   <plurals name="new_game_selected_count">
     <item quantity="one">Sélectionné : %1$d joueur (3-5 requis)</item>
     <item quantity="other">Sélectionnés : %1$d joueurs (3-5 requis)</item>
@@ -111,6 +113,9 @@
     <item quantity="one">%1$d donne</item>
     <item quantity="other">%1$d donnes</item>
   </plurals>
+  <string name="history_rename_game">Renommer la Partie</string>
+  <string name="history_rename_game_label">Nom de la Partie</string>
+  <string name="history_rename_game_placeholder">Entrez le nouveau nom de la partie</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Paramètres</string>
