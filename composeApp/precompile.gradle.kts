@@ -6,14 +6,12 @@ val generateSecretsTask by
     group = "codegen"
     description = "Generate secrets from local.properties"
 
-    notCompatibleWithConfigurationCache("Task uses project-level properties and file I/O")
-
-    val projectDirValue = projectDir
-    val rootProjectDirValue = rootProject.projectDir
+    val projectDirValue = layout.projectDirectory.asFile
+    val rootProjectDirValue = rootProject.layout.projectDirectory.asFile
 
     // Determine which local.properties file to use
-    val moduleProps = File(projectDirValue, "local.properties")
-    val globalProps = File(rootProjectDirValue, "local.properties")
+    val moduleProps = projectDirValue.resolve("local.properties")
+    val globalProps = rootProjectDirValue.resolve("local.properties")
     val propsFile =
       when {
         moduleProps.exists() -> moduleProps
@@ -21,18 +19,21 @@ val generateSecretsTask by
         else -> null
       }
 
+    // Declare inputs - mark as optional if file doesn't exist
+    if (propsFile != null) {
+      inputs.file(propsFile).optional()
+    }
+
     // Declare output file
     val (secretsPackageDir, secretsFile) = getGeneratedFileName(projectDirValue)
+    outputs.file(secretsFile)
 
     doLast {
       // If no local.properties file is found, properties will be empty
       val properties =
-        if (propsFile == null) {
+        if (propsFile == null || !propsFile.exists()) {
           Properties()
         } else {
-          if (!propsFile.exists()) {
-            error("local.properties file not found at ${propsFile.absolutePath}")
-          }
           Properties().apply { load(propsFile.inputStream()) }
         }
 
