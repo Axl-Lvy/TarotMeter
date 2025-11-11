@@ -6,8 +6,8 @@ val generateSecretsTask by
     group = "codegen"
     description = "Generate secrets from local.properties"
 
-    val projectDirValue = projectDir
-    val rootProjectDirValue = rootProject.projectDir
+    val projectDirValue = layout.projectDirectory.asFile // Changed from projectDir
+    val rootProjectDirValue = rootProject.layout.projectDirectory.asFile
 
     // Determine which local.properties file to use
     val moduleProps = File(projectDirValue, "local.properties")
@@ -25,6 +25,7 @@ val generateSecretsTask by
     // Declare output file
     val (secretsPackageDir, secretsFile) = getGeneratedFileName(projectDirValue)
     outputs.file(secretsFile)
+    outputs.cacheIf { true }
 
     doLast {
       // If no local.properties file is found, properties will be empty
@@ -81,7 +82,7 @@ val cleanSecretsTask by
   tasks.registering {
     group = "codegen"
     description = "Clean generated Secrets.kt file"
-    val projectDirValue = projectDir
+    val projectDirValue = layout.projectDirectory.asFile
     val (secretsPackageDir, secretsFile) = getGeneratedFileName(projectDirValue)
 
     doLast {
@@ -133,7 +134,10 @@ fun String.toCamelCase(): String {
 }
 
 tasks
-  .matching { it.name.contains("compile", ignoreCase = true) }
+  .matching {
+    it.name.contains("compile", ignoreCase = true) ||
+      it.name.contains("kspKotlinJvm", ignoreCase = true)
+  }
   .configureEach { dependsOn(generateSecretsTask) }
 
 tasks.matching { it.name == "clean" }.configureEach { dependsOn(cleanSecretsTask) }
