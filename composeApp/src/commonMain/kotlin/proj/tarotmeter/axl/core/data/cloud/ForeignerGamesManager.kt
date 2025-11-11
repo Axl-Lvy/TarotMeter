@@ -15,6 +15,7 @@ import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.cloud.model.SupabasePlayer
 import proj.tarotmeter.axl.core.data.cloud.model.SupabaseRound
 import proj.tarotmeter.axl.core.data.model.Game
+import proj.tarotmeter.axl.core.data.model.Round
 
 /**
  * Manages games that are not owned by the current user but that the user can join via an invitation
@@ -32,7 +33,7 @@ class ForeignerGamesManager : KoinComponent {
    */
   suspend fun createGameInvitation(gameId: Uuid): Int {
     if (authManager.user == null) {
-      return -1
+      error("User must be logged in to invite to a game")
     }
     val invitationCode = Random.nextInt(1_0000_0000) // 8-digit code
 
@@ -48,6 +49,9 @@ class ForeignerGamesManager : KoinComponent {
    * @param invitationCode The invitation code to join the game
    */
   suspend fun joinGame(invitationCode: Int) {
+    if (authManager.user == null) {
+      error("User must be logged in to join a game")
+    }
     supabaseClient.postgrest.rpc(
       "join_game_with_invitation",
       SupabaseGameInvitationCode(invitationCode),
@@ -60,10 +64,26 @@ class ForeignerGamesManager : KoinComponent {
    * @return The list of non-owned games
    */
   suspend fun getNonOwnedGames(): List<Game> {
-    val rpc = supabaseClient.postgrest.rpc("get_my_cross_games")
-    print(rpc.data)
-    val fetchResult = rpc.decodeList<SupabaseGameWithRefs>()
+    val fetchResult =
+      supabaseClient.postgrest.rpc("get_my_cross_games").decodeList<SupabaseGameWithRefs>()
     return fetchResult.filter { !it.isDeleted }.map { it.toGame() }
+  }
+
+  suspend fun upsertRound(gameId: Uuid, round: Round) {
+    if (authManager.user == null) {
+      error("User must be logged in to upsert a round")
+    }
+    supabaseClient.postgrest.rpc(
+      "upsert_round_for_user",
+      mapOf("p_round" to SupabaseRound(round, gameId.toString())),
+    )
+  }
+
+  suspend fun deleteRound(roundId: Uuid) {
+    if (authManager.user == null) {
+      error("User must be logged in to delete a round")
+    }
+    supabaseClient.postgrest.rpc("delete_round_for_user", mapOf("p_round_id" to roundId))
   }
 }
 
