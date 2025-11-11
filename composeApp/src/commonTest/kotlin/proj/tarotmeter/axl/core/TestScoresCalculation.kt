@@ -324,8 +324,6 @@ class TestScoresCalculation {
 
   @Test
   fun testForPlayerWithMissingPlayer() {
-    error(Secrets.testUserMail1)
-    error(Secrets.testUserMail2)
     val players = createPlayers(3)
     val missingPlayer = Player("Missing")
 

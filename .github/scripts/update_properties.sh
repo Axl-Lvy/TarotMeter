@@ -15,8 +15,13 @@ if [ ! -z "$SUPABASE_API_KEY" ]; then
   echo "Added SUPABASE_API_KEY to local.properties"
 fi
 
-if [ ! -z "$TEST_USER_MAIL" ]; then
-  echo "TEST_USER_MAIL=$TEST_USER_MAIL" >> local.properties
+if [ ! -z "$TEST_USER_MAIL_1" ]; then
+  echo "TEST_USER_MAIL_1=$TEST_USER_MAIL_1" >> local.properties
+  echo "Added TEST_USER_MAIL to local.properties"
+fi
+
+if [ ! -z "$TEST_USER_MAIL_2" ]; then
+  echo "TEST_USER_MAIL_2=$TEST_USER_MAIL_2" >> local.properties
   echo "Added TEST_USER_MAIL to local.properties"
 fi
 
