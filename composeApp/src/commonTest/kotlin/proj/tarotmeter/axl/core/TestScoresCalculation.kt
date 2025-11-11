@@ -11,7 +11,6 @@ import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
-import proj.tarotmeter.axl.util.generated.Secrets
 
 class TestScoresCalculation {
 
