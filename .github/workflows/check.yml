@@ -49,8 +49,8 @@ jobs:
           .github/scripts/update_properties.sh
         env:
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
-          TEST_USER_MAIL1: "testuser1@axl.com"
-          TEST_USER_MAIL2: "testuser2@axl.com"
+          TEST_USER_MAIL_1: "testuser1@axl.com"
+          TEST_USER_MAILr_2: "testuser2@axl.com"
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
       - name: Setup Gradle

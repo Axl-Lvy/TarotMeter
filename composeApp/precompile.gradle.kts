@@ -8,8 +8,8 @@ val generateSecretsTask by
 
     notCompatibleWithConfigurationCache("Task uses project-level properties and file I/O")
 
-    val projectDirValue = layout.projectDirectory.asFile // Changed from projectDir
-    val rootProjectDirValue = rootProject.layout.projectDirectory.asFile
+    val projectDirValue = projectDir
+    val rootProjectDirValue = rootProject.projectDir
 
     // Determine which local.properties file to use
     val moduleProps = File(projectDirValue, "local.properties")
