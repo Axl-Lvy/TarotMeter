@@ -4,7 +4,7 @@ import kotlin.uuid.Uuid
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.DatabaseManager
-import proj.tarotmeter.axl.core.data.cloud.ForeignerGamesManager
+import proj.tarotmeter.axl.core.data.cloud.SharedGamesManager
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.GameSource
 import proj.tarotmeter.axl.core.data.model.Player
@@ -13,7 +13,7 @@ import proj.tarotmeter.axl.core.data.model.Round
 /** Provides access to and management of games within the application. */
 class GamesProvider : KoinComponent {
   private val databaseManager: DatabaseManager by inject()
-  private val foreignerGamesManager: ForeignerGamesManager by inject()
+  private val sharedGamesManager: SharedGamesManager by inject()
 
   /**
    * Retrieves a game.
@@ -29,7 +29,7 @@ class GamesProvider : KoinComponent {
     }
 
     // Try remote if not found locally
-    val remoteGames = foreignerGamesManager.getNonOwnedGames()
+    val remoteGames = sharedGamesManager.getNonOwnedGames()
     return remoteGames.find { it.id == id }
   }
 
@@ -40,7 +40,7 @@ class GamesProvider : KoinComponent {
    */
   suspend fun getGames(): List<Game> {
     val localGames = databaseManager.getGames()
-    val remoteGames = foreignerGamesManager.getNonOwnedGames()
+    val remoteGames = sharedGamesManager.getNonOwnedGames()
     return localGames + remoteGames
   }
 
@@ -86,7 +86,7 @@ class GamesProvider : KoinComponent {
 
     when (game.source) {
       GameSource.LOCAL -> databaseManager.addRound(gameId, round)
-      GameSource.REMOTE -> foreignerGamesManager.upsertRound(gameId, round)
+      GameSource.REMOTE -> sharedGamesManager.upsertRound(gameId, round)
     }
   }
 
@@ -98,7 +98,7 @@ class GamesProvider : KoinComponent {
     if (game != null) {
       when (game.source) {
         GameSource.LOCAL -> databaseManager.deleteRound(roundId)
-        GameSource.REMOTE -> foreignerGamesManager.deleteRound(roundId)
+        GameSource.REMOTE -> sharedGamesManager.deleteRound(roundId)
       }
     }
   }
@@ -111,7 +111,7 @@ class GamesProvider : KoinComponent {
     if (game != null) {
       when (game.source) {
         GameSource.LOCAL -> databaseManager.updateRound(round)
-        GameSource.REMOTE -> foreignerGamesManager.upsertRound(game.id, round)
+        GameSource.REMOTE -> sharedGamesManager.upsertRound(game.id, round)
       }
     }
   }

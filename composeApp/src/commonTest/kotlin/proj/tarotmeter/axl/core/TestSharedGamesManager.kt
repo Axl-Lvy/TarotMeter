@@ -11,7 +11,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.cloud.CloudDatabaseManager
-import proj.tarotmeter.axl.core.data.cloud.ForeignerGamesManager
+import proj.tarotmeter.axl.core.data.cloud.SharedGamesManager
 import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
@@ -27,7 +27,7 @@ import proj.tarotmeter.axl.util.generated.Secrets
 class TestSharedGamesManager : TestWithKoin {
   private val authManager: AuthManager by inject()
   private val cloudDb: CloudDatabaseManager by inject()
-  private val foreignerGamesManager: ForeignerGamesManager by inject()
+  private val sharedGamesManager: SharedGamesManager by inject()
 
   @BeforeTest
   override fun setUp() {
@@ -95,7 +95,7 @@ class TestSharedGamesManager : TestWithKoin {
       )
     cloudDb.addRound(game.id, round)
 
-    val invitationCode = foreignerGamesManager.createGameInvitation(game.id)
+    val invitationCode = sharedGamesManager.createGameInvitation(game.id)
     assertTrue(invitationCode > 0, "Invitation code should be positive")
 
     // Disconnect user 1
@@ -105,10 +105,10 @@ class TestSharedGamesManager : TestWithKoin {
     // === USER 2: Join game and fetch it ===
     signInAsUser2()
 
-    foreignerGamesManager.joinGame(invitationCode)
+    sharedGamesManager.joinGame(invitationCode)
 
     // Fetch non-owned games for user 2
-    val nonOwnedGames = foreignerGamesManager.getNonOwnedGames()
+    val nonOwnedGames = sharedGamesManager.getNonOwnedGames()
 
     // Assert that user 2 can see the game
     val sharedGame = nonOwnedGames.find { it.id == gameId }
@@ -140,7 +140,7 @@ class TestSharedGamesManager : TestWithKoin {
     cloudDb.insertGame(game)
     val gameId = game.id
 
-    val invitationCode = foreignerGamesManager.createGameInvitation(game.id)
+    val invitationCode = sharedGamesManager.createGameInvitation(game.id)
 
     // Disconnect user 1
     authManager.signOut()
@@ -149,7 +149,7 @@ class TestSharedGamesManager : TestWithKoin {
     // === USER 2: Join game and upsert a round ===
     signInAsUser2()
 
-    foreignerGamesManager.joinGame(invitationCode)
+    sharedGamesManager.joinGame(invitationCode)
 
     val newRound =
       Round(
@@ -164,10 +164,10 @@ class TestSharedGamesManager : TestWithKoin {
         index = 0,
       )
 
-    foreignerGamesManager.upsertRound(gameId, newRound)
+    sharedGamesManager.upsertRound(gameId, newRound)
 
     run { // Fetch the game and verify the round was inserted
-      val nonOwnedGames = foreignerGamesManager.getNonOwnedGames()
+      val nonOwnedGames = sharedGamesManager.getNonOwnedGames()
       val sharedGame = nonOwnedGames.find { it.id == gameId }
 
       assertNotNull(sharedGame, "Game should be accessible")
@@ -183,10 +183,10 @@ class TestSharedGamesManager : TestWithKoin {
 
     val updatedRound = newRound.copy(takerPoints = 70)
     run {
-      foreignerGamesManager.upsertRound(gameId, updatedRound)
+      sharedGamesManager.upsertRound(gameId, updatedRound)
 
       // Fetch the game and verify the round was inserted
-      val nonOwnedGames = foreignerGamesManager.getNonOwnedGames()
+      val nonOwnedGames = sharedGamesManager.getNonOwnedGames()
       val sharedGame = nonOwnedGames.find { it.id == gameId }
 
       assertNotNull(sharedGame, "Game should be accessible")
@@ -227,7 +227,7 @@ class TestSharedGamesManager : TestWithKoin {
     val gameId = game.id
     val roundId = game.rounds.first().id
 
-    val invitationCode = foreignerGamesManager.createGameInvitation(game.id)
+    val invitationCode = sharedGamesManager.createGameInvitation(game.id)
 
     // Disconnect user 1
     authManager.signOut()
@@ -236,19 +236,19 @@ class TestSharedGamesManager : TestWithKoin {
     // === USER 2: Join game and delete the round ===
     signInAsUser2()
 
-    foreignerGamesManager.joinGame(invitationCode)
+    sharedGamesManager.joinGame(invitationCode)
 
     // Verify round exists before deletion
-    var nonOwnedGames = foreignerGamesManager.getNonOwnedGames()
+    var nonOwnedGames = sharedGamesManager.getNonOwnedGames()
     var sharedGame = nonOwnedGames.find { it.id == gameId }
     assertNotNull(sharedGame, "Game should be accessible")
     assertEquals(1, sharedGame.rounds.size)
 
     // Delete the round
-    foreignerGamesManager.deleteRound(roundId)
+    sharedGamesManager.deleteRound(roundId)
 
     // Verify round was deleted
-    nonOwnedGames = foreignerGamesManager.getNonOwnedGames()
+    nonOwnedGames = sharedGamesManager.getNonOwnedGames()
     sharedGame = nonOwnedGames.find { it.id == gameId }
     assertNotNull(sharedGame, "Game should still be accessible")
     assertTrue(sharedGame.rounds.isEmpty(), "Round should be deleted")
@@ -284,7 +284,7 @@ class TestSharedGamesManager : TestWithKoin {
       )
     cloudDb.addRound(game.id, round)
 
-    foreignerGamesManager.createGameInvitation(game.id)
+    sharedGamesManager.createGameInvitation(game.id)
 
     // Disconnect user 1
     authManager.signOut()
@@ -294,7 +294,7 @@ class TestSharedGamesManager : TestWithKoin {
     signInAsUser2()
 
     // User 2 should NOT see the game since they didn't join
-    val nonOwnedGames = foreignerGamesManager.getNonOwnedGames()
+    val nonOwnedGames = sharedGamesManager.getNonOwnedGames()
     val sharedGame = nonOwnedGames.find { it.id == gameId }
 
     assertNull(sharedGame, "User 2 should not be able to see the game without an invitation")

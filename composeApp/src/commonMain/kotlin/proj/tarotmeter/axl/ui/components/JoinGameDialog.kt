@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import proj.tarotmeter.axl.core.data.cloud.ForeignerGamesManager
+import proj.tarotmeter.axl.core.data.cloud.SharedGamesManager
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.general_cancel
 import tarotmeter.composeapp.generated.resources.join_game_dialog_button
@@ -44,7 +44,7 @@ import tarotmeter.composeapp.generated.resources.join_game_dialog_title
 fun JoinGameDialog(
   onDismiss: () -> Unit,
   onSuccess: () -> Unit,
-  foreignerGamesManager: ForeignerGamesManager = koinInject(),
+  sharedGamesManager: SharedGamesManager = koinInject(),
 ) {
   var invitationCode by remember { mutableStateOf("") }
   var exception by remember { mutableStateOf<Exception?>(null) }
@@ -92,7 +92,7 @@ fun JoinGameDialog(
           coroutineScope.launch {
             isLoading = true
             try {
-              foreignerGamesManager.joinGame(code)
+              sharedGamesManager.joinGame(code)
               onSuccess()
             } catch (e: Exception) {
               exception = e

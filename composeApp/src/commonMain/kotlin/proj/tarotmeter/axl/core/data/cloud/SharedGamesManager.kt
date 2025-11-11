@@ -22,7 +22,7 @@ import proj.tarotmeter.axl.core.data.model.Round
  * Manages games that are not owned by the current user but that the user can join via an invitation
  * code
  */
-class ForeignerGamesManager : KoinComponent {
+class SharedGamesManager : KoinComponent {
   private val authManager: AuthManager by inject()
   private val supabaseClient: SupabaseClient by inject()
 
@@ -33,7 +33,7 @@ class ForeignerGamesManager : KoinComponent {
    * @return The invitation code created, or -1 if the user is not logged in
    */
   suspend fun createGameInvitation(gameId: Uuid): Int {
-    val currentUser = authManager.user ?: error("User must be logged in to invite to a game")
+    requireNotNull(authManager.user) { "User must be logged in to invite to a game" }
     val invitationCode = Random.nextInt(1_0000_0000) // 8-digit code
 
     supabaseClient.from("game_invitation").delete { filter { eq("game_id", gameId) } }

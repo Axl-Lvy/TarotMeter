@@ -33,7 +33,7 @@ import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import proj.tarotmeter.axl.core.data.cloud.ForeignerGamesManager
+import proj.tarotmeter.axl.core.data.cloud.SharedGamesManager
 import proj.tarotmeter.axl.util.toClipEntry
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.game_editor_invite
@@ -53,7 +53,7 @@ import tarotmeter.composeapp.generated.resources.invitation_code_dialog_title
 fun GameInvitationDialog(
   gameId: Uuid,
   onDismiss: () -> Unit,
-  foreignerGamesManager: ForeignerGamesManager = koinInject(),
+  sharedGamesManager: SharedGamesManager = koinInject(),
 ) {
   var invitationCode by remember { mutableStateOf<Int?>(null) }
   var isLoading by remember { mutableStateOf(true) }
@@ -63,7 +63,7 @@ fun GameInvitationDialog(
   LaunchedEffect(gameId) {
     coroutineScope.launch {
       try {
-        invitationCode = foreignerGamesManager.createGameInvitation(gameId)
+        invitationCode = sharedGamesManager.createGameInvitation(gameId)
         isLoading = false
       } catch (e: Exception) {
         errorMessage = e.message ?: "Unknown error"
