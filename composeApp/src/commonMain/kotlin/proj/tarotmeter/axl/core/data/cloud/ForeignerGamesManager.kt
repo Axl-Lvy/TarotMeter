@@ -16,15 +16,25 @@ import proj.tarotmeter.axl.core.data.cloud.model.SupabasePlayer
 import proj.tarotmeter.axl.core.data.cloud.model.SupabaseRound
 import proj.tarotmeter.axl.core.data.model.Game
 
+/**
+ * Manages games that are not owned by the current user but that the user can join via an invitation
+ * code
+ */
 class ForeignerGamesManager : KoinComponent {
-  val authManager: AuthManager by inject()
-  val supabaseClient: SupabaseClient by inject()
+  private val authManager: AuthManager by inject()
+  private val supabaseClient: SupabaseClient by inject()
 
+  /**
+   * Creates a game invitation for the given game id
+   *
+   * @param gameId The id of the game to create the invitation for
+   * @return The invitation code created, or -1 if the user is not logged in
+   */
   suspend fun createGameInvitation(gameId: Uuid): Int {
     if (authManager.user == null) {
       return -1
     }
-    val invitationCode = Random.nextInt(1000000)
+    val invitationCode = Random.nextInt(1_0000_0000) // 8-digit code
 
     supabaseClient
       .from("game_invitation")
@@ -32,6 +42,11 @@ class ForeignerGamesManager : KoinComponent {
     return invitationCode
   }
 
+  /**
+   * Joins a game using the given invitation code
+   *
+   * @param invitationCode The invitation code to join the game
+   */
   suspend fun joinGame(invitationCode: Int) {
     supabaseClient.postgrest.rpc(
       "join_game_with_invitation",
@@ -39,6 +54,11 @@ class ForeignerGamesManager : KoinComponent {
     )
   }
 
+  /**
+   * Gets all games that are not owned by the current user but that the user can access
+   *
+   * @return The list of non-owned games
+   */
   suspend fun getNonOwnedGames(): List<Game> {
     val rpc = supabaseClient.postgrest.rpc("get_my_cross_games")
     print(rpc.data)
@@ -78,7 +98,7 @@ private data class SupabaseGameWithRefs(
       roundsInternal =
         rounds
           .sortedBy { it.index }
-          .map { it.toRound { id -> idToPlayer[id] ?: error { "Player $id not found" } } }
+          .map { it.toRound { id -> idToPlayer[id] ?: error("Player $id not found") } }
           .toMutableList(),
       startedAt = createdAt,
       updatedAtInternal = updatedAt,
