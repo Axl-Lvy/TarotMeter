@@ -101,6 +101,7 @@
   <string name="game_editor_delete_confirm_title">Supprimer la Donne ?</string>
   <string name="game_editor_delete_confirm_message">Êtes-vous sûr de vouloir supprimer cette donne ? Cette action est irréversible.</string>
   <string name="game_editor_taker_points">Preneur • %1$d pts</string>
+  <string name="game_editor_invite">Inviter des utilisateurs</string>
 
   <!-- History Screen -->
   <plurals name="history_game_count">
