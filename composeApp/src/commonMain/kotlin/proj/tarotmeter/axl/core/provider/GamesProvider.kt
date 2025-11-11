@@ -4,28 +4,16 @@ import kotlin.uuid.Uuid
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.DatabaseManager
+import proj.tarotmeter.axl.core.data.cloud.ForeignerGamesManager
 import proj.tarotmeter.axl.core.data.model.Game
+import proj.tarotmeter.axl.core.data.model.GameSource
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
 
 /** Provides access to and management of games within the application. */
 class GamesProvider : KoinComponent {
   private val databaseManager: DatabaseManager by inject()
-
-  /**
-   * Creates a new game.
-   *
-   * @param players The players involved in this game.
-   * @param name Name for the game.
-   * @return The created [Game].
-   * @throws IllegalArgumentException if the number of players is not between 3 and 5.
-   */
-  suspend fun createGame(players: Set<Player>, name: String): Game {
-    require(players.size in 3..5) { "A game must have between 3 and 5 players." }
-    val game = Game(players = players.toList(), name = name)
-    databaseManager.insertGame(game)
-    return game
-  }
+  private val foreignerGamesManager: ForeignerGamesManager by inject()
 
   /**
    * Retrieves a game.
@@ -33,14 +21,41 @@ class GamesProvider : KoinComponent {
    * @param id The id of the game to retrieve.
    * @return The [Game] with the given id, or null if not found.
    */
-  suspend fun getGame(id: Uuid): Game? = databaseManager.getGame(id)
+  suspend fun getGame(id: Uuid): Game? {
+    // Try local first
+    val localGame = databaseManager.getGame(id)
+    if (localGame != null) {
+      return localGame
+    }
+
+    // Try remote if not found locally
+    val remoteGames = foreignerGamesManager.getNonOwnedGames()
+    return remoteGames.find { it.id == id }
+  }
 
   /**
-   * Retrieves all games.
+   * Retrieves all games (both local and remote).
    *
    * @return The list of all [games][Game].
    */
-  suspend fun getGames(): List<Game> = databaseManager.getGames()
+  suspend fun getGames(): List<Game> {
+    val localGames = databaseManager.getGames()
+    val remoteGames = foreignerGamesManager.getNonOwnedGames()
+    return localGames + remoteGames
+  }
+
+  /**
+   * Creates a new game.
+   *
+   * @param players The set of players in the game.
+   * @param name Name for the game.
+   * @return The created [Game].
+   */
+  suspend fun createGame(players: Set<Player>, name: String): Game {
+    val game = Game(players = players.toList(), name = name)
+    databaseManager.insertGame(game)
+    return game
+  }
 
   /**
    * Renames an existing game.
@@ -49,7 +64,14 @@ class GamesProvider : KoinComponent {
    * @param newName The new name for the game.
    */
   suspend fun renameGame(id: Uuid, newName: String) {
-    databaseManager.renameGame(id, newName)
+    val game = getGame(id) ?: return
+    when (game.source) {
+      GameSource.LOCAL -> databaseManager.renameGame(id, newName)
+      GameSource.REMOTE -> {
+        // Remote games cannot be renamed directly
+        throw UnsupportedOperationException("Cannot rename remote games")
+      }
+    }
   }
 
   /**
@@ -61,14 +83,36 @@ class GamesProvider : KoinComponent {
   suspend fun addRound(gameId: Uuid, round: Round) {
     val game = getGame(gameId) ?: return
     game.addRound(round)
-    databaseManager.addRound(gameId, round)
+
+    when (game.source) {
+      GameSource.LOCAL -> databaseManager.addRound(gameId, round)
+      GameSource.REMOTE -> foreignerGamesManager.upsertRound(gameId, round)
+    }
   }
 
   suspend fun deleteRound(roundId: Uuid) {
-    databaseManager.deleteRound(roundId)
+    // First, find which game this round belongs to
+    val allGames = getGames()
+    val game = allGames.find { game -> game.rounds.any { it.id == roundId } }
+
+    if (game != null) {
+      when (game.source) {
+        GameSource.LOCAL -> databaseManager.deleteRound(roundId)
+        GameSource.REMOTE -> foreignerGamesManager.deleteRound(roundId)
+      }
+    }
   }
 
   suspend fun updateRound(round: Round) {
-    databaseManager.updateRound(round)
+    // First, find which game this round belongs to
+    val allGames = getGames()
+    val game = allGames.find { game -> game.rounds.any { it.id == round.id } }
+
+    if (game != null) {
+      when (game.source) {
+        GameSource.LOCAL -> databaseManager.updateRound(round)
+        GameSource.REMOTE -> foreignerGamesManager.upsertRound(game.id, round)
+      }
+    }
   }
 }

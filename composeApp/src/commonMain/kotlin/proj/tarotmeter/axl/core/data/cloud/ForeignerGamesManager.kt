@@ -15,6 +15,7 @@ import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.cloud.model.SupabasePlayer
 import proj.tarotmeter.axl.core.data.cloud.model.SupabaseRound
 import proj.tarotmeter.axl.core.data.model.Game
+import proj.tarotmeter.axl.core.data.model.GameSource
 import proj.tarotmeter.axl.core.data.model.Round
 
 /**
@@ -32,14 +33,14 @@ class ForeignerGamesManager : KoinComponent {
    * @return The invitation code created, or -1 if the user is not logged in
    */
   suspend fun createGameInvitation(gameId: Uuid): Int {
-    if (authManager.user == null) {
-      error("User must be logged in to invite to a game")
-    }
+    val currentUser = authManager.user ?: error("User must be logged in to invite to a game")
     val invitationCode = Random.nextInt(1_0000_0000) // 8-digit code
+
+    supabaseClient.from("game_invitation").delete { filter { eq("game_id", gameId) } }
 
     supabaseClient
       .from("game_invitation")
-      .insert(SupabaseGameInvitation(gameId = gameId, invitationCode = invitationCode))
+      .upsert(SupabaseGameInvitation(gameId = gameId, invitationCode = invitationCode))
     return invitationCode
   }
 
@@ -121,6 +122,7 @@ private data class SupabaseGameWithRefs(
           .map { it.toRound { id -> idToPlayer[id] ?: error("Player $id not found") } }
           .toMutableList(),
       startedAt = createdAt,
+      source = GameSource.REMOTE,
       updatedAtInternal = updatedAt,
     )
   }

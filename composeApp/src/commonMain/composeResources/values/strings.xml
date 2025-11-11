@@ -99,6 +99,7 @@
   <string name="game_editor_delete_confirm_title">Delete Round?</string>
   <string name="game_editor_delete_confirm_message">Are you sure you want to delete this round? This action cannot be undone.</string>
   <string name="game_editor_taker_points">Taker • %1$d pts</string>
+  <string name="game_editor_invite">Invite Players</string>
 
   <!-- History Screen -->
   <plurals name="history_game_count">
@@ -114,6 +115,29 @@
   <string name="history_rename_game">Rename Game</string>
   <string name="history_rename_game_label">Game Name</string>
   <string name="history_rename_game_placeholder">Enter new game name</string>
+  <string name="history_join_game">Join Game</string>
+
+  <!-- Game Source Labels -->
+  <string name="game_source_local">Local</string>
+  <string name="game_source_remote">Shared</string>
+
+  <!-- Invitation Code -->
+  <string name="invitation_code_dialog_title">Game Invitation</string>
+  <string name="invitation_code_dialog_message">Share this code with others to let them join this game:</string>
+  <string name="invitation_code_dialog_generating">Generating invitation code…</string>
+  <string name="invitation_code_dialog_error">Error: %1$s</string>
+
+  <!-- Join Game -->
+  <string name="join_game_dialog_title">Join Game</string>
+  <string name="join_game_dialog_message">Enter the 8-digit invitation code:</string>
+  <string name="join_game_dialog_input_label">Invitation Code</string>
+  <string name="join_game_dialog_button">Join</string>
+  <string name="join_game_dialog_success">Game Joined!</string>
+  <string name="join_game_dialog_error">Failed to join game</string>
+  <string name="join_game_dialog_not_authenticated">You must be signed in to join a game.</string>
+  <string name="join_game_dialog_invalid_code">Invalid or expired invitation code.</string>
+  <string name="join_game_dialog_game_not_found">Game not found.</string>
+  <string name="join_game_dialog_cannot_join_own">You cannot join your own game.</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Settings</string>

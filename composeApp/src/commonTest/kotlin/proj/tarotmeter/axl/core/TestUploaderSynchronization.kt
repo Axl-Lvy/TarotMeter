@@ -14,7 +14,6 @@ import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.CloudDatabaseManager
-import proj.tarotmeter.axl.core.data.cloud.Uploader
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
@@ -26,7 +25,6 @@ import proj.tarotmeter.axl.util.TEST_TIMEOUT
 import proj.tarotmeter.axl.util.TestAuthenticated
 
 class TestUploaderSynchronization : TestAuthenticated() {
-  private val uploader: Uploader by inject()
   private val localDb: LocalDatabaseManager by inject()
   private val cloudDb: CloudDatabaseManager by inject()
 

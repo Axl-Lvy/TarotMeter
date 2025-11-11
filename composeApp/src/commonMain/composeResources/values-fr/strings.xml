@@ -116,6 +116,29 @@
   <string name="history_rename_game">Renommer la Partie</string>
   <string name="history_rename_game_label">Nom de la Partie</string>
   <string name="history_rename_game_placeholder">Entrez le nouveau nom de la partie</string>
+  <string name="history_join_game">Rejoindre une partie</string>
+
+  <!-- Game Source Labels -->
+  <string name="game_source_local">Local</string>
+  <string name="game_source_remote">Partagée</string>
+
+  <!-- Invitation Code -->
+  <string name="invitation_code_dialog_title">Code d'invitation</string>
+  <string name="invitation_code_dialog_message">Partagez ce code à d'autres utilisateurs pour qu'il rejoignent votre partie:</string>
+  <string name="invitation_code_dialog_generating">Génération du code d'invitation…</string>
+  <string name="invitation_code_dialog_error">Érreur: %1$s</string>
+
+  <!-- Join Game Dialog -->
+  <string name="join_game_dialog_title">Rejoindre une partie</string>
+  <string name="join_game_dialog_message">Entrez le code d'invitation à 8 chiffres:</string>
+  <string name="join_game_dialog_input_label">Code d'invitation</string>
+  <string name="join_game_dialog_button">Rejoindre</string>
+  <string name="join_game_dialog_success">Partie rejointe !</string>
+  <string name="join_game_dialog_error">Échec de la connexion à la partie</string>
+  <string name="join_game_dialog_not_authenticated">Vous devez être connecté pour rejoindre une partie.</string>
+  <string name="join_game_dialog_invalid_code">Code d'invitation invalide ou expiré.</string>
+  <string name="join_game_dialog_game_not_found">Partie introuvable.</string>
+  <string name="join_game_dialog_cannot_join_own">Vous ne pouvez pas rejoindre votre propre partie.</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Paramètres</string>

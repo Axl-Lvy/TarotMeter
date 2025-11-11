@@ -3,12 +3,18 @@ package proj.tarotmeter.axl.ui.pages
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,12 +36,15 @@ import proj.tarotmeter.axl.core.data.model.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
+import proj.tarotmeter.axl.ui.components.GameSourceBadge
+import proj.tarotmeter.axl.ui.components.JoinGameDialog
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.ResponsiveContainer
 import proj.tarotmeter.axl.ui.components.ScoreText
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.history_empty_state
 import tarotmeter.composeapp.generated.resources.history_game_count
+import tarotmeter.composeapp.generated.resources.history_join_game
 import tarotmeter.composeapp.generated.resources.history_round_count
 
 /**
@@ -47,21 +56,54 @@ import tarotmeter.composeapp.generated.resources.history_round_count
 @Composable
 fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koinInject()) {
   var games by remember { mutableStateOf(emptyList<Game>()) }
+  var showJoinGameDialog by remember { mutableStateOf(false) }
+
   LaunchedEffect(Unit) { games = gamesProvider.getGames() }
 
   ResponsiveContainer {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          pluralStringResource(Res.plurals.history_game_count, games.size, games.size),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        FloatingActionButton(
+          onClick = { showJoinGameDialog = true },
+          containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+          contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        ) {
+          Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Icon(
+              imageVector = Icons.Default.Add,
+              contentDescription = stringResource(Res.string.history_join_game),
+              modifier = Modifier.size(20.dp),
+            )
+            Text(
+              text = stringResource(Res.string.history_join_game),
+              style = MaterialTheme.typography.labelLarge,
+            )
+          }
+        }
+      }
+
       if (games.isEmpty()) {
         EmptyState(
           message = stringResource(Res.string.history_empty_state),
           modifier = Modifier.weight(1f),
         )
       } else {
-        Text(
-          pluralStringResource(Res.plurals.history_game_count, games.size, games.size),
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+
+        Spacer(modifier = Modifier.size(8.dp))
 
         LazyColumn(
           verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -73,6 +115,17 @@ fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koi
         }
       }
     }
+  }
+
+  if (showJoinGameDialog) {
+    JoinGameDialog(
+      onDismiss = { showJoinGameDialog = false },
+      onSuccess = {
+        showJoinGameDialog = false
+        // Refresh games list
+        games = emptyList()
+      },
+    )
   }
 }
 
@@ -90,20 +143,26 @@ private fun GameHistoryCard(game: Game, onClick: () -> Unit) {
           style = MaterialTheme.typography.titleLarge,
           color = MaterialTheme.colorScheme.primary,
         )
-        Surface(
-          shape = MaterialTheme.shapes.small,
-          color = MaterialTheme.colorScheme.secondaryContainer,
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalAlignment = Alignment.CenterVertically,
         ) {
-          Text(
-            text =
-              pluralStringResource(
-                Res.plurals.history_round_count,
-                game.rounds.size,
-                game.rounds.size,
-              ),
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-          )
+          GameSourceBadge(source = game.source)
+          Surface(
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.secondaryContainer,
+          ) {
+            Text(
+              text =
+                pluralStringResource(
+                  Res.plurals.history_round_count,
+                  game.rounds.size,
+                  game.rounds.size,
+                ),
+              style = MaterialTheme.typography.labelMedium,
+              modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            )
+          }
         }
       }
 

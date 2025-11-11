@@ -38,6 +38,7 @@ import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.regular.Edit
 import compose.icons.fontawesomeicons.solid.ChevronLeft
+import compose.icons.fontawesomeicons.solid.Share
 import compose.icons.fontawesomeicons.solid.Times
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
@@ -45,12 +46,15 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
+import proj.tarotmeter.axl.core.data.model.GameSource
 import proj.tarotmeter.axl.core.data.model.Round
 import proj.tarotmeter.axl.core.data.model.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
+import proj.tarotmeter.axl.ui.components.GameInvitationDialog
 import proj.tarotmeter.axl.ui.components.GameRenameDialog
+import proj.tarotmeter.axl.ui.components.GameSourceBadge
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.RoundEditor
@@ -70,6 +74,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   var editingRound by remember { mutableStateOf<Round?>(null) }
   var showDeleteDialog by remember { mutableStateOf(false) }
   var roundToDelete by remember { mutableStateOf<Round?>(null) }
+  var showInvitationDialog by remember { mutableStateOf(false) }
   var showRenameDialog by remember { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
 
@@ -86,23 +91,37 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   Column(Modifier.fillMaxSize()) {
     Spacer(modifier = Modifier.size(16.dp))
 
-    // Game name header with rename button
+    // Game name header with rename and invite buttons
     Row(
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      Text(
-        text = currentGame.name,
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.primary,
-      )
-      TextButton(onClick = { showRenameDialog = true }) {
-        Icon(
-          imageVector = FontAwesomeIcons.Regular.Edit,
-          contentDescription = stringResource(Res.string.history_rename_game),
-          modifier = Modifier.size(20.dp),
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+          text = currentGame.name,
+          style = MaterialTheme.typography.headlineSmall,
+          color = MaterialTheme.colorScheme.primary,
         )
+        GameSourceBadge(source = currentGame.source)
+      }
+      if (currentGame.source == GameSource.LOCAL) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          TextButton(onClick = { showInvitationDialog = true }) {
+            Icon(
+              imageVector = FontAwesomeIcons.Solid.Share,
+              contentDescription = stringResource(Res.string.game_editor_invite),
+              modifier = Modifier.size(20.dp),
+            )
+          }
+          TextButton(onClick = { showRenameDialog = true }) {
+            Icon(
+              imageVector = FontAwesomeIcons.Regular.Edit,
+              contentDescription = stringResource(Res.string.history_rename_game),
+              modifier = Modifier.size(20.dp),
+            )
+          }
+        }
       }
     }
 
@@ -194,6 +213,11 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
         }
       },
     )
+  }
+
+  // Invitation dialog
+  if (showInvitationDialog) {
+    GameInvitationDialog(gameId = gameId, onDismiss = { showInvitationDialog = false })
   }
 
   if (editingRound != null) {

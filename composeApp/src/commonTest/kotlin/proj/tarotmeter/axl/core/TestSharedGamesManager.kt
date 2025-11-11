@@ -24,7 +24,7 @@ import proj.tarotmeter.axl.util.TEST_TIMEOUT
 import proj.tarotmeter.axl.util.TestWithKoin
 import proj.tarotmeter.axl.util.generated.Secrets
 
-class TestNonOwnedGamesManager : TestWithKoin {
+class TestSharedGamesManager : TestWithKoin {
   private val authManager: AuthManager by inject()
   private val cloudDb: CloudDatabaseManager by inject()
   private val foreignerGamesManager: ForeignerGamesManager by inject()
