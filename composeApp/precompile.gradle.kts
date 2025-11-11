@@ -22,55 +22,58 @@ val generateSecretsTask by
     // Declare input file (if it exists)
     propsFile?.let { inputs.file(it) }
 
-    // If no local.properties file is found, properties will be empty
-    val properties =
-      if (propsFile == null) {
-        Properties()
-      } else {
-        if (!propsFile.exists()) {
-          error("local.properties file not found at ${propsFile.absolutePath}")
-        }
-        Properties().apply { load(propsFile.inputStream()) }
-      }
-
-    // Create target directory and file
+    // Declare output file
     val (secretsPackageDir, secretsFile) = getGeneratedFileName(projectDirValue)
     outputs.file(secretsFile)
 
-    if (!secretsPackageDir.exists()) {
-      secretsPackageDir.mkdirs()
-    }
-
-    // Generate Secrets.kt content
-    val content = buildString {
-      appendLine("package proj.tarotmeter.axl.util.generated")
-      appendLine()
-      appendLine("import proj.tarotmeter.axl.util.SecretsTemplate")
-      appendLine()
-      appendLine("/**")
-      appendLine(" * Contains secrets stored in local.properties.")
-      appendLine(" *")
-      appendLine(" * Automatically generated file. DO NOT EDIT!")
-      appendLine(" */")
-      appendLine("object Secrets : SecretsTemplate() {")
-
-      properties.forEach { (key, value) ->
-        val originalKey = key.toString()
-        val camelCaseKey = originalKey.toCamelCase()
-
-        // Validate that the camelCase key is a valid Kotlin identifier
-        if (Regex("^[a-zA-Z_][a-zA-Z0-9_]*$").matches(camelCaseKey)) {
-          appendLine("    override val $camelCaseKey = \"$value\"")
+    doLast {
+      // If no local.properties file is found, properties will be empty
+      val properties =
+        if (propsFile == null) {
+          Properties()
+        } else {
+          if (!propsFile.exists()) {
+            error("local.properties file not found at ${propsFile.absolutePath}")
+          }
+          Properties().apply { load(propsFile.inputStream()) }
         }
+
+      // Create target directory and file
+      if (!secretsPackageDir.exists()) {
+        secretsPackageDir.mkdirs()
       }
 
-      appendLine("}")
+      // Generate Secrets.kt content
+      val content = buildString {
+        appendLine("package proj.tarotmeter.axl.util.generated")
+        appendLine()
+        appendLine("import proj.tarotmeter.axl.util.SecretsTemplate")
+        appendLine()
+        appendLine("/**")
+        appendLine(" * Contains secrets stored in local.properties.")
+        appendLine(" *")
+        appendLine(" * Automatically generated file. DO NOT EDIT!")
+        appendLine(" */")
+        appendLine("object Secrets : SecretsTemplate() {")
+
+        properties.forEach { (key, value) ->
+          val originalKey = key.toString()
+          val camelCaseKey = originalKey.toCamelCase()
+
+          // Validate that the camelCase key is a valid Kotlin identifier
+          if (Regex("^[a-zA-Z_][a-zA-Z0-9_]*$").matches(camelCaseKey)) {
+            appendLine("    override val $camelCaseKey = \"$value\"")
+          }
+        }
+
+        appendLine("}")
+      }
+
+      secretsFile.writeText(content)
+
+      // Add Secrets.kt to .gitignore
+      addToGitIgnore(projectDirValue, secretsFile)
     }
-
-    secretsFile.writeText(content)
-
-    // Add Secrets.kt to .gitignore
-    addToGitIgnore(projectDirValue, secretsFile)
   }
 
 // Task to clean Secrets.kt file
