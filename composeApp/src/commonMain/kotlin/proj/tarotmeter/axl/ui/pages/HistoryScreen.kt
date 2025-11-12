@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,60 +58,69 @@ import tarotmeter.composeapp.generated.resources.history_round_count
 fun HistoryScreen(onOpenGame: (Uuid) -> Unit, dataProvider: DataProvider = koinInject()) {
   var games by remember { mutableStateOf(emptyList<Game>()) }
   var showJoinGameDialog by remember { mutableStateOf(false) }
+  var isRefreshing by remember { mutableStateOf(false) }
 
   LaunchedEffect(Unit) { games = dataProvider.getGames() }
+  LaunchedEffect(isRefreshing) {
+    if (isRefreshing) {
+      games = dataProvider.getGames()
+      isRefreshing = false
+    }
+  }
 
-  ResponsiveContainer {
-    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          pluralStringResource(Res.plurals.history_game_count, games.size, games.size),
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        FloatingActionButton(
-          onClick = { showJoinGameDialog = true },
-          containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-          contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+  PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { isRefreshing = true }) {
+    ResponsiveContainer {
+      Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
         ) {
-          Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+          Text(
+            pluralStringResource(Res.plurals.history_game_count, games.size, games.size),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+
+          FloatingActionButton(
+            onClick = { showJoinGameDialog = true },
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
           ) {
-            Icon(
-              imageVector = Icons.Default.Add,
-              contentDescription = stringResource(Res.string.history_join_game),
-              modifier = Modifier.size(20.dp),
-            )
-            Text(
-              text = stringResource(Res.string.history_join_game),
-              style = MaterialTheme.typography.labelLarge,
-            )
+            Row(
+              modifier = Modifier.padding(horizontal = 16.dp),
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(Res.string.history_join_game),
+                modifier = Modifier.size(20.dp),
+              )
+              Text(
+                text = stringResource(Res.string.history_join_game),
+                style = MaterialTheme.typography.labelLarge,
+              )
+            }
           }
         }
-      }
 
-      if (games.isEmpty()) {
-        EmptyState(
-          message = stringResource(Res.string.history_empty_state),
-          modifier = Modifier.weight(1f),
-        )
-      } else {
+        if (games.isEmpty()) {
+          EmptyState(
+            message = stringResource(Res.string.history_empty_state),
+            modifier = Modifier.weight(1f),
+          )
+        } else {
 
-        Spacer(modifier = Modifier.size(8.dp))
+          Spacer(modifier = Modifier.size(8.dp))
 
-        LazyColumn(
-          verticalArrangement = Arrangement.spacedBy(12.dp),
-          modifier = Modifier.weight(1f),
-        ) {
-          items(games, key = { it.id }) { game ->
-            GameHistoryCard(game = game, onClick = { onOpenGame(game.id) })
+          LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.weight(1f),
+          ) {
+            items(games, key = { it.id }) { game ->
+              GameHistoryCard(game = game, onClick = { onOpenGame(game.id) })
+            }
           }
         }
       }
