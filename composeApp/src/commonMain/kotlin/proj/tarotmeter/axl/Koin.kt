@@ -15,8 +15,7 @@ import proj.tarotmeter.axl.core.data.cloud.createSupabaseClient
 import proj.tarotmeter.axl.core.data.config.getPlatformSpecificConfig
 import proj.tarotmeter.axl.core.data.getPlatformSpecificDatabaseManager
 import proj.tarotmeter.axl.core.localization.localizationModule
-import proj.tarotmeter.axl.core.provider.GamesProvider
-import proj.tarotmeter.axl.core.provider.PlayersProvider
+import proj.tarotmeter.axl.core.provider.DataProvider
 
 /**
  * Initializes koin modules
@@ -40,8 +39,7 @@ fun initKoinModules(): Array<Module> {
   }
 
   val providerModule = module {
-    singleOf(::PlayersProvider)
-    singleOf(::GamesProvider)
+    singleOf(::DataProvider)
   }
 
   val miscModule = module { single { getPlatformSpecificConfig() } }

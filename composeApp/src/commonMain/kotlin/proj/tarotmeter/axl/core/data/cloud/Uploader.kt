@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -26,10 +27,14 @@ class Uploader : KoinComponent {
   val isActive
     get() = authManager.user != null && !forceDeactivate
 
-  fun notifyChange() {
+  fun notifyChange(): Job {
     LOGGER.d { if (isActive) "Notifying changes" else "Uploader not active" }
-    if (!isActive) return
-    scope.launch { triggerUpload() }
+    if (!isActive) {
+      val dummyJob = Job(null)
+      dummyJob.complete()
+      return dummyJob
+    }
+    return scope.launch { triggerUpload() }
   }
 
   suspend fun pauseUploadsDoing(block: suspend () -> Unit) {
