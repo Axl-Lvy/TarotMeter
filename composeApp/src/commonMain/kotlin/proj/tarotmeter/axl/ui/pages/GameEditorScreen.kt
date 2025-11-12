@@ -49,7 +49,7 @@ import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.GameSource
 import proj.tarotmeter.axl.core.data.model.Round
 import proj.tarotmeter.axl.core.data.model.Scores
-import proj.tarotmeter.axl.core.provider.GamesProvider
+import proj.tarotmeter.axl.core.provider.DataProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
 import proj.tarotmeter.axl.ui.components.GameInvitationDialog
@@ -69,7 +69,7 @@ import tarotmeter.composeapp.generated.resources.Res
  * @param gameId The ID of the game to edit
  */
 @Composable
-fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) {
+fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
   var game by remember { mutableStateOf<Game?>(null) }
   var editingRound by remember { mutableStateOf<Round?>(null) }
   var showDeleteDialog by remember { mutableStateOf(false) }
@@ -78,7 +78,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   var showRenameDialog by remember { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
 
-  LaunchedEffect(gameId) { game = gamesProvider.getGame(gameId) }
+  LaunchedEffect(gameId) { game = dataProvider.getGame(gameId) }
 
   val currentGame = game
   if (currentGame == null) {
@@ -143,8 +143,8 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
           game = currentGame,
           onValidate = { round ->
             coroutineScope.launch {
-              gamesProvider.addRound(currentGame.id, round)
-              game = gamesProvider.getGame(gameId)
+              dataProvider.addRound(currentGame.id, round)
+              game = dataProvider.getGame(gameId)
             }
           },
         )
@@ -187,8 +187,8 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
     DeleteRoundDialog(
       onConfirm = {
         coroutineScope.launch {
-          gamesProvider.deleteRound(roundToDelete!!.id)
-          game = gamesProvider.getGame(gameId)
+          dataProvider.deleteRound(roundToDelete!!.id)
+          game = dataProvider.getGame(gameId)
           showDeleteDialog = false
           roundToDelete = null
         }
@@ -207,8 +207,8 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
       onDismiss = { showRenameDialog = false },
       onConfirm = { newName ->
         coroutineScope.launch {
-          gamesProvider.renameGame(gameId, newName)
-          game = gamesProvider.getGame(gameId)
+          dataProvider.renameGame(gameId, newName)
+          game = dataProvider.getGame(gameId)
           showRenameDialog = false
         }
       },
@@ -227,8 +227,8 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
       onDismiss = { editingRound = null },
       onValidate = { updatedRound ->
         coroutineScope.launch {
-          gamesProvider.updateRound(updatedRound)
-          game = gamesProvider.getGame(gameId)
+          dataProvider.updateRound(updatedRound)
+          game = dataProvider.getGame(gameId)
           editingRound = null
         }
       },

@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Scores
-import proj.tarotmeter.axl.core.provider.GamesProvider
+import proj.tarotmeter.axl.core.provider.DataProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
 import proj.tarotmeter.axl.ui.components.GameSourceBadge
@@ -54,11 +54,11 @@ import tarotmeter.composeapp.generated.resources.history_round_count
  * @param onOpenGame Callback for opening a specific game, with the game ID
  */
 @Composable
-fun HistoryScreen(onOpenGame: (Uuid) -> Unit, gamesProvider: GamesProvider = koinInject()) {
+fun HistoryScreen(onOpenGame: (Uuid) -> Unit, dataProvider: DataProvider = koinInject()) {
   var games by remember { mutableStateOf(emptyList<Game>()) }
   var showJoinGameDialog by remember { mutableStateOf(false) }
 
-  LaunchedEffect(Unit) { games = gamesProvider.getGames() }
+  LaunchedEffect(Unit) { games = dataProvider.getGames() }
 
   ResponsiveContainer {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {

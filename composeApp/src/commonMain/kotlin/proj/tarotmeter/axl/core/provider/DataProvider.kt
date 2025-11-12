@@ -4,16 +4,20 @@ import kotlin.uuid.Uuid
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.DatabaseManager
+import proj.tarotmeter.axl.core.data.cloud.Downloader
 import proj.tarotmeter.axl.core.data.cloud.SharedGamesManager
+import proj.tarotmeter.axl.core.data.cloud.Uploader
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.GameSource
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
 
-/** Provides access to and management of games within the application. */
-class GamesProvider : KoinComponent {
+/** Provides access to and management of data within the application. */
+class DataProvider : KoinComponent {
   private val databaseManager: DatabaseManager by inject()
   private val sharedGamesManager: SharedGamesManager by inject()
+  private val uploader: Uploader by inject()
+  private val downloader: Downloader by inject()
 
   /**
    * Retrieves a game.
@@ -114,5 +118,41 @@ class GamesProvider : KoinComponent {
         GameSource.REMOTE -> sharedGamesManager.upsertRound(game.id, round)
       }
     }
+  }
+
+  suspend fun getPlayers(): List<Player> = databaseManager.getPlayers()
+
+  /**
+   * Adds a new player.
+   *
+   * @param name The name of the new player
+   */
+  suspend fun addPlayer(name: String) {
+    val newPlayer = Player(name)
+    databaseManager.insertPlayer(newPlayer)
+  }
+
+  /**
+   * Renames a player
+   *
+   * @param id The id of the player to rename
+   * @param newName The new name for the player
+   */
+  suspend fun renamePlayer(id: Uuid, newName: String) {
+    databaseManager.renamePlayer(id, newName)
+  }
+
+  /**
+   * Removes a player
+   *
+   * @param id The id of the player to remove
+   */
+  suspend fun removePlayer(id: Uuid) {
+    databaseManager.deletePlayer(id)
+  }
+
+  suspend fun syncData() {
+    uploader.notifyChange().join()
+    downloader.downloadData()
   }
 }
