@@ -236,7 +236,10 @@ class TestCleanDeletedData : TestAuthenticated() {
   @Test
   fun testDeletedGameWithRoundsCleanedTogether() = runTestWithTrueClock {
     val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
-    players.forEach { localDb.insertPlayer(it) }
+    players.forEach {
+      delay(2.milliseconds)
+      localDb.insertPlayer(it)
+    }
 
     val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
