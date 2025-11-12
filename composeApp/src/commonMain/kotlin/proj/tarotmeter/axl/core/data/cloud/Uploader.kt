@@ -1,6 +1,7 @@
 package proj.tarotmeter.axl.core.data.cloud
 
 import co.touchlab.kermit.Logger
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -69,7 +70,8 @@ class Uploader : KoinComponent {
             )
             .maxOrNull()
         if (maxUpdatedAt != null) {
-          LAST_SYNC.value = maxUpdatedAt
+          // We add a small delta to avoid re-uploading items with the same timestamp
+          LAST_SYNC.value = maxUpdatedAt + 1.milliseconds
           // Clean up deleted data after successful upload
           localDatabaseManager.cleanDeletedData(maxUpdatedAt)
         }

@@ -5,7 +5,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
 import proj.tarotmeter.axl.core.data.config.LAST_SYNC
-import proj.tarotmeter.axl.core.data.model.Game
 
 /**
  * Downloads all data from the cloud database and stores it locally.
@@ -62,6 +61,17 @@ class Downloader : KoinComponent {
       localGames
         .filter { it.id !in remoteGameIds }
         .forEach { game -> runCatching { localDatabaseManager.deleteGame(game.id) } }
+
+      localGames
+        .filter { it.id in remoteGameIds }
+        .forEach { localGame ->
+          val remoteGame = remoteGames.first { it.id == localGame.id }
+          val remoteRoundIds = remoteGame.rounds.map { it.id }.toSet()
+          // Delete local rounds not present remotely
+          localGame.rounds
+            .filter { it.id !in remoteRoundIds }
+            .forEach { round -> runCatching { localDatabaseManager.deleteRound(round.id) } }
+        }
       // Note: Missing remote rounds are not removed (no per-round delete API implemented).
     }
 
@@ -70,23 +80,7 @@ class Downloader : KoinComponent {
     remotePlayers.forEach { player -> runCatching { localDatabaseManager.insertPlayer(player) } }
 
     // Insert games without rounds, then add rounds to preserve their updatedAt values.
-    remoteGames.forEach { game ->
-      val baseGame =
-        Game(
-          players = game.players,
-          id = game.id,
-          name = game.name,
-          // empty rounds list for initial insert (web implementation stores provided rounds; we
-          // avoid duplicates in merge/full refresh)
-          roundsInternal = mutableListOf(),
-          startedAt = game.startedAt,
-          updatedAtInternal = game.updatedAt,
-        )
-      runCatching { localDatabaseManager.insertGame(baseGame) }
-      // Now add rounds individually so standalone implementation (which ignores rounds on insert)
-      // also gets them.
-      game.rounds.forEach { round -> runCatching { localDatabaseManager.addRound(game.id, round) } }
-    }
+    remoteGames.forEach { game -> runCatching { localDatabaseManager.insertGame(game) } }
 
     // Update LAST_SYNC so subsequent uploads don't treat downloaded rows as new local edits.
     val maxUpdatedAt =

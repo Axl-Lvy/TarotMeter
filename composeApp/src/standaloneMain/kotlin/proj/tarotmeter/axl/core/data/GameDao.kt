@@ -40,7 +40,7 @@ interface GameDao {
    *
    * @param crossRef The cross reference entity to insert.
    */
-  @Insert(onConflict = OnConflictStrategy.IGNORE)
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertGamePlayerCrossRef(crossRef: GamePlayerCrossRef)
 
   /**

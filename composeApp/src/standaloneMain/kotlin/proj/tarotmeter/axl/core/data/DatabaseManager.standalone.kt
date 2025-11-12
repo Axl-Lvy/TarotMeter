@@ -58,6 +58,7 @@ internal class StandaloneDatabaseManager(
     for (player in game.players) {
       database.getGameDao().insertGamePlayerCrossRef(GamePlayerCrossRef(game.id, player.id))
     }
+    game.rounds.forEach { addRound(game.id, it) }
     notifyChange()
   }
 

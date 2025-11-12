@@ -16,7 +16,7 @@ interface PlayerDao {
    *
    * @param player The player entity to insert.
    */
-  @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun insertPlayer(player: PlayerEntity)
+  @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertPlayer(player: PlayerEntity)
 
   /**
    * Retrieves a player by ID.

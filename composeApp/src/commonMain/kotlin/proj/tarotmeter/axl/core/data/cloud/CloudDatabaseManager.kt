@@ -71,8 +71,10 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
 
   override suspend fun getPlayers(): List<Player> {
     if (authManager.user == null) return emptyList()
-    return selectForUser("player")?.decodeList<SupabasePlayer>()?.map { it.toPlayer() }
-      ?: emptyList()
+    return selectForUser("player")
+      ?.decodeList<SupabasePlayer>()
+      ?.filter { !it.isDeleted }
+      ?.map { it.toPlayer() } ?: emptyList()
   }
 
   suspend fun getPlayer(id: Uuid): Player? {
