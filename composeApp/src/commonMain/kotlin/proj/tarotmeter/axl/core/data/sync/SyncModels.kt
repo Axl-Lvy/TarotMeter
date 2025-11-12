@@ -2,6 +2,8 @@ package proj.tarotmeter.axl.core.data.sync
 
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
+import proj.tarotmeter.axl.core.data.model.Player
+import proj.tarotmeter.axl.core.data.model.Round
 import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
@@ -13,7 +15,9 @@ data class PlayerSync(
   val name: String,
   val updatedAt: Instant,
   val isDeleted: Boolean,
-)
+) {
+  fun toPlayer() = Player(name, id, updatedAt)
+}
 
 /** Lightweight sync row representing a Game (including soft-deleted ones) with its player ids. */
 data class GameSync(
@@ -40,4 +44,19 @@ data class RoundSync(
   val index: Int,
   val updatedAt: Instant,
   val isDeleted: Boolean,
-)
+) {
+  fun toRound(playerLookup: (Uuid) -> Player) =
+    Round(
+      taker = playerLookup(takerId),
+      partner = partnerId?.let { playerLookup(it) },
+      contract = contract,
+      oudlerCount = oudlerCount,
+      takerPoints = takerPoints,
+      poignee = poignee,
+      petitAuBout = petitAuBout,
+      chelem = chelem,
+      index = index,
+      id = id,
+      updatedAt = updatedAt,
+    )
+}

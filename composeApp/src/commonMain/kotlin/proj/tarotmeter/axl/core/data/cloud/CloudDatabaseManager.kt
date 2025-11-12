@@ -7,11 +7,13 @@ import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
 import io.github.jan.supabase.postgrest.query.PostgrestRequestBuilder
 import io.github.jan.supabase.postgrest.query.filter.PostgrestFilterBuilder
 import io.github.jan.supabase.postgrest.result.PostgrestResult
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.DatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
+import proj.tarotmeter.axl.core.data.cloud.model.SupabaseDeviceId
 import proj.tarotmeter.axl.core.data.cloud.model.SupabaseGame
 import proj.tarotmeter.axl.core.data.cloud.model.SupabaseGameCrossPlayer
 import proj.tarotmeter.axl.core.data.cloud.model.SupabasePlayer
@@ -22,6 +24,7 @@ import proj.tarotmeter.axl.core.data.model.Round
 import proj.tarotmeter.axl.core.data.sync.GameSync
 import proj.tarotmeter.axl.core.data.sync.PlayerSync
 import proj.tarotmeter.axl.core.data.sync.RoundSync
+import proj.tarotmeter.axl.util.DateUtil
 
 /**
  * CloudDatabaseManager implementation using Supabase as the backend.
@@ -40,6 +43,21 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
   ): PostgrestResult? {
     if (authManager.user == null) return null
     return supabaseClient.from(table).select { filterForUser { block() } }
+  }
+
+  private suspend fun selectForUserIncludingDeleted(
+    table: String,
+    block: @PostgrestFilterDSL (PostgrestFilterBuilder.() -> Unit) = {},
+  ): PostgrestResult? {
+    if (authManager.user == null) return null
+    return supabaseClient.from(table).select {
+      filter {
+        and {
+          eq("user_id", authManager.user!!.id)
+          block()
+        }
+      }
+    }
   }
 
   private fun PostgrestRequestBuilder.filterForUser(block: PostgrestFilterBuilder.() -> Unit) {
@@ -66,7 +84,10 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
   private suspend fun PostgrestQueryBuilder.softDelete(
     request: PostgrestRequestBuilder.() -> Unit = {}
   ): PostgrestResult {
-    return update(mapOf("is_deleted" to true), request)
+    return update(
+      mapOf("is_deleted" to true.toString(), "updated_at" to DateUtil.now().toString()),
+      request,
+    )
   }
 
   override suspend fun getPlayers(): List<Player> {
@@ -328,7 +349,9 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
 
   override suspend fun renameGame(id: Uuid, newName: String) {
     if (authManager.user == null) return
-    supabaseClient.from("game").update(mapOf("name" to newName)) {
+    supabaseClient.from("game").update(
+      mapOf("name" to newName, "updated_at" to DateUtil.now().toString())
+    ) {
       filterForUser { eq("game_id", id.toString()) }
     }
   }
@@ -437,5 +460,81 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
         )
       }
     supabaseClient.from("round").upsert(dtos)
+  }
+
+  suspend fun getLastRemoteSync(deviceId: Uuid): Instant {
+    val user = authManager.user ?: error("No authenticated user")
+    supabaseClient.from("device_sync").upsert(
+      SupabaseDeviceId(deviceId.toString(), user.id, DateUtil.referenceTimePast())
+    ) {
+      onConflict = "device_id,user_id"
+      ignoreDuplicates = true
+    }
+    val supabaseDeviceId =
+      supabaseClient
+        .from("device_sync")
+        .select {
+          filter {
+            and {
+              eq("device_id", deviceId.toString())
+              eq("user_id", user.id)
+            }
+          }
+        }
+        .decodeList<SupabaseDeviceId>()
+    if (supabaseDeviceId.isEmpty()) {
+      error("Failed to insert or retrieve device sync info")
+    } else if (supabaseDeviceId.size > 1) {
+      error("Multiple device sync entries found for device $deviceId and user ${user.id}")
+    }
+    return supabaseDeviceId.first().updatedAt
+  }
+
+  suspend fun updateLastRemoteSync(deviceId: Uuid, lastSync: Instant) {
+    val user = authManager.user ?: return
+    supabaseClient.from("device_sync").upsert(
+      SupabaseDeviceId(deviceId = deviceId.toString(), userId = user.id, updatedAt = lastSync)
+    ) {
+      onConflict = "device_id,user_id"
+      ignoreDuplicates = false
+    }
+  }
+
+  override suspend fun getPlayersUpdatedSince(since: Instant): List<PlayerSync> {
+    if (authManager.user == null) return emptyList()
+    return selectForUserIncludingDeleted("player") { gt("updated_at", since) }
+      ?.decodeList<SupabasePlayer>()
+      ?.map { it.toPlayerSync() } ?: emptyList()
+  }
+
+  override suspend fun getGamesUpdatedSince(since: Instant): List<GameSync> {
+    if (authManager.user == null) return emptyList()
+    val games =
+      selectForUserIncludingDeleted("game") { gt("updated_at", since) }?.decodeList<SupabaseGame>()
+        ?: return emptyList()
+
+    if (games.isEmpty()) return emptyList()
+
+    val gameIds = games.map { it.gameId }
+    val crossRefs =
+      supabaseClient
+        .from("game_cross_player")
+        .select { filter { isIn("game_id", gameIds) } }
+        .decodeList<SupabaseGameCrossPlayer>()
+        .groupBy { it.gameId }
+
+    return games.map { game ->
+      val playerIds = crossRefs[game.gameId]?.map { Uuid.parse(it.playerId) } ?: emptyList()
+      game.toGameSync(playerIds)
+    }
+  }
+
+  override suspend fun getRoundsUpdatedSince(since: Instant): List<RoundSync> {
+    if (authManager.user == null) return emptyList()
+    return supabaseClient
+      .from("round")
+      .select { filter { gt("updated_at", since) } }
+      .decodeList<SupabaseRound>()
+      .map { it.toRoundSync() }
   }
 }

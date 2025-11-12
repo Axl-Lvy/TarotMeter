@@ -10,6 +10,7 @@ import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
+import proj.tarotmeter.axl.core.data.sync.RoundSync
 
 /**
  * Supabase data model for Round table.
@@ -75,5 +76,22 @@ data class SupabaseRound(
       index = index,
       id = Uuid.parse(roundId),
       updatedAt = updatedAt,
+    )
+
+  fun toRoundSync() =
+    RoundSync(
+      id = Uuid.parse(roundId),
+      gameId = Uuid.parse(gameId),
+      takerId = Uuid.parse(taker),
+      partnerId = partner?.let { Uuid.parse(it) },
+      contract = contract,
+      oudlerCount = oudlerCount,
+      takerPoints = takerPoints,
+      poignee = poignee,
+      petitAuBout = petitAuBout,
+      chelem = chelem,
+      index = index,
+      updatedAt = updatedAt,
+      isDeleted = isDeleted,
     )
 }

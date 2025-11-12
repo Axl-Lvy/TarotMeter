@@ -1,26 +1,29 @@
 package proj.tarotmeter.axl.core.data.cloud
 
 import co.touchlab.kermit.Logger
+import kotlin.time.Duration.Companion.milliseconds
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
-import proj.tarotmeter.axl.core.data.config.LAST_SYNC
 
 /**
- * Downloads all data from the cloud database and stores it locally.
+ * Downloads data from the cloud database and stores it locally.
  *
- * Current strategy (default) is a full refresh:
- * 1. Fetch all remote players & games (non-deleted) using the cloud manager.
- * 2. Clear the local database.
- * 3. Insert players, then games (without rounds), then rounds for each game.
- * 4. Advance LAST_SYNC to the max updatedAt among all downloaded entities so that the uploader
- *    won't re-upload the freshly synced data.
+ * Symmetrical to [Uploader], but inverts cloud/local roles:
+ * - Cloud database acts as the source (remote state)
+ * - Local database acts as the destination (target state)
  *
- * If [clearLocal] is false, a merge is performed:
- * - Remote players/games not present locally are inserted.
- * - Local players/games absent remotely are soft-deleted locally.
- * - Rounds cannot be individually removed in merge mode (no round delete API); missing remote
- *   rounds remain until a full refresh is performed.
+ * Uses incremental sync based on remote last_sync timestamp:
+ * 1. Fetch the last remote sync timestamp for this device from the cloud.
+ * 2. Fetch players, games, and rounds updated since that timestamp (including deleted items).
+ * 3. Apply changes to the local database (insert/update or delete).
+ * 4. Update the remote last_sync timestamp to prevent re-downloading the same data.
+ *
+ * In full sync mode, a complete refresh is performed:
+ * - Clear local database.
+ * - Fetch all remote data (non-deleted).
+ * - Insert into local database.
+ * - Update remote sync timestamp.
  */
 class Downloader : KoinComponent {
   private val localDatabaseManager: LocalDatabaseManager by inject()
@@ -30,68 +33,113 @@ class Downloader : KoinComponent {
   /**
    * Performs a download.
    *
-   * @param clearLocal Whether to clear the local store before applying remote state (default true).
+   * @param fullSync Whether to perform a full refresh (default false for incremental sync).
    */
-  suspend fun downloadData(clearLocal: Boolean = false) {
-    uploader.pauseUploadsDoing { doDownloadData(clearLocal = clearLocal) }
+  suspend fun downloadData(fullSync: Boolean = false) {
+    uploader.pauseUploadsDoing { doDownloadData(fullSync = fullSync) }
   }
 
-  private suspend fun doDownloadData(clearLocal: Boolean = false) {
-    // Fetch remote state first so we don't wipe local data if network fails mid-way.
-    val remotePlayers = runCatching { cloudDatabaseManager.getPlayers() }.getOrDefault(emptyList())
-    val remoteGames = runCatching { cloudDatabaseManager.getGames() }.getOrDefault(emptyList())
+  private suspend fun doDownloadData(fullSync: Boolean = false) {
+    val deviceId = localDatabaseManager.getOrCreateDeviceId()
 
-    if (clearLocal) {
-      // Always clear (even if remote is empty) so local reflects remote deletions.
+    if (fullSync) {
+      // Full refresh: fetch all remote state and replace local.
+      val remotePlayers =
+        runCatching { cloudDatabaseManager.getPlayers() }.getOrDefault(emptyList())
+      val remoteGames = runCatching { cloudDatabaseManager.getGames() }.getOrDefault(emptyList())
+
+      // Clear local database
       localDatabaseManager.clear()
-    } else {
-      // Merge mode: compute deletions & insertions.
-      val remotePlayerIds = remotePlayers.map { it.id }.toSet()
-      val remoteGameIds = remoteGames.map { it.id }.toSet()
-      val localPlayers = runCatching { localDatabaseManager.getPlayers() }.getOrDefault(emptyList())
-      val localGames = runCatching { localDatabaseManager.getGames() }.getOrDefault(emptyList())
-      // Deletions (players not in remote)
-      LOGGER.d {
-        "Merging downloaded data: ${remotePlayers.size} remote players, ${localPlayers.size} local players"
+
+      // Insert players first (games will reference them)
+      remotePlayers.forEach { player -> runCatching { localDatabaseManager.insertPlayer(player) } }
+
+      // Insert games with rounds
+      remoteGames.forEach { game -> runCatching { localDatabaseManager.insertGame(game) } }
+
+      // Update sync timestamps
+      val maxUpdatedAt =
+        listOfNotNull(
+            remotePlayers.maxOfOrNull { it.updatedAt },
+            remoteGames.maxOfOrNull { it.updatedAt },
+            remoteGames.flatMap { it.rounds }.maxOfOrNull { it.updatedAt },
+          )
+          .maxOrNull()
+      if (maxUpdatedAt != null) {
+        cloudDatabaseManager.updateLastRemoteSync(deviceId, maxUpdatedAt + 1.milliseconds)
       }
-      localPlayers
-        .filter { it.id !in remotePlayerIds }
-        .forEach { localDatabaseManager.deletePlayer(it.id) }
-      // Deletions (games not in remote)
-      localGames
-        .filter { it.id !in remoteGameIds }
-        .forEach { game -> runCatching { localDatabaseManager.deleteGame(game.id) } }
 
-      localGames
-        .filter { it.id in remoteGameIds }
-        .forEach { localGame ->
-          val remoteGame = remoteGames.first { it.id == localGame.id }
-          val remoteRoundIds = remoteGame.rounds.map { it.id }.toSet()
-          // Delete local rounds not present remotely
-          localGame.rounds
-            .filter { it.id !in remoteRoundIds }
-            .forEach { round -> runCatching { localDatabaseManager.deleteRound(round.id) } }
+      LOGGER.i { "Full sync completed. Players: ${remotePlayers.size}, Games: ${remoteGames.size}" }
+    } else {
+      // Incremental sync: fetch only updates since last remote sync
+      val lastRemoteSync =
+        runCatching { cloudDatabaseManager.getLastRemoteSync(deviceId) }
+          .getOrElse {
+            LOGGER.e { "Failed to get last remote sync: ${it.message}" }
+            return
+          }
+
+      val players = cloudDatabaseManager.getPlayersUpdatedSince(lastRemoteSync)
+      val games = cloudDatabaseManager.getGamesUpdatedSince(lastRemoteSync)
+      val rounds = cloudDatabaseManager.getRoundsUpdatedSince(lastRemoteSync)
+
+      if (players.isEmpty() && games.isEmpty() && rounds.isEmpty()) {
+        LOGGER.d { "No remote changes to download since $lastRemoteSync" }
+        return
+      }
+
+      // Apply players
+      players.forEach { playerSync ->
+        if (playerSync.isDeleted) {
+          runCatching { localDatabaseManager.deletePlayer(playerSync.id) }
+        } else {
+          runCatching { localDatabaseManager.insertPlayer(playerSync.toPlayer()) }
         }
-      // Note: Missing remote rounds are not removed (no per-round delete API implemented).
-    }
+      }
 
-    // Insert players first (games will reference them). Dedup is handled by local layer (IGNORE
-    // strategy for Room / overwrite in web impl).
-    remotePlayers.forEach { player -> runCatching { localDatabaseManager.insertPlayer(player) } }
+      // Apply games
+      games.forEach { gameSync ->
+        if (gameSync.isDeleted) {
+          runCatching { localDatabaseManager.deleteGame(gameSync.id) }
+        } else {
+          // Fetch full game data if needed to insert properly
+          val game = cloudDatabaseManager.getGame(gameSync.id)
+          if (game != null) {
+            runCatching { localDatabaseManager.insertGame(game) }
+          }
+        }
+      }
 
-    // Insert games without rounds, then add rounds to preserve their updatedAt values.
-    remoteGames.forEach { game -> runCatching { localDatabaseManager.insertGame(game) } }
+      // Apply rounds
+      val localPlayers = localDatabaseManager.getPlayers()
+      rounds.forEach { roundSync ->
+        if (roundSync.isDeleted) {
+          runCatching { localDatabaseManager.deleteRound(roundSync.id) }
+        } else {
+          val round =
+            roundSync.toRound { playerId ->
+              localPlayers.firstOrNull { it.id == playerId }
+                ?: error("Player $playerId not found locally")
+            }
+          runCatching { localDatabaseManager.updateRound(round) }
+        }
+      }
 
-    // Update LAST_SYNC so subsequent uploads don't treat downloaded rows as new local edits.
-    val maxUpdatedAt =
-      listOfNotNull(
-          remotePlayers.maxOfOrNull { it.updatedAt },
-          remoteGames.maxOfOrNull { it.updatedAt },
-          remoteGames.flatMap { it.rounds }.maxOfOrNull { it.updatedAt },
-        )
-        .maxOrNull()
-    if (maxUpdatedAt != null) {
-      LAST_SYNC.value = maxUpdatedAt
+      // Update sync timestamps
+      val maxUpdatedAt =
+        listOfNotNull(
+            players.maxOfOrNull { it.updatedAt },
+            games.maxOfOrNull { it.updatedAt },
+            rounds.maxOfOrNull { it.updatedAt },
+          )
+          .maxOrNull()
+      if (maxUpdatedAt != null) {
+        cloudDatabaseManager.updateLastRemoteSync(deviceId, maxUpdatedAt + 1.milliseconds)
+      }
+
+      LOGGER.i {
+        "Incremental sync completed. Players: ${players.size}, Games: ${games.size}, Rounds: ${rounds.size}"
+      }
     }
   }
 

@@ -5,6 +5,7 @@ import kotlin.uuid.Uuid
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import proj.tarotmeter.axl.core.data.model.Player
+import proj.tarotmeter.axl.core.data.sync.PlayerSync
 
 /**
  * Supabase data model for Player table.
@@ -23,4 +24,7 @@ data class SupabasePlayer(
   @SerialName("is_deleted") val isDeleted: Boolean,
 ) {
   fun toPlayer() = Player(name, Uuid.parse(playerId), updatedAt)
+
+  fun toPlayerSync() =
+    PlayerSync(id = Uuid.parse(playerId), name = name, updatedAt = updatedAt, isDeleted = isDeleted)
 }

@@ -2,12 +2,10 @@ package proj.tarotmeter.axl.core.data
 
 import co.touchlab.kermit.Logger
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.cloud.Uploader
-import proj.tarotmeter.axl.core.data.sync.GameSync
-import proj.tarotmeter.axl.core.data.sync.PlayerSync
-import proj.tarotmeter.axl.core.data.sync.RoundSync
 
 abstract class LocalDatabaseManager : DatabaseManager, KoinComponent {
   private val uploader: Uploader by inject()
@@ -16,19 +14,28 @@ abstract class LocalDatabaseManager : DatabaseManager, KoinComponent {
     uploader.notifyChange()
   }
 
-  /** Return all players (including deleted) updated strictly after the given instant. */
-  abstract suspend fun getPlayersUpdatedSince(since: Instant): List<PlayerSync>
-
-  /** Return all games (including deleted) updated strictly after the given instant. */
-  abstract suspend fun getGamesUpdatedSince(since: Instant): List<GameSync>
-
-  /** Return all rounds (including deleted) updated strictly after the given instant. */
-  abstract suspend fun getRoundsUpdatedSince(since: Instant): List<RoundSync>
-
+  /** Permanently removes all data from the local database. */
   abstract suspend fun clear()
 
   /** Permanently removes all data marked as deleted from the local database. */
   abstract suspend fun cleanDeletedData(dateLimit: Instant)
+
+  suspend fun getOrCreateDeviceId(): Uuid {
+    val existingId = getDeviceId()
+    if (existingId != null) {
+      return existingId
+    }
+    val newId = Uuid.random()
+    insertDeviceId(newId)
+    LOGGER.d { "Generated new device ID: $newId" }
+    return newId
+  }
+
+  /** Inserts the device ID into the database. */
+  protected abstract suspend fun insertDeviceId(deviceId: Uuid)
+
+  /** Retrieves the device ID from the database, or null if not set. */
+  protected abstract suspend fun getDeviceId(): Uuid?
 }
 
 private val LOGGER = Logger.withTag("LocalDatabaseManager")

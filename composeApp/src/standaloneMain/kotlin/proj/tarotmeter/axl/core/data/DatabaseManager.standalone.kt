@@ -2,6 +2,7 @@ package proj.tarotmeter.axl.core.data
 
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
+import proj.tarotmeter.axl.core.data.entity.DeviceIdEntity
 import proj.tarotmeter.axl.core.data.entity.GameEntity
 import proj.tarotmeter.axl.core.data.entity.GamePlayerCrossRef
 import proj.tarotmeter.axl.core.data.entity.PlayerEntity
@@ -159,6 +160,17 @@ internal class StandaloneDatabaseManager(
     database.getGameDao().cleanDeletedRounds(dateLimit)
     database.getGameDao().cleanDeletedGames(dateLimit)
     database.getPlayerDao().cleanDeletedPlayers(dateLimit)
+  }
+
+  override suspend fun getDeviceId(): Uuid? {
+    return database.getMiscDao().getDeviceId()?.deviceId
+  }
+
+  override suspend fun insertDeviceId(deviceId: Uuid) {
+    if (getDeviceId() != null) {
+      error("Device ID is already set and cannot be changed.")
+    }
+    database.getMiscDao().insertDeviceId(DeviceIdEntity(deviceId))
   }
 }
 
