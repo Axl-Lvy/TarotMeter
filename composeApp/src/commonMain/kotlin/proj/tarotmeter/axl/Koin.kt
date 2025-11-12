@@ -38,9 +38,7 @@ fun initKoinModules(): Array<Module> {
     singleOf(::SharedGamesManager)
   }
 
-  val providerModule = module {
-    singleOf(::DataProvider)
-  }
+  val providerModule = module { singleOf(::DataProvider) }
 
   val miscModule = module { single { getPlatformSpecificConfig() } }
 

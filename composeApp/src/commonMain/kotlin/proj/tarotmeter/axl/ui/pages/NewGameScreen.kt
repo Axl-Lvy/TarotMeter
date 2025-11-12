@@ -55,10 +55,7 @@ import tarotmeter.composeapp.generated.resources.new_game_selected_count
  * @param onGameCreated Callback for when a new game is created, with the game ID
  */
 @Composable
-fun NewGameScreen(
-  onGameCreated: (Uuid) -> Unit,
-  dataProvider: DataProvider = koinInject(),
-) {
+fun NewGameScreen(onGameCreated: (Uuid) -> Unit, dataProvider: DataProvider = koinInject()) {
   var availablePlayers by remember { mutableStateOf(emptyList<Player>()) }
   val selectedPlayers = remember { mutableStateSetOf<Player>() }
   var gameName by remember { mutableStateOf("") }

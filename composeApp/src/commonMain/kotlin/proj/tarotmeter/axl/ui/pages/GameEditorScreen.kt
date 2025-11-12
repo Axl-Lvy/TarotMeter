@@ -20,6 +20,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -77,8 +80,17 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
   var showInvitationDialog by remember { mutableStateOf(false) }
   var showRenameDialog by remember { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
+  var isRefreshing by remember { mutableStateOf(false) }
+  val pullToRefreshState = rememberPullToRefreshState()
 
   LaunchedEffect(gameId) { game = dataProvider.getGame(gameId) }
+  LaunchedEffect(isRefreshing) {
+    if (isRefreshing) {
+      dataProvider.syncData()
+      game = dataProvider.getGame(gameId)
+      isRefreshing = false
+    }
+  }
 
   val currentGame = game
   if (currentGame == null) {
@@ -87,96 +99,99 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
   }
 
   val globalScores = Scores.globalScores(currentGame)
+  PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = {
+    isRefreshing = true
+  }) {
+    Column(Modifier.fillMaxSize()) {
+      Spacer(modifier = Modifier.size(16.dp))
 
-  Column(Modifier.fillMaxSize()) {
-    Spacer(modifier = Modifier.size(16.dp))
-
-    // Game name header with rename and invite buttons
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-          text = currentGame.name,
-          style = MaterialTheme.typography.headlineSmall,
-          color = MaterialTheme.colorScheme.primary,
-        )
-        GameSourceBadge(source = currentGame.source)
-      }
-      if (currentGame.source == GameSource.LOCAL) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-          TextButton(onClick = { showInvitationDialog = true }) {
-            Icon(
-              imageVector = FontAwesomeIcons.Solid.Share,
-              contentDescription = stringResource(Res.string.game_editor_invite),
-              modifier = Modifier.size(20.dp),
-            )
-          }
-          TextButton(onClick = { showRenameDialog = true }) {
-            Icon(
-              imageVector = FontAwesomeIcons.Regular.Edit,
-              contentDescription = stringResource(Res.string.history_rename_game),
-              modifier = Modifier.size(20.dp),
-            )
-          }
-        }
-      }
-    }
-
-    Spacer(modifier = Modifier.size(8.dp))
-    // Fixed scores at the top
-    PlayerScoresRow(
-      playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
-    )
-
-    // Scrollable list with header content
-    LazyColumn(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      item {
-        Spacer(modifier = Modifier.size(16.dp))
-        // Add/Edit round section
-        RoundEditor(
-          game = currentGame,
-          onValidate = { round ->
-            coroutineScope.launch {
-              dataProvider.addRound(currentGame.id, round)
-              game = dataProvider.getGame(gameId)
-            }
-          },
-        )
-      }
-
-      item { HorizontalDivider() }
-
-      item {
-        Text(
-          stringResource(Res.string.game_editor_round_history, currentGame.rounds.size),
-          style = MaterialTheme.typography.titleMedium,
-        )
-      }
-
-      if (currentGame.rounds.isEmpty()) {
-        item {
-          EmptyState(
-            message = stringResource(Res.string.game_editor_empty_state),
-            modifier = Modifier.fillParentMaxHeight(0.3f),
+      // Game name header with rename and invite buttons
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          Text(
+            text = currentGame.name,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
           )
+          GameSourceBadge(source = currentGame.source)
         }
-      } else {
-        items(currentGame.rounds.reversed()) { round ->
-          RoundCard(
-            round = round,
+        if (currentGame.source == GameSource.LOCAL) {
+          Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TextButton(onClick = { showInvitationDialog = true }) {
+              Icon(
+                imageVector = FontAwesomeIcons.Solid.Share,
+                contentDescription = stringResource(Res.string.game_editor_invite),
+                modifier = Modifier.size(20.dp),
+              )
+            }
+            TextButton(onClick = { showRenameDialog = true }) {
+              Icon(
+                imageVector = FontAwesomeIcons.Regular.Edit,
+                contentDescription = stringResource(Res.string.history_rename_game),
+                modifier = Modifier.size(20.dp),
+              )
+            }
+          }
+        }
+      }
+
+      Spacer(modifier = Modifier.size(8.dp))
+      // Fixed scores at the top
+      PlayerScoresRow(
+        playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
+      )
+
+      // Scrollable list with header content
+      LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+        item {
+          Spacer(modifier = Modifier.size(16.dp))
+          // Add/Edit round section
+          RoundEditor(
             game = currentGame,
-            onEdit = { editingRound = round },
-            onDelete = {
-              roundToDelete = round
-              showDeleteDialog = true
+            onValidate = { round ->
+              coroutineScope.launch {
+                dataProvider.addRound(currentGame.id, round)
+                game = dataProvider.getGame(gameId)
+              }
             },
           )
+        }
+
+        item { HorizontalDivider() }
+
+        item {
+          Text(
+            stringResource(Res.string.game_editor_round_history, currentGame.rounds.size),
+            style = MaterialTheme.typography.titleMedium,
+          )
+        }
+
+        if (currentGame.rounds.isEmpty()) {
+          item {
+            EmptyState(
+              message = stringResource(Res.string.game_editor_empty_state),
+              modifier = Modifier.fillParentMaxHeight(0.3f),
+            )
+          }
+        } else {
+          items(currentGame.rounds.reversed()) { round ->
+            RoundCard(
+              round = round,
+              game = currentGame,
+              onEdit = { editingRound = round },
+              onDelete = {
+                roundToDelete = round
+                showDeleteDialog = true
+              },
+            )
+          }
         }
       }
     }
