@@ -235,11 +235,17 @@ class TestCleanDeletedData : TestAuthenticated() {
 
   @Test
   fun testDeletedGameWithRoundsCleanedTogether() = runTestWithTrueClock {
-    val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
-    players.forEach {
-      delay(2.milliseconds)
-      localDb.insertPlayer(it)
-    }
+    val playerA = Player("A")
+    delay(2.milliseconds)
+    val playerB = Player("B")
+    delay(2.milliseconds)
+    val playerC = Player("C")
+    delay(2.milliseconds)
+    val playerD = Player("D")
+    delay(2.milliseconds)
+    val players = listOf(playerA, playerB, playerC, playerD)
+    delay(2.milliseconds)
+    players.forEach { localDb.insertPlayer(it) }
 
     val game = Game(players, name = "Test Game")
     localDb.insertGame(game)
@@ -256,6 +262,7 @@ class TestCleanDeletedData : TestAuthenticated() {
         chelem = Chelem.NONE,
         index = 0,
       )
+    delay(2.milliseconds)
     val round2 =
       Round(
         taker = players[1],
@@ -268,6 +275,7 @@ class TestCleanDeletedData : TestAuthenticated() {
         chelem = Chelem.NONE,
         index = 1,
       )
+    delay(2.milliseconds)
 
     localDb.addRound(game.id, round1)
     localDb.addRound(game.id, round2)
