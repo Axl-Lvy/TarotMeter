@@ -126,6 +126,8 @@
   <string name="invitation_code_dialog_message">Share this code with others to let them join this game:</string>
   <string name="invitation_code_dialog_generating">Generating invitation code…</string>
   <string name="invitation_code_dialog_error">Error: %1$s</string>
+  <string name="invitation_code_dialog_copy">Copy</string>
+  <string name="invitation_code_dialog_qr">Generate QR code</string>
 
   <!-- Join Game -->
   <string name="join_game_dialog_title">Join Game</string>

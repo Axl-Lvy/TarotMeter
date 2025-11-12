@@ -128,6 +128,8 @@
   <string name="invitation_code_dialog_message">Partagez ce code à d'autres utilisateurs pour qu'il rejoignent votre partie:</string>
   <string name="invitation_code_dialog_generating">Génération du code d'invitation…</string>
   <string name="invitation_code_dialog_error">Érreur: %1$s</string>
+  <string name="invitation_code_dialog_copy">Copier</string>
+  <string name="invitation_code_dialog_qr">Générer un QR code</string>
 
   <!-- Join Game Dialog -->
   <string name="join_game_dialog_title">Rejoindre une partie</string>

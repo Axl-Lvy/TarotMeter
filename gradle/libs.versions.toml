@@ -15,6 +15,7 @@ atomicfu = "0.29.0"
 composeIcons = "1.1.1"
 composeHotReload = "1.0.0-rc02"
 composeMultiplatform = "1.9.2"
+goquatiQr = "0.1.0"
 junit = "4.13.2"
 kermit = "2.0.8"
 kotest = "6.0.4"
@@ -53,6 +54,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
+goquati-qr = { module = "io.github.goquati:qr", version.ref = "goquatiQr" }
 
 # --- Navigation and ui ---
 compose-icons-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "composeIcons"}
