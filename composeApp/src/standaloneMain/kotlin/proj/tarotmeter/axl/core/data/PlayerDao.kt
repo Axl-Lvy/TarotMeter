@@ -1,9 +1,8 @@
 package proj.tarotmeter.axl.core.data
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.core.data.entity.PlayerEntity
@@ -16,7 +15,7 @@ interface PlayerDao {
    *
    * @param player The player entity to insert.
    */
-  @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertPlayer(player: PlayerEntity)
+  @Upsert suspend fun insertPlayer(player: PlayerEntity)
 
   /**
    * Retrieves a player by ID.

@@ -18,30 +18,28 @@ interface GameDao {
    *
    * @param game The game entity to insert.
    */
-  @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertGame(game: GameEntity)
+  @Upsert suspend fun insertGame(game: GameEntity)
 
   /**
    * Inserts a round into the database.
    *
    * @param round The round entity to insert.
    */
-  @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertRound(round: RoundEntity)
+  @Upsert suspend fun insertRound(round: RoundEntity)
 
   /**
    * Inserts multiple rounds into the database.
    *
    * @param rounds Collection of round entities to insert.
    */
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertRounds(rounds: Collection<RoundEntity>)
+  @Upsert suspend fun insertRounds(rounds: Collection<RoundEntity>)
 
   /**
    * Inserts a game-player cross reference.
    *
    * @param crossRef The cross reference entity to insert.
    */
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertGamePlayerCrossRef(crossRef: GamePlayerCrossRef)
+  @Upsert suspend fun insertGamePlayerCrossRef(crossRef: GamePlayerCrossRef)
 
   /**
    * Retrieves all games with their associated entities.

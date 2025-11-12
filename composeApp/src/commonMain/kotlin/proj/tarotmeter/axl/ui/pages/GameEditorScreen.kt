@@ -21,7 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -99,9 +98,7 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
   }
 
   val globalScores = Scores.globalScores(currentGame)
-  PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = {
-    isRefreshing = true
-  }) {
+  PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { isRefreshing = true }) {
     Column(Modifier.fillMaxSize()) {
       Spacer(modifier = Modifier.size(16.dp))
 
