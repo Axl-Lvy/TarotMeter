@@ -8,7 +8,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
@@ -86,7 +88,12 @@ class TestUploaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testBurstPlayerInsertionSynchronizesAll() = runTestWithTrueClock {
-    val players = (0 until 6).map { Player("P$it") }
+    val players =
+      (0 until 6).map {
+        val player = Player("P$it")
+        delay(2.milliseconds)
+        return@map player
+      }
     players.forEach { localDb.insertPlayer(it) }
 
     awaitCloudPlayersMatch()
@@ -126,7 +133,15 @@ class TestUploaderSynchronization : TestAuthenticated() {
 
   @Test
   fun testGameAndRoundsSynchronization() = runTestWithTrueClock {
-    val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
+    val playerA = Player("A")
+    delay(2.milliseconds)
+    val playerB = Player("B")
+    delay(2.milliseconds)
+    val playerC = Player("C")
+    delay(2.milliseconds)
+    val playerD = Player("D")
+    delay(2.milliseconds)
+    val players = listOf(playerA, playerB, playerC, playerD)
     players.forEach { localDb.insertPlayer(it) }
     awaitCloudPlayersMatch()
 

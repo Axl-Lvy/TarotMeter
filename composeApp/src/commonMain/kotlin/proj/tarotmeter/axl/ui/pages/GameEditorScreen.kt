@@ -21,7 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -80,7 +79,6 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
   var showRenameDialog by remember { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
   var isRefreshing by remember { mutableStateOf(false) }
-  val pullToRefreshState = rememberPullToRefreshState()
 
   LaunchedEffect(gameId) { game = dataProvider.getGame(gameId) }
   LaunchedEffect(isRefreshing) {
@@ -103,38 +101,7 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
       Spacer(modifier = Modifier.size(16.dp))
 
       // Game name header with rename and invite buttons
-      Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text(
-            text = currentGame.name,
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary,
-          )
-          GameSourceBadge(source = currentGame.source)
-        }
-        if (currentGame.source == GameSource.LOCAL) {
-          Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick = { showInvitationDialog = true }) {
-              Icon(
-                imageVector = FontAwesomeIcons.Solid.Share,
-                contentDescription = stringResource(Res.string.game_editor_invite),
-                modifier = Modifier.size(20.dp),
-              )
-            }
-            TextButton(onClick = { showRenameDialog = true }) {
-              Icon(
-                imageVector = FontAwesomeIcons.Regular.Edit,
-                contentDescription = stringResource(Res.string.history_rename_game),
-                modifier = Modifier.size(20.dp),
-              )
-            }
-          }
-        }
-      }
+      GameHeader(currentGame, { showInvitationDialog = true }, { showRenameDialog = true })
 
       Spacer(modifier = Modifier.size(8.dp))
       // Fixed scores at the top
@@ -245,6 +212,55 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
         }
       },
     )
+  }
+}
+
+/**
+ * Header section displaying the game name and action buttons for inviting players and renaming the
+ * game.
+ *
+ * @param currentGame The current game being edited
+ * @param showInvitationDialog Whether to show the invitation dialog
+ * @param showRenameDialog Whether to show the rename dialog
+ * @return Pair of updated showInvitationDialog and showRenameDialog states
+ */
+@Composable
+private fun GameHeader(
+  currentGame: Game,
+  showInvitationDialog: () -> Unit,
+  showRenameDialog: () -> Unit,
+) {
+  Row(
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      Text(
+        text = currentGame.name,
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.primary,
+      )
+      GameSourceBadge(source = currentGame.source)
+    }
+    if (currentGame.source == GameSource.LOCAL) {
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        TextButton(onClick = showInvitationDialog) {
+          Icon(
+            imageVector = FontAwesomeIcons.Solid.Share,
+            contentDescription = stringResource(Res.string.game_editor_invite),
+            modifier = Modifier.size(20.dp),
+          )
+        }
+        TextButton(onClick = showRenameDialog) {
+          Icon(
+            imageVector = FontAwesomeIcons.Regular.Edit,
+            contentDescription = stringResource(Res.string.history_rename_game),
+            modifier = Modifier.size(20.dp),
+          )
+        }
+      }
+    }
   }
 }
 

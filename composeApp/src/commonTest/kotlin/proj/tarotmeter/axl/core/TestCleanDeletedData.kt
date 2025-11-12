@@ -6,8 +6,11 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import org.koin.core.component.inject
@@ -81,7 +84,13 @@ class TestCleanDeletedData : TestAuthenticated() {
 
   @Test
   fun testDeletedGameIsCleanedAfterUpload() = runTestWithTrueClock {
-    val players = listOf(Player("A"), Player("B"), Player("C"))
+    val playerA = Player("A")
+    delay(2.milliseconds)
+    val playerB = Player("B")
+    delay(2.milliseconds)
+    val playerC = Player("C")
+    delay(2.milliseconds)
+    val players = listOf(playerA, playerB, playerC)
     players.forEach { localDb.insertPlayer(it) }
 
     val game = Game(players, name = "Test Game")
@@ -98,49 +107,63 @@ class TestCleanDeletedData : TestAuthenticated() {
   }
 
   @Test
-  fun testDeletedRoundIsCleanedAfterUpload() = runTestWithTrueClock {
-    val players = listOf(Player("A"), Player("B"), Player("C"), Player("D"))
-    players.forEach { localDb.insertPlayer(it) }
+  fun testDeletedRoundIsCleanedAfterUpload(): TestResult {
+    return runTestWithTrueClock {
+      val playerA = Player("A")
+      delay(2.milliseconds)
+      val playerB = Player("B")
+      delay(2.milliseconds)
+      val playerC = Player("C")
+      delay(2.milliseconds)
+      val playerD = Player("D")
+      delay(2.milliseconds)
+      val players = listOf(playerA, playerB, playerC, playerD)
+      players.forEach { localDb.insertPlayer(it) }
 
-    val game = Game(players, name = "Test Game")
-    localDb.insertGame(game)
+      val game = Game(players, name = "Test Game")
+      localDb.insertGame(game)
 
-    val round =
-      Round(
-        taker = players[0],
-        partner = null,
-        contract = Contract.PETITE,
-        oudlerCount = 1,
-        takerPoints = 42,
-        poignee = Poignee.NONE,
-        petitAuBout = PetitAuBout.NONE,
-        chelem = Chelem.NONE,
-        index = 0,
-      )
-    localDb.addRound(game.id, round)
+      val round =
+        Round(
+          taker = players[0],
+          partner = null,
+          contract = Contract.PETITE,
+          oudlerCount = 1,
+          takerPoints = 42,
+          poignee = Poignee.NONE,
+          petitAuBout = PetitAuBout.NONE,
+          chelem = Chelem.NONE,
+          index = 0,
+        )
+      localDb.addRound(game.id, round)
 
-    eventually(TEST_TIMEOUT) {
-      val cloudGame = cloudDb.getGame(game.id)
-      assertTrue { cloudGame?.rounds?.any { it.id == round.id } == true }
+      eventually(TEST_TIMEOUT) {
+        val cloudGame = cloudDb.getGame(game.id)
+        assertTrue { cloudGame?.rounds?.any { it.id == round.id } == true }
+      }
+
+      localDb.deleteRound(round.id)
+
+      eventually(TEST_TIMEOUT) {
+        val cloudGame = cloudDb.getGame(game.id)
+        assertTrue { cloudGame?.rounds?.none { it.id == round.id } == true }
+      }
+
+      val roundsIncludingDeleted = localDb.getRoundsUpdatedSince(Instant.DISTANT_PAST)
+      assertTrue(roundsIncludingDeleted.none { it.id == round.id && it.isDeleted })
     }
-
-    localDb.deleteRound(round.id)
-
-    eventually(TEST_TIMEOUT) {
-      val cloudGame = cloudDb.getGame(game.id)
-      assertTrue { cloudGame?.rounds?.none { it.id == round.id } == true }
-    }
-
-    val roundsIncludingDeleted = localDb.getRoundsUpdatedSince(Instant.DISTANT_PAST)
-    assertTrue(roundsIncludingDeleted.none { it.id == round.id && it.isDeleted })
   }
 
   @Test
   fun testMultipleDeletedEntitiesCleanedAfterUpload() = runTestWithTrueClock {
     val player1 = Player("Player1")
+    delay(2.milliseconds)
     val player2 = Player("Player2")
+    delay(2.milliseconds)
     val player3 = Player("Player3")
+    delay(2.milliseconds)
     val player4 = Player("Player4")
+    delay(2.milliseconds)
 
     localDb.insertPlayer(player1)
     localDb.insertPlayer(player2)
@@ -177,6 +200,7 @@ class TestCleanDeletedData : TestAuthenticated() {
   @Test
   fun testCleanDeletedDataDoesNotAffectActiveData() = runTestWithTrueClock {
     val activePlayer = Player("Active")
+    delay(2.milliseconds)
     val deletedPlayer = Player("Deleted")
 
     localDb.insertPlayer(activePlayer)
