@@ -8,14 +8,14 @@ import proj.tarotmeter.axl.core.data.DatabaseManager
 import proj.tarotmeter.axl.core.data.LocalDatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.CloudDatabaseManager
 import proj.tarotmeter.axl.core.data.cloud.Downloader
+import proj.tarotmeter.axl.core.data.cloud.SharedGamesManager
 import proj.tarotmeter.axl.core.data.cloud.Uploader
 import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.cloud.createSupabaseClient
 import proj.tarotmeter.axl.core.data.config.getPlatformSpecificConfig
 import proj.tarotmeter.axl.core.data.getPlatformSpecificDatabaseManager
 import proj.tarotmeter.axl.core.localization.localizationModule
-import proj.tarotmeter.axl.core.provider.GamesProvider
-import proj.tarotmeter.axl.core.provider.PlayersProvider
+import proj.tarotmeter.axl.core.provider.DataProvider
 
 /**
  * Initializes koin modules
@@ -35,12 +35,10 @@ fun initKoinModules(): Array<Module> {
     singleOf(::CloudDatabaseManager)
     singleOf(::Uploader)
     singleOf(::Downloader)
+    singleOf(::SharedGamesManager)
   }
 
-  val providerModule = module {
-    singleOf(::PlayersProvider)
-    singleOf(::GamesProvider)
-  }
+  val providerModule = module { singleOf(::DataProvider) }
 
   val miscModule = module { single { getPlatformSpecificConfig() } }
 

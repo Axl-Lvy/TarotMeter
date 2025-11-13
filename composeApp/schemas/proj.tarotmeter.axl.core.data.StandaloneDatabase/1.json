@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ffd6c9ac4efc28bb12f153aa492c188b",
+    "identityHash": "1f47eef59e352862787aee9d2bf61ab8",
     "entities": [
       {
         "tableName": "PlayerEntity",
@@ -349,11 +349,29 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "DeviceIdEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`device_id` TEXT NOT NULL, PRIMARY KEY(`device_id`))",
+        "fields": [
+          {
+            "fieldPath": "deviceId",
+            "columnName": "device_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "device_id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ffd6c9ac4efc28bb12f153aa492c188b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1f47eef59e352862787aee9d2bf61ab8')"
     ]
   }
 }

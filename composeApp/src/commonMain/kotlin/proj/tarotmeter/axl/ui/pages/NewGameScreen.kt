@@ -35,8 +35,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Player
-import proj.tarotmeter.axl.core.provider.GamesProvider
-import proj.tarotmeter.axl.core.provider.PlayersProvider
+import proj.tarotmeter.axl.core.provider.DataProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PrimaryButton
@@ -56,17 +55,13 @@ import tarotmeter.composeapp.generated.resources.new_game_selected_count
  * @param onGameCreated Callback for when a new game is created, with the game ID
  */
 @Composable
-fun NewGameScreen(
-  onGameCreated: (Uuid) -> Unit,
-  playersProvider: PlayersProvider = koinInject(),
-  gamesProvider: GamesProvider = koinInject(),
-) {
+fun NewGameScreen(onGameCreated: (Uuid) -> Unit, dataProvider: DataProvider = koinInject()) {
   var availablePlayers by remember { mutableStateOf(emptyList<Player>()) }
   val selectedPlayers = remember { mutableStateSetOf<Player>() }
   var gameName by remember { mutableStateOf("") }
   val coroutineScope = rememberCoroutineScope()
 
-  LaunchedEffect(Unit) { availablePlayers = playersProvider.getPlayers() }
+  LaunchedEffect(Unit) { availablePlayers = dataProvider.getPlayers() }
 
   val selectedCount = selectedPlayers.size
   val isValidSelection = selectedCount in 3..5 && gameName.trim().isNotBlank()
@@ -111,7 +106,7 @@ fun NewGameScreen(
           text = stringResource(Res.string.new_game_button_start),
           onClick = {
             coroutineScope.launch {
-              val game = gamesProvider.createGame(selectedPlayers, gameName)
+              val game = dataProvider.createGame(selectedPlayers, gameName)
               onGameCreated(game.id)
             }
           },

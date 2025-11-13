@@ -6,6 +6,8 @@ val generateSecretsTask by
     group = "codegen"
     description = "Generate secrets from local.properties"
 
+    notCompatibleWithConfigurationCache("Task uses project-level properties and file I/O")
+
     val projectDirValue = projectDir
     val rootProjectDirValue = rootProject.projectDir
 
@@ -19,54 +21,57 @@ val generateSecretsTask by
         else -> null
       }
 
-    // If no local.properties file is found, properties will be empty
-    val properties =
-      if (propsFile == null) {
-        Properties()
-      } else {
-        if (!propsFile.exists()) {
-          error("local.properties file not found at ${propsFile.absolutePath}")
-        }
-        Properties().apply { load(propsFile.inputStream()) }
-      }
-
-    // Create target directory and file
+    // Declare output file
     val (secretsPackageDir, secretsFile) = getGeneratedFileName(projectDirValue)
 
-    if (!secretsPackageDir.exists()) {
-      secretsPackageDir.mkdirs()
-    }
-
-    // Generate Secrets.kt content
-    val content = buildString {
-      appendLine("package proj.tarotmeter.axl.util.generated")
-      appendLine()
-      appendLine("import proj.tarotmeter.axl.util.SecretsTemplate")
-      appendLine()
-      appendLine("/**")
-      appendLine(" * Contains secrets stored in local.properties.")
-      appendLine(" *")
-      appendLine(" * Automatically generated file. DO NOT EDIT!")
-      appendLine(" */")
-      appendLine("object Secrets : SecretsTemplate() {")
-
-      properties.forEach { (key, value) ->
-        val originalKey = key.toString()
-        val camelCaseKey = originalKey.toCamelCase()
-
-        // Validate that the camelCase key is a valid Kotlin identifier
-        if (Regex("^[a-zA-Z_][a-zA-Z0-9_]*$").matches(camelCaseKey)) {
-          appendLine("    override val $camelCaseKey = \"$value\"")
+    doLast {
+      // If no local.properties file is found, properties will be empty
+      val properties =
+        if (propsFile == null) {
+          Properties()
+        } else {
+          if (!propsFile.exists()) {
+            error("local.properties file not found at ${propsFile.absolutePath}")
+          }
+          Properties().apply { load(propsFile.inputStream()) }
         }
+
+      // Create target directory and file
+      if (!secretsPackageDir.exists()) {
+        secretsPackageDir.mkdirs()
       }
 
-      appendLine("}")
+      // Generate Secrets.kt content
+      val content = buildString {
+        appendLine("package proj.tarotmeter.axl.util.generated")
+        appendLine()
+        appendLine("import proj.tarotmeter.axl.util.SecretsTemplate")
+        appendLine()
+        appendLine("/**")
+        appendLine(" * Contains secrets stored in local.properties.")
+        appendLine(" *")
+        appendLine(" * Automatically generated file. DO NOT EDIT!")
+        appendLine(" */")
+        appendLine("object Secrets : SecretsTemplate() {")
+
+        properties.forEach { (key, value) ->
+          val originalKey = key.toString()
+          val camelCaseKey = originalKey.toCamelCase()
+
+          // Validate that the camelCase key is a valid Kotlin identifier
+          if (Regex("^[a-zA-Z_][a-zA-Z0-9_]*$").matches(camelCaseKey)) {
+            appendLine("    override val $camelCaseKey = \"$value\"")
+          }
+        }
+
+        appendLine("}")
+      }
+
+      secretsFile.writeText(content)
+
+      // Add Secrets.kt to .gitignore
+      addToGitIgnore(projectDirValue, secretsFile)
     }
-
-    secretsFile.writeText(content)
-
-    // Add Secrets.kt to .gitignore
-    addToGitIgnore(projectDirValue, secretsFile)
   }
 
 // Task to clean Secrets.kt file
@@ -74,7 +79,7 @@ val cleanSecretsTask by
   tasks.registering {
     group = "codegen"
     description = "Clean generated Secrets.kt file"
-    val projectDirValue = projectDir
+    val projectDirValue = layout.projectDirectory.asFile
     val (secretsPackageDir, secretsFile) = getGeneratedFileName(projectDirValue)
 
     doLast {
@@ -126,7 +131,10 @@ fun String.toCamelCase(): String {
 }
 
 tasks
-  .matching { it.name.contains("compile", ignoreCase = true) }
+  .matching {
+    it.name.contains("compile", ignoreCase = true) ||
+      it.name.contains("kspKotlinJvm", ignoreCase = true)
+  }
   .configureEach { dependsOn(generateSecretsTask) }
 
 tasks.matching { it.name == "clean" }.configureEach { dependsOn(cleanSecretsTask) }

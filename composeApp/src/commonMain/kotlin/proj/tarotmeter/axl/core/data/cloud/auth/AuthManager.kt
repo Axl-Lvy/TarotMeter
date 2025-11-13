@@ -13,11 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import proj.tarotmeter.axl.core.data.config.AUTH_ACCESS_TOKEN
 import proj.tarotmeter.axl.core.data.config.AUTH_REFRESH_TOKEN
 import proj.tarotmeter.axl.core.data.config.KEEP_LOGGED_IN
+import proj.tarotmeter.axl.util.InitializableKoinComponent
 
 /**
  * A singleton class for managing Supabase authentication
@@ -25,7 +25,7 @@ import proj.tarotmeter.axl.core.data.config.KEEP_LOGGED_IN
  * @property supabaseClient
  * @constructor Create empty Supabase auth manager
  */
-class AuthManager() : KoinComponent {
+class AuthManager() : InitializableKoinComponent() {
 
   private val supabaseClient: SupabaseClient by inject()
 
@@ -76,6 +76,13 @@ class AuthManager() : KoinComponent {
     updateSavedTokens()
   }
 
+  /**
+   * Updates the stored authentication tokens based on the current session state.
+   *
+   * If a valid session exists and the user has chosen to stay logged in, the access and refresh
+   * tokens from the session are stored. Otherwise, the authentication tokens and the "keep logged
+   * in" preference are reset to their default values.
+   */
   fun updateSavedTokens() {
     val session = supabaseClient.auth.currentSessionOrNull()
     if (session != null && KEEP_LOGGED_IN.value) {

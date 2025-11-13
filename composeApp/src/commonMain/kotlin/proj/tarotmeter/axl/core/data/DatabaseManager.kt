@@ -1,9 +1,13 @@
 package proj.tarotmeter.axl.core.data
 
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Round
+import proj.tarotmeter.axl.core.data.sync.GameSync
+import proj.tarotmeter.axl.core.data.sync.PlayerSync
+import proj.tarotmeter.axl.core.data.sync.RoundSync
 
 /** Interface for managing database operations. */
 interface DatabaseManager {
@@ -96,6 +100,30 @@ interface DatabaseManager {
    * @throws IllegalStateException If the round does not exist.
    */
   suspend fun updateRound(round: Round)
+
+  /**
+   * Return all players (including deleted) updated strictly after the given instant.
+   *
+   * @param since The instant to filter by.
+   * @return List of players updated after the given instant.
+   */
+  suspend fun getPlayersUpdatedSince(since: Instant): List<PlayerSync>
+
+  /**
+   * Return all games (including deleted) updated strictly after the given instant.
+   *
+   * @param since The instant to filter by.
+   * @return List of games updated after the given instant.
+   */
+  suspend fun getGamesUpdatedSince(since: Instant): List<GameSync>
+
+  /**
+   * Return all rounds (including deleted) updated strictly after the given instant.
+   *
+   * @param since The instant to filter by.
+   * @return List of rounds updated after the given instant.
+   */
+  suspend fun getRoundsUpdatedSince(since: Instant): List<RoundSync>
 }
 
 /**

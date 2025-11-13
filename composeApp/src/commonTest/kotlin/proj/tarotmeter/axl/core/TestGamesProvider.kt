@@ -16,11 +16,11 @@ import proj.tarotmeter.axl.core.data.model.enums.Chelem
 import proj.tarotmeter.axl.core.data.model.enums.Contract
 import proj.tarotmeter.axl.core.data.model.enums.PetitAuBout
 import proj.tarotmeter.axl.core.data.model.enums.Poignee
-import proj.tarotmeter.axl.core.provider.GamesProvider
+import proj.tarotmeter.axl.core.provider.DataProvider
 import proj.tarotmeter.axl.util.TestWithKoin
 
 class TestGamesProvider : TestWithKoin {
-  private val gamesProvider: GamesProvider by inject()
+  private val dataProvider: DataProvider by inject()
   private val databaseManager: DatabaseManager by inject()
 
   @AfterTest
@@ -42,7 +42,7 @@ class TestGamesProvider : TestWithKoin {
   fun testCreateGameWithValidPlayers() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
 
-    val game = gamesProvider.createGame(players, "Test Game")
+    val game = dataProvider.createGame(players, "Test Game")
 
     assertNotNull(game)
     assertEquals(3, game.players.size)
@@ -54,7 +54,7 @@ class TestGamesProvider : TestWithKoin {
   fun testCreateGameWithFourPlayers() = runTest {
     val players = setOf(Player("Player1"), Player("Player2"), Player("Player3"), Player("Player4"))
 
-    val game = gamesProvider.createGame(players, "Test Game")
+    val game = dataProvider.createGame(players, "Test Game")
 
     assertNotNull(game)
     assertEquals(4, game.players.size)
@@ -71,7 +71,7 @@ class TestGamesProvider : TestWithKoin {
         Player("Player5"),
       )
 
-    val game = gamesProvider.createGame(players, "Test Game")
+    val game = dataProvider.createGame(players, "Test Game")
 
     assertNotNull(game)
     assertEquals(5, game.players.size)
@@ -81,7 +81,7 @@ class TestGamesProvider : TestWithKoin {
   fun testCreateGameWithTooFewPlayers() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"))
 
-    assertFailsWith<IllegalArgumentException> { gamesProvider.createGame(players, "Test Game") }
+    assertFailsWith<IllegalArgumentException> { dataProvider.createGame(players, "Test Game") }
   }
 
   @Test
@@ -96,15 +96,15 @@ class TestGamesProvider : TestWithKoin {
         Player("Player6"),
       )
 
-    assertFailsWith<IllegalArgumentException> { gamesProvider.createGame(players, "Test Game") }
+    assertFailsWith<IllegalArgumentException> { dataProvider.createGame(players, "Test Game") }
   }
 
   @Test
   fun testGetGameById() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
-    val createdGame = gamesProvider.createGame(players, "Test Game")
+    val createdGame = dataProvider.createGame(players, "Test Game")
 
-    val retrievedGame = gamesProvider.getGame(createdGame.id)
+    val retrievedGame = dataProvider.getGame(createdGame.id)
 
     assertNotNull(retrievedGame)
     assertEquals(createdGame.id, retrievedGame.id)
@@ -115,7 +115,7 @@ class TestGamesProvider : TestWithKoin {
   fun testGetNonExistentGame() = runTest {
     val nonExistentId = kotlin.uuid.Uuid.random()
 
-    val retrievedGame = gamesProvider.getGame(nonExistentId)
+    val retrievedGame = dataProvider.getGame(nonExistentId)
 
     assertNull(retrievedGame)
   }
@@ -125,10 +125,10 @@ class TestGamesProvider : TestWithKoin {
     val players1 = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
     val players2 = setOf(Player("Dave"), Player("Eve"), Player("Frank"))
 
-    val game1 = gamesProvider.createGame(players1, "Test Game")
-    val game2 = gamesProvider.createGame(players2, "Test Game")
+    val game1 = dataProvider.createGame(players1, "Test Game")
+    val game2 = dataProvider.createGame(players2, "Test Game")
 
-    val allGames = gamesProvider.getGames()
+    val allGames = dataProvider.getGames()
 
     assertTrue(allGames.size >= 2)
     assertTrue(allGames.any { it.id == game1.id })
@@ -137,7 +137,7 @@ class TestGamesProvider : TestWithKoin {
 
   @Test
   fun testGetGamesReturnsEmptyListWhenNoGames() = runTest {
-    val games = gamesProvider.getGames()
+    val games = dataProvider.getGames()
 
     assertTrue(games.isEmpty())
   }
@@ -145,7 +145,7 @@ class TestGamesProvider : TestWithKoin {
   @Test
   fun testAddRoundToGame() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
-    val game = gamesProvider.createGame(players, "Test Game")
+    val game = dataProvider.createGame(players, "Test Game")
 
     val round =
       Round(
@@ -160,9 +160,9 @@ class TestGamesProvider : TestWithKoin {
         index = 0,
       )
 
-    gamesProvider.addRound(game.id, round)
+    dataProvider.addRound(game.id, round)
 
-    val updatedGame = gamesProvider.getGame(game.id)
+    val updatedGame = dataProvider.getGame(game.id)
     assertNotNull(updatedGame)
     assertEquals(1, updatedGame.rounds.size)
     assertEquals(round.id, updatedGame.rounds[0].id)
@@ -172,7 +172,7 @@ class TestGamesProvider : TestWithKoin {
   @Test
   fun testAddMultipleRoundsToGame() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"), Player("Dave"))
-    val game = gamesProvider.createGame(players, "Test Game")
+    val game = dataProvider.createGame(players, "Test Game")
 
     val round1 =
       Round(
@@ -200,10 +200,10 @@ class TestGamesProvider : TestWithKoin {
         index = 1,
       )
 
-    gamesProvider.addRound(game.id, round1)
-    gamesProvider.addRound(game.id, round2)
+    dataProvider.addRound(game.id, round1)
+    dataProvider.addRound(game.id, round2)
 
-    val updatedGame = gamesProvider.getGame(game.id)
+    val updatedGame = dataProvider.getGame(game.id)
     assertNotNull(updatedGame)
     assertEquals(2, updatedGame.rounds.size)
     assertEquals(round1.id, updatedGame.rounds[0].id)
@@ -220,7 +220,7 @@ class TestGamesProvider : TestWithKoin {
         Player("Player4"),
         Player("Player5"),
       )
-    val game = gamesProvider.createGame(players, "Test Game")
+    val game = dataProvider.createGame(players, "Test Game")
 
     val round =
       Round(
@@ -235,9 +235,9 @@ class TestGamesProvider : TestWithKoin {
         index = 0,
       )
 
-    gamesProvider.addRound(game.id, round)
+    dataProvider.addRound(game.id, round)
 
-    val updatedGame = gamesProvider.getGame(game.id)
+    val updatedGame = dataProvider.getGame(game.id)
     assertNotNull(updatedGame)
     assertEquals(1, updatedGame.rounds.size)
 
@@ -251,7 +251,7 @@ class TestGamesProvider : TestWithKoin {
   fun testAddRoundToNonExistentGame() = runTest {
     val nonExistentId = kotlin.uuid.Uuid.random()
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
-    val game = gamesProvider.createGame(players, "Test Game")
+    val game = dataProvider.createGame(players, "Test Game")
 
     val round =
       Round(
@@ -266,16 +266,16 @@ class TestGamesProvider : TestWithKoin {
         index = 0,
       )
 
-    gamesProvider.addRound(nonExistentId, round)
+    dataProvider.addRound(nonExistentId, round)
 
-    val retrievedGame = gamesProvider.getGame(nonExistentId)
+    val retrievedGame = dataProvider.getGame(nonExistentId)
     assertNull(retrievedGame)
   }
 
   @Test
   fun testRoundIndexIncrements() = runTest {
     val players = setOf(Player("Alice"), Player("Bob"), Player("Charlie"))
-    val game = gamesProvider.createGame(players, "Test Game")
+    val game = dataProvider.createGame(players, "Test Game")
 
     val round1 =
       Round(
@@ -316,11 +316,11 @@ class TestGamesProvider : TestWithKoin {
         index = 2,
       )
 
-    gamesProvider.addRound(game.id, round1)
-    gamesProvider.addRound(game.id, round2)
-    gamesProvider.addRound(game.id, round3)
+    dataProvider.addRound(game.id, round1)
+    dataProvider.addRound(game.id, round2)
+    dataProvider.addRound(game.id, round3)
 
-    val updatedGame = gamesProvider.getGame(game.id)
+    val updatedGame = dataProvider.getGame(game.id)
     assertNotNull(updatedGame)
     assertEquals(3, updatedGame.rounds.size)
     assertEquals(0, updatedGame.rounds[0].index)

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
@@ -27,6 +28,7 @@ import tarotmeter.composeapp.generated.resources.confirm_email_error_title
 import tarotmeter.composeapp.generated.resources.confirm_email_success_message
 import tarotmeter.composeapp.generated.resources.confirm_email_success_title
 import tarotmeter.composeapp.generated.resources.confirm_email_verifying
+import tarotmeter.composeapp.generated.resources.general_unknown_error
 
 /**
  * Screen for confirming email verification. Displays a button that allows the user to verify their
@@ -47,7 +49,8 @@ fun ConfirmEmailScreen(tokenHash: String) {
       authManager.verifyEmail(tokenHash)
       verificationState = VerificationState.Success
     } catch (e: Exception) {
-      verificationState = VerificationState.Error(e.message ?: "Unknown error")
+      verificationState =
+        VerificationState.Error(e.message ?: getString(Res.string.general_unknown_error))
     }
   }
 

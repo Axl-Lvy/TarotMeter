@@ -22,4 +22,8 @@ object DateUtil {
   fun now(): Instant {
     return Clock.System.now()
   }
+
+  fun referenceTimePast(): Instant {
+    return Instant.parse("2000-01-01T00:00:00Z")
+  }
 }

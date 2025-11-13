@@ -15,6 +15,7 @@ import proj.tarotmeter.axl.util.DateUtil
  * @property name name for the game.
  * @property startedAt timestamp when the game started.
  * @property updatedAt timestamp when the game was last edited.
+ * @property source The storage source of this game (local or remote).
  */
 @Serializable
 data class Game(
@@ -24,6 +25,7 @@ data class Game(
   private val roundsInternal: MutableList<Round> = mutableStateListOf(),
   val startedAt: Instant = DateUtil.now(),
   private var updatedAtInternal: Instant = DateUtil.now(),
+  val source: GameSource = GameSource.LOCAL,
 ) {
   private var isSorted: Boolean = false
 

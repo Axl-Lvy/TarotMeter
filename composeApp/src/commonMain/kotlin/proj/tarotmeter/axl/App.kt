@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
+import proj.tarotmeter.axl.core.data.cloud.auth.AuthManager
 import proj.tarotmeter.axl.core.data.config.LANGUAGE_SETTING
 import proj.tarotmeter.axl.core.localization.Localization
 import proj.tarotmeter.axl.ui.AppScaffold
@@ -17,6 +18,8 @@ fun App(initialRoute: String? = null, onNavHostReady: suspend (NavController) ->
   KoinApplication(application = { modules(*modules) }) {
     // Apply saved language on app startup
     val localization = koinInject<Localization>()
+    val authManager = koinInject<AuthManager>()
+    authManager.initialize()
 
     LaunchedEffect(LANGUAGE_SETTING.value) {
       val languageToApply =

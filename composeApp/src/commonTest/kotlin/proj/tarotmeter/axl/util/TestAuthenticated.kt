@@ -18,7 +18,7 @@ abstract class TestAuthenticated : TestWithKoin {
     super.setUp()
     ensureSignedOut()
     runTest {
-      authManager.signInFromEmail(Secrets.testUserMail, Secrets.testUserPassword)
+      authManager.signInFromEmail(Secrets.testUserMail1, Secrets.testUserPassword)
       eventually(TEST_TIMEOUT) { assertNotNull(authManager.user) }
     }
   }

@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -136,10 +137,11 @@ private fun DownloadButton(
           snackbarHostState.showSnackbar(
             message = getString(Res.string.settings_account_download_success)
           )
-        } catch (_: Exception) {
+        } catch (e: Exception) {
           snackbarHostState.showSnackbar(
             message = getString(Res.string.settings_account_download_failed)
           )
+          LOGGER.e("Error: ", e)
         } finally {
           isDownloading = false
         }
@@ -151,3 +153,5 @@ private fun DownloadButton(
 }
 
 @Composable expect fun LanguageSelection(selectedLanguage: Language, localization: Localization)
+
+private val LOGGER = Logger.withTag("DownloadButton")

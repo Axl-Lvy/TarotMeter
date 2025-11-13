@@ -10,6 +10,7 @@ import proj.tarotmeter.axl.ui.pages.ConfirmEmailScreen
 import proj.tarotmeter.axl.ui.pages.GameEditorScreen
 import proj.tarotmeter.axl.ui.pages.HistoryScreen
 import proj.tarotmeter.axl.ui.pages.HomeScreen
+import proj.tarotmeter.axl.ui.pages.JoinGameScreen
 import proj.tarotmeter.axl.ui.pages.NewGameScreen
 import proj.tarotmeter.axl.ui.pages.PlayersScreen
 import proj.tarotmeter.axl.ui.pages.SettingsScreen
@@ -52,6 +53,18 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
     composable<Route.ConfirmEmail> { backStackEntry ->
       val tokenHash = backStackEntry.toRoute<Route.ConfirmEmail>().tokenHash
       ConfirmEmailScreen(tokenHash = tokenHash)
+    }
+    composable<Route.JoinGame> { backStackEntry ->
+      val invitationCode = backStackEntry.toRoute<Route.JoinGame>().invitationCode
+      JoinGameScreen(
+        invitationCode = invitationCode,
+        onSuccess = {
+          navController.navigate(Route.History.route) {
+            popUpTo(navController.graph.startDestinationId) { inclusive = false }
+            launchSingleTop = true
+          }
+        },
+      )
     }
   }
 }

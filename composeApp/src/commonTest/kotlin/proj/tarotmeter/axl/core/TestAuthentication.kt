@@ -55,13 +55,13 @@ class TestAuthentication : TestWithKoin {
   @Test
   fun testSuccessfulSignIn() = runTest {
     authManager.signInFromEmail(
-      providedEmail = Secrets.testUserMail,
+      providedEmail = Secrets.testUserMail1,
       providedPassword = Secrets.testUserPassword,
     )
 
     eventually(duration = TEST_TIMEOUT) {
       assertNotNull(authManager.user, "User should not be null after successful sign in")
-      assertEquals(Secrets.testUserMail, authManager.user?.email, "Email should match")
+      assertEquals(Secrets.testUserMail1, authManager.user?.email, "Email should match")
     }
   }
 
@@ -90,7 +90,7 @@ class TestAuthentication : TestWithKoin {
   fun testSignOut() = runTest {
     // Sign in first
     authManager.signInFromEmail(
-      providedEmail = Secrets.testUserMail,
+      providedEmail = Secrets.testUserMail1,
       providedPassword = Secrets.testUserPassword,
     )
 
@@ -112,7 +112,7 @@ class TestAuthentication : TestWithKoin {
 
     // Sign in
     authManager.signInFromEmail(
-      providedEmail = Secrets.testUserMail,
+      providedEmail = Secrets.testUserMail1,
       providedPassword = Secrets.testUserPassword,
     )
 
@@ -130,7 +130,7 @@ class TestAuthentication : TestWithKoin {
 
     // Sign in
     authManager.signInFromEmail(
-      providedEmail = Secrets.testUserMail,
+      providedEmail = Secrets.testUserMail1,
       providedPassword = Secrets.testUserPassword,
     )
 
@@ -146,7 +146,7 @@ class TestAuthentication : TestWithKoin {
     // Enable keep logged in and sign in
     KEEP_LOGGED_IN.value = true
     authManager.signInFromEmail(
-      providedEmail = Secrets.testUserMail,
+      providedEmail = Secrets.testUserMail1,
       providedPassword = Secrets.testUserPassword,
     )
 
@@ -179,7 +179,7 @@ class TestAuthentication : TestWithKoin {
 
     // Sign in to trigger listener
     authManager.signInFromEmail(
-      providedEmail = Secrets.testUserMail,
+      providedEmail = Secrets.testUserMail1,
       providedPassword = Secrets.testUserPassword,
     )
 
@@ -221,7 +221,7 @@ class TestAuthentication : TestWithKoin {
   fun testEmptyPasswordValidation() = runTest {
     var exceptionThrown = false
     try {
-      authManager.signInFromEmail(providedEmail = Secrets.testUserMail, providedPassword = "")
+      authManager.signInFromEmail(providedEmail = Secrets.testUserMail1, providedPassword = "")
     } catch (_: Exception) {
       exceptionThrown = true
     }

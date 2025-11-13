@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import proj.tarotmeter.axl.core.data.converter.DateConverter
 import proj.tarotmeter.axl.core.data.converter.UuidConverter
+import proj.tarotmeter.axl.core.data.entity.DeviceIdEntity
 import proj.tarotmeter.axl.core.data.entity.GameEntity
 import proj.tarotmeter.axl.core.data.entity.GamePlayerCrossRef
 import proj.tarotmeter.axl.core.data.entity.PlayerEntity
@@ -18,7 +19,13 @@ import proj.tarotmeter.axl.core.data.entity.RoundEntity
 /** Room database for standalone platforms. */
 @Database(
   entities =
-    [PlayerEntity::class, RoundEntity::class, GameEntity::class, GamePlayerCrossRef::class],
+    [
+      PlayerEntity::class,
+      RoundEntity::class,
+      GameEntity::class,
+      GamePlayerCrossRef::class,
+      DeviceIdEntity::class,
+    ],
   version = 1,
   autoMigrations = [],
 )
@@ -38,6 +45,13 @@ abstract class StandaloneDatabase : RoomDatabase() {
    * @return GameDao instance.
    */
   abstract fun getGameDao(): GameDao
+
+  /**
+   * Miscellaneous data access object.
+   *
+   * @return MiscDao instance.
+   */
+  abstract fun getMiscDao(): MiscDao
 }
 
 /** Database constructor for platform-specific initialization. */

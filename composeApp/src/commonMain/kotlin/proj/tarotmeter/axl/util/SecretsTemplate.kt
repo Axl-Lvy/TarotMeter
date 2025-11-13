@@ -20,7 +20,10 @@ abstract class SecretsTemplate {
   open val supabaseApiKey = NOT_FOUND
 
   /** Mail of the user account used for testing */
-  open val testUserMail = NOT_FOUND
+  open val testUserMail1 = NOT_FOUND
+
+  /** Mail of the second user account used for testing */
+  open val testUserMail2 = NOT_FOUND
 
   /** Password of the user account used for testing */
   open val testUserPassword = NOT_FOUND
