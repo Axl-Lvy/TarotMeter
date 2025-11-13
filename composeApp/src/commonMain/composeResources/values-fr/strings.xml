@@ -9,7 +9,8 @@
   <string name="general_delete">Supprimer</string>
   <string name="general_save">Sauvegarder</string>
   <string name="general_cancel">Annuler</string>
-  <string name="game_editor_with">Avec</string>
+  <string name="general_unknown_error">Erreur inconnue</string>
+  <string name="general_with">Avec</string>
 
   <!-- Tarot Specific Terms -->
   <string name="tarot_taker">Preneur</string>
@@ -50,6 +51,7 @@
   <string name="title_game_history">Historique des Parties</string>
   <string name="title_game_editor">Éditeur de Partie</string>
   <string name="title_confirm_email">Confirmer l'Email</string>
+  <string name="title_join_game">Rejoindre une Partie</string>
 
   <!-- Home Screen -->
   <string name="home_subtitle">Suivez vos parties de Tarot avec élégance</string>
@@ -193,4 +195,11 @@
   <string name="confirm_email_success_title">E-mail vérifié avec succès !</string>
   <string name="confirm_email_success_message">Vous êtes maintenant connecté</string>
   <string name="confirm_email_error_title">Échec de la vérification</string>
+
+  <!-- Join Game Screen -->
+  <string name="join_game_joining">Rejoindre la partie…</string>
+  <string name="join_game_success_title">Partie rejointe avec succès !</string>
+  <string name="join_game_success_message">Redirection vers l'historique…</string>
+  <string name="join_game_error_title">Échec de rejoindre la partie</string>
+  <string name="join_game_invalid_code">Code d'invitation invalide</string>
 </resources>

@@ -319,7 +319,7 @@ private fun RoundCard(round: Round, game: Game, onEdit: () -> Unit, onDelete: ()
           }
           if (round.partner != null) {
             Text(
-              stringResource(Res.string.game_editor_with),
+              stringResource(Res.string.general_with),
               style = MaterialTheme.typography.bodySmall,
             )
             PlayerAvatar(name = round.partner.name, size = 32.dp)

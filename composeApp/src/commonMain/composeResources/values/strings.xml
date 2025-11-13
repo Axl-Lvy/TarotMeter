@@ -9,7 +9,8 @@
   <string name="general_delete">Delete</string>
   <string name="general_save">Save</string>
   <string name="general_cancel">Cancel</string>
-  <string name="game_editor_with">with</string>
+  <string name="general_unknown_error">Unknown error</string>
+  <string name="general_with">with</string>
 
   <!-- Tarot Specific Terms -->
   <string name="tarot_taker">Taker</string>
@@ -50,6 +51,7 @@
   <string name="title_game_history">Game History</string>
   <string name="title_game_editor">Game Editor</string>
   <string name="title_confirm_email">Confirm Email</string>
+  <string name="title_join_game">Join Game</string>
 
   <!-- Home Screen -->
   <string name="home_subtitle">Track your Tarot games with elegance</string>
@@ -189,4 +191,11 @@
   <string name="confirm_email_success_title">Email verified successfully!</string>
   <string name="confirm_email_success_message">You are now connected</string>
   <string name="confirm_email_error_title">Verification failed</string>
+
+  <!-- Join Game Screen -->
+  <string name="join_game_joining">Joining game…</string>
+  <string name="join_game_success_title">Game joined successfully!</string>
+  <string name="join_game_success_message">Redirecting to game history…</string>
+  <string name="join_game_error_title">Failed to join game</string>
+  <string name="join_game_invalid_code">Invalid invitation code</string>
 </resources>

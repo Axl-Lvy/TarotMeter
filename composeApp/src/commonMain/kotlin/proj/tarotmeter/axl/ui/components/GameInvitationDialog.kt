@@ -38,12 +38,14 @@ import compose.icons.fontawesomeicons.solid.Copy
 import io.github.goquati.qr.QrCode
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.cloud.SharedGamesManager
 import proj.tarotmeter.axl.util.toClipEntry
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.general_ok
+import tarotmeter.composeapp.generated.resources.general_unknown_error
 import tarotmeter.composeapp.generated.resources.invitation_code_dialog_copy
 import tarotmeter.composeapp.generated.resources.invitation_code_dialog_error
 import tarotmeter.composeapp.generated.resources.invitation_code_dialog_generating
@@ -75,7 +77,7 @@ fun GameInvitationDialog(
         qrCode = generateQrCode(code.toString().padStart(8, '0'))
         isLoading = false
       } catch (e: Exception) {
-        errorMessage = e.message ?: "Unknown error"
+        errorMessage = e.message ?: getString(Res.string.general_unknown_error)
         isLoading = false
       }
     }
