@@ -142,6 +142,7 @@
   <string name="join_game_dialog_invalid_code">Invalid or expired invitation code.</string>
   <string name="join_game_dialog_game_not_found">Game not found.</string>
   <string name="join_game_dialog_cannot_join_own">You cannot join your own game.</string>
+  <string name="join_game_dialog_qr_scan">Scan QR Code</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Settings</string>

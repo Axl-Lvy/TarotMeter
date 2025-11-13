@@ -144,6 +144,7 @@
   <string name="join_game_dialog_invalid_code">Code d'invitation invalide ou expiré.</string>
   <string name="join_game_dialog_game_not_found">Partie introuvable.</string>
   <string name="join_game_dialog_cannot_join_own">Vous ne pouvez pas rejoindre votre propre partie.</string>
+  <string name="join_game_dialog_qr_scan">Scanner le code QR</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Paramètres</string>

@@ -2,6 +2,7 @@ package proj.tarotmeter.axl.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -51,6 +52,21 @@ fun JoinGameDialog(
   var isLoading by remember { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
 
+  fun doJoinGame(stringCode: String) {
+    val code = stringCode.toIntOrNull() ?: return
+    isLoading = true
+    coroutineScope.launch {
+      try {
+        sharedGamesManager.joinGame(code)
+        onSuccess()
+      } catch (e: Exception) {
+        exception = e
+      } finally {
+        isLoading = false
+      }
+    }
+  }
+
   AlertDialog(
     onDismissRequest = onDismiss,
     title = { Text(stringResource(Res.string.join_game_dialog_title)) },
@@ -61,21 +77,25 @@ fun JoinGameDialog(
           stringResource(Res.string.join_game_dialog_message),
           style = MaterialTheme.typography.bodyMedium,
         )
-        OutlinedTextField(
-          value = invitationCode,
-          onValueChange = {
-            if (it.length <= 8 && it.all { char -> char.isDigit() }) {
-              invitationCode = it
-              exception = null
-            }
-          },
-          label = { Text(stringResource(Res.string.join_game_dialog_input_label)) },
-          modifier = Modifier.fillMaxWidth(),
-          singleLine = true,
-          isError = exception != null,
-          enabled = !isLoading,
-          keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          OutlinedTextField(
+            value = invitationCode,
+            onValueChange = {
+              if (it.length <= 8 && it.all { char -> char.isDigit() }) {
+                invitationCode = it
+                exception = null
+              }
+            },
+            label = { Text(stringResource(Res.string.join_game_dialog_input_label)) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            isError = exception != null,
+            enabled = !isLoading,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+          )
+          QrCodeScannerButton { doJoinGame(it) }
+        }
+        QrCodeScannerButton { doJoinGame(it) }
         immutableException?.let {
           Text(
             text = getErrorMessage(immutableException),
@@ -87,20 +107,7 @@ fun JoinGameDialog(
     },
     confirmButton = {
       TextButton(
-        onClick = {
-          val code = invitationCode.toIntOrNull() ?: return@TextButton
-          coroutineScope.launch {
-            isLoading = true
-            try {
-              sharedGamesManager.joinGame(code)
-              onSuccess()
-            } catch (e: Exception) {
-              exception = e
-            } finally {
-              isLoading = false
-            }
-          }
-        },
+        onClick = { doJoinGame(invitationCode) },
         enabled = invitationCode.length == 8 && !isLoading,
       ) {
         Text(stringResource(Res.string.join_game_dialog_button))
