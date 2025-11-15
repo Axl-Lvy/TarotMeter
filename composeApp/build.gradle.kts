@@ -130,6 +130,7 @@ kotlin {
   sourceSets.all {
     languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
     languageSettings.optIn("kotlin.time.ExperimentalTime")
+    languageSettings.optIn("androidx.compose.foundation.layout.ExperimentalLayoutApi")
   }
 
   compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }

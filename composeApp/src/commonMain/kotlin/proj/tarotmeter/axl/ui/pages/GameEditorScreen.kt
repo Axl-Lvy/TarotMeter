@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.ui.pages
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -50,10 +51,15 @@ import proj.tarotmeter.axl.core.data.model.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
+import proj.tarotmeter.axl.ui.components.GameModeToggle
+import proj.tarotmeter.axl.ui.components.GameScreenTab
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.RoundEditor
 import proj.tarotmeter.axl.ui.components.ScoreText
+import proj.tarotmeter.axl.ui.pages.stats.GameStatsView
+import proj.tarotmeter.axl.ui.pages.stats.SamplePlayerStats
+import proj.tarotmeter.axl.ui.pages.stats.buildPlayerStats
 import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
 
@@ -66,12 +72,15 @@ import tarotmeter.composeapp.generated.resources.Res
 @Composable
 fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) {
   var game by remember { mutableStateOf<Game?>(null) }
+  var allGames by remember { mutableStateOf<List<Game>>(emptyList()) }
   var editingRound by remember { mutableStateOf<Round?>(null) }
   var showDeleteDialog by remember { mutableStateOf(false) }
   var roundToDelete by remember { mutableStateOf<Round?>(null) }
+  var selectedTab by remember { mutableStateOf(GameScreenTab.AddGame) }
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(gameId) { game = gamesProvider.getGame(gameId) }
+  LaunchedEffect(Unit) { allGames = gamesProvider.getGames() }
 
   val currentGame = game
   if (currentGame == null) {
@@ -80,59 +89,89 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   }
 
   val globalScores = Scores.globalScores(currentGame)
+  val playerStats = remember(allGames) { buildPlayerStats(allGames) }
+  val statsForCurrentPlayers =
+    remember(currentGame, playerStats) {
+      playerStats.filter { stat -> currentGame.players.any { it.id == stat.player.id } }
+    }
 
-  Column(Modifier.fillMaxSize()) {
-    Spacer(modifier = Modifier.size(16.dp))
-    // Fixed scores at the top
-    PlayerScoresRow(
-      playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
+  Column(
+    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    GameModeToggle(
+      selectedTab = selectedTab,
+      onTabSelected = { selectedTab = it },
+      modifier = Modifier.fillMaxWidth(),
     )
 
-    // Scrollable list with header content
-    LazyColumn(
+    Crossfade(
+      targetState = selectedTab,
       modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      item {
-        Spacer(modifier = Modifier.size(16.dp))
-        // Add/Edit round section
-        RoundEditor(
-          game = currentGame,
-          onValidate = { round ->
-            coroutineScope.launch {
-              gamesProvider.addRound(currentGame.id, round)
-              game = gamesProvider.getGame(gameId)
+      label = "game-editor-mode",
+    ) { mode ->
+      when (mode) {
+        GameScreenTab.AddGame -> {
+          Column(Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.size(16.dp))
+            PlayerScoresRow(
+              playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
+            )
+            LazyColumn(
+              modifier = Modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+              item {
+                Spacer(modifier = Modifier.size(16.dp))
+                RoundEditor(
+                  game = currentGame,
+                  onValidate = { round ->
+                    coroutineScope.launch {
+                      gamesProvider.addRound(currentGame.id, round)
+                      game = gamesProvider.getGame(gameId)
+                      allGames = gamesProvider.getGames()
+                    }
+                  },
+                )
+              }
+
+              item { HorizontalDivider() }
+
+              item {
+                Text(
+                  stringResource(Res.string.game_editor_round_history, currentGame.rounds.size),
+                  style = MaterialTheme.typography.titleMedium,
+                )
+              }
+
+              if (currentGame.rounds.isEmpty()) {
+                item {
+                  EmptyState(
+                    message = stringResource(Res.string.game_editor_empty_state),
+                    modifier = Modifier.fillParentMaxHeight(0.3f),
+                  )
+                }
+              } else {
+                items(currentGame.rounds.reversed()) { round ->
+                  RoundCard(
+                    round = round,
+                    game = currentGame,
+                    onEdit = { editingRound = round },
+                    onDelete = {
+                      roundToDelete = round
+                      showDeleteDialog = true
+                    },
+                  )
+                }
+              }
             }
-          },
-        )
-      }
-
-      item { HorizontalDivider() }
-
-      item {
-        Text(
-          stringResource(Res.string.game_editor_round_history, currentGame.rounds.size),
-          style = MaterialTheme.typography.titleMedium,
-        )
-      }
-
-      if (currentGame.rounds.isEmpty()) {
-        item {
-          EmptyState(
-            message = stringResource(Res.string.game_editor_empty_state),
-            modifier = Modifier.fillParentMaxHeight(0.3f),
-          )
+          }
         }
-      } else {
-        items(currentGame.rounds.reversed()) { round ->
-          RoundCard(
-            round = round,
-            game = currentGame,
-            onEdit = { editingRound = round },
-            onDelete = {
-              roundToDelete = round
-              showDeleteDialog = true
-            },
+        GameScreenTab.Stats -> {
+          GameStatsView(
+            playerStats = statsForCurrentPlayers,
+            placeholderData = SamplePlayerStats,
+            modifier = Modifier.fillMaxSize(),
           )
         }
       }
@@ -146,6 +185,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
         coroutineScope.launch {
           gamesProvider.deleteRound(roundToDelete!!.id)
           game = gamesProvider.getGame(gameId)
+          allGames = gamesProvider.getGames()
           showDeleteDialog = false
           roundToDelete = null
         }
@@ -166,6 +206,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
         coroutineScope.launch {
           gamesProvider.updateRound(updatedRound)
           game = gamesProvider.getGame(gameId)
+          allGames = gamesProvider.getGames()
           editingRound = null
         }
       },

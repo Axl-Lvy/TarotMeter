@@ -85,6 +85,19 @@
   </plurals>
   <string name="new_game_button_start">Commencer la Partie</string>
   <string name="new_game_no_players">Aucun joueur disponible. Veuillez d'abord ajouter des joueurs.</string>
+  <string name="game_toggle_add_game">Ajouter une Partie</string>
+  <string name="game_toggle_stats">Statistiques</string>
+  <string name="game_stats_chart_title">Évolution des scores</string>
+  <string name="game_stats_empty_state_title">Pas encore de stats</string>
+  <string name="game_stats_empty_state_message">Jouez ou importez une partie pour débloquer les analyses en direct.</string>
+  <string name="game_stats_placeholder_notice">Affichage des données d'exemple en attendant vos premières parties.</string>
+  <string name="game_stats_chart_empty">Ajoutez au moins une partie terminée pour voir les courbes.</string>
+  <string name="game_stats_metric_avg_score">Moy. score</string>
+  <string name="game_stats_metric_best_score">Meilleur</string>
+  <string name="game_stats_metric_worst_score">Pire</string>
+  <string name="game_stats_metric_total_games">Parties</string>
+  <string name="game_stats_metric_win_rate">Taux de victoires</string>
+  <string name="game_stats_metric_avg_place">Moy. place</string>
 
   <!-- Round Editor -->
   <string name="round_editor_add_new">Ajouter une Nouvelle Donne</string>
