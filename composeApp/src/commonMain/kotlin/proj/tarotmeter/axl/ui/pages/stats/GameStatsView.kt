@@ -49,32 +49,23 @@ import tarotmeter.composeapp.generated.resources.game_stats_metric_best_score
 import tarotmeter.composeapp.generated.resources.game_stats_metric_total_rounds
 import tarotmeter.composeapp.generated.resources.game_stats_metric_win_rate
 import tarotmeter.composeapp.generated.resources.game_stats_metric_worst_score
-import tarotmeter.composeapp.generated.resources.game_stats_placeholder_notice
 
 /**
  * Displays game statistics for players in a specific game.
  *
  * Shows score evolution over rounds, total score, and various metrics for each player.
  *
- * @param playerStats List of player statistics to display
+ * @param game The game to display statistics for
  * @param modifier Modifier for the component
- * @param placeholderData Optional placeholder data to display when no real stats are available
  */
 @Composable
 fun GameStatsView(
-  playerStats: List<PlayerStats>,
+  game: Game,
   modifier: Modifier = Modifier,
-  placeholderData: List<PlayerStats>? = null,
 ) {
-  val isUsingSampleData = playerStats.isEmpty() && !placeholderData.isNullOrEmpty()
-  val statsToDisplay =
-    if (playerStats.isNotEmpty()) {
-      playerStats
-    } else {
-      placeholderData.orEmpty()
-    }
+  val playerStats = remember(game) { buildPlayerStats(game) }
 
-  if (statsToDisplay.isEmpty()) {
+  if (playerStats.isEmpty()) {
     StatsEmptyState(modifier)
     return
   }
@@ -89,8 +80,8 @@ fun GameStatsView(
       MaterialTheme.colorScheme.outline,
     )
   val playerColors =
-    remember(statsToDisplay, palette) {
-      statsToDisplay
+    remember(playerStats, palette) {
+      playerStats
         .mapIndexed { index, stats -> stats.player to palette[index % palette.size] }
         .toMap()
     }
@@ -100,39 +91,19 @@ fun GameStatsView(
     verticalArrangement = Arrangement.spacedBy(16.dp),
     contentPadding = PaddingValues(bottom = 32.dp),
   ) {
-    if (isUsingSampleData) {
-      item { SampleDataBanner() }
-    }
     item {
       PlayerScoreChart(
-        stats = statsToDisplay,
+        stats = playerStats,
         playerColors = playerColors,
         modifier = Modifier.fillMaxWidth(),
       )
     }
-    items(statsToDisplay, key = { it.player.id }) { stats ->
+    items(playerStats, key = { it.player.id }) { stats ->
       PlayerStatsCard(
         playerStats = stats,
         accentColor = playerColors[stats.player] ?: MaterialTheme.colorScheme.primary,
       )
     }
-  }
-}
-
-@Composable
-private fun SampleDataBanner() {
-  Surface(
-    modifier = Modifier.fillMaxWidth(),
-    color = MaterialTheme.colorScheme.secondaryContainer,
-    shape = MaterialTheme.shapes.medium,
-    tonalElevation = 2.dp,
-  ) {
-    Text(
-      text = stringResource(Res.string.game_stats_placeholder_notice),
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-      style = MaterialTheme.typography.bodySmall,
-      color = MaterialTheme.colorScheme.onSecondaryContainer,
-    )
   }
 }
 
