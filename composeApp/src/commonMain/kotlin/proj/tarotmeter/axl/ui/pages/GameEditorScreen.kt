@@ -58,8 +58,6 @@ import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.RoundEditor
 import proj.tarotmeter.axl.ui.components.ScoreText
 import proj.tarotmeter.axl.ui.pages.stats.GameStatsView
-import proj.tarotmeter.axl.ui.pages.stats.SamplePlayerStats
-import proj.tarotmeter.axl.ui.pages.stats.buildPlayerStats
 import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
 
@@ -89,11 +87,6 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   }
 
   val globalScores = Scores.globalScores(currentGame)
-  val playerStats = remember(allGames) { buildPlayerStats(allGames) }
-  val statsForCurrentPlayers =
-    remember(currentGame, playerStats) {
-      playerStats.filter { stat -> currentGame.players.any { it.id == stat.player.id } }
-    }
 
   Column(
     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
@@ -169,8 +162,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
         }
         GameScreenTab.Stats -> {
           GameStatsView(
-            playerStats = statsForCurrentPlayers,
-            placeholderData = SamplePlayerStats,
+            game = currentGame,
             modifier = Modifier.fillMaxSize(),
           )
         }
