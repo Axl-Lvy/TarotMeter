@@ -17,14 +17,24 @@ import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.ui.components.GameScreenTab.AddGame
 import proj.tarotmeter.axl.ui.components.GameScreenTab.Stats
 import tarotmeter.composeapp.generated.resources.Res
-import tarotmeter.composeapp.generated.resources.game_toggle_add_game
-import tarotmeter.composeapp.generated.resources.game_toggle_stats
+import tarotmeter.composeapp.generated.resources.game_editor_toggle_add_game
+import tarotmeter.composeapp.generated.resources.game_editor_toggle_stats
 
+/**
+ * Enum representing the tabs available in the game screen.
+ */
 enum class GameScreenTab {
   AddGame,
   Stats,
 }
 
+/**
+ * A toggle component for switching between game screen tabs.
+ *
+ * @param selectedTab The currently selected tab
+ * @param onTabSelected Callback when a tab is selected
+ * @param modifier Modifier for the component
+ */
 @Composable
 fun GameModeToggle(
   selectedTab: GameScreenTab,
@@ -36,14 +46,16 @@ fun GameModeToggle(
     horizontalArrangement = Arrangement.spacedBy(12.dp),
   ) {
     ModeChip(
-      text = stringResource(Res.string.game_toggle_add_game),
+      text = stringResource(Res.string.game_editor_toggle_add_game),
       selected = selectedTab == AddGame,
       onClick = { onTabSelected(AddGame) },
+      modifier = Modifier.weight(1f)
     )
     ModeChip(
-      text = stringResource(Res.string.game_toggle_stats),
+      text = stringResource(Res.string.game_editor_toggle_stats),
       selected = selectedTab == Stats,
       onClick = { onTabSelected(Stats) },
+      modifier = Modifier.weight(1f)
     )
   }
 }

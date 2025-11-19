@@ -85,8 +85,23 @@
   </plurals>
   <string name="new_game_button_start">Commencer la Partie</string>
   <string name="new_game_no_players">Aucun joueur disponible. Veuillez d'abord ajouter des joueurs.</string>
-  <string name="game_toggle_add_game">Ajouter une Partie</string>
-  <string name="game_toggle_stats">Statistiques</string>
+
+  <!-- Round Editor -->
+  <string name="round_editor_add_new">Ajouter une Nouvelle Donne</string>
+  <string name="round_editor_edit">Modifier la Donne</string>
+
+  <!-- Game Editor Screen -->
+  <string name="game_editor_toggle_add_game">Ajouter une Partie</string>
+  <string name="game_editor_toggle_stats">Statistiques</string>
+  <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
+  <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !
+  </string>
+  <string name="game_editor_edit">Modifier</string>
+  <string name="game_editor_delete_confirm_title">Supprimer la Donne ?</string>
+  <string name="game_editor_delete_confirm_message">Êtes-vous sûr de vouloir supprimer cette donne ? Cette action est irréversible.</string>
+  <string name="game_editor_taker_points">Preneur • %1$d pts</string>
+
+  <!-- Game Stats -->
   <string name="game_stats_chart_title">Évolution des scores</string>
   <string name="game_stats_empty_state_title">Pas encore de stats</string>
   <string name="game_stats_empty_state_message">Jouez ou importez une partie pour débloquer les analyses en direct.</string>
@@ -95,22 +110,9 @@
   <string name="game_stats_metric_avg_score">Moy. score</string>
   <string name="game_stats_metric_best_score">Meilleur</string>
   <string name="game_stats_metric_worst_score">Pire</string>
-  <string name="game_stats_metric_total_games">Parties</string>
+  <string name="game_stats_metric_total_rounds">Donnes</string>
   <string name="game_stats_metric_win_rate">Taux de victoires</string>
   <string name="game_stats_metric_avg_place">Moy. place</string>
-
-  <!-- Round Editor -->
-  <string name="round_editor_add_new">Ajouter une Nouvelle Donne</string>
-  <string name="round_editor_edit">Modifier la Donne</string>
-
-  <!-- Game Editor Screen -->
-  <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
-  <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !
-  </string>
-  <string name="game_editor_edit">Modifier</string>
-  <string name="game_editor_delete_confirm_title">Supprimer la Donne ?</string>
-  <string name="game_editor_delete_confirm_message">Êtes-vous sûr de vouloir supprimer cette donne ? Cette action est irréversible.</string>
-  <string name="game_editor_taker_points">Preneur • %1$d pts</string>
 
   <!-- History Screen -->
   <plurals name="history_game_count">

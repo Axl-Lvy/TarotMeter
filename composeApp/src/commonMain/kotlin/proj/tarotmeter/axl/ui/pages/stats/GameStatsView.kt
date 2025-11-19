@@ -32,14 +32,12 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.data.model.Scores
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
-import proj.tarotmeter.axl.util.DateUtil
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.game_stats_chart_empty
 import tarotmeter.composeapp.generated.resources.game_stats_chart_title
@@ -48,11 +46,20 @@ import tarotmeter.composeapp.generated.resources.game_stats_empty_state_title
 import tarotmeter.composeapp.generated.resources.game_stats_metric_avg_place
 import tarotmeter.composeapp.generated.resources.game_stats_metric_avg_score
 import tarotmeter.composeapp.generated.resources.game_stats_metric_best_score
-import tarotmeter.composeapp.generated.resources.game_stats_metric_total_games
+import tarotmeter.composeapp.generated.resources.game_stats_metric_total_rounds
 import tarotmeter.composeapp.generated.resources.game_stats_metric_win_rate
 import tarotmeter.composeapp.generated.resources.game_stats_metric_worst_score
 import tarotmeter.composeapp.generated.resources.game_stats_placeholder_notice
 
+/**
+ * Displays game statistics for players in a specific game.
+ *
+ * Shows score evolution over rounds, total score, and various metrics for each player.
+ *
+ * @param playerStats List of player statistics to display
+ * @param modifier Modifier for the component
+ * @param placeholderData Optional placeholder data to display when no real stats are available
+ */
 @Composable
 fun GameStatsView(
   playerStats: List<PlayerStats>,
@@ -288,8 +295,8 @@ private fun PlayerStatsCard(playerStats: PlayerStats, accentColor: Color) {
             fontWeight = FontWeight.SemiBold,
           )
           Text(
-            text = stringResource(Res.string.game_stats_metric_total_games) +
-              ": ${playerStats.totalGames}",
+            text = stringResource(Res.string.game_stats_metric_total_rounds) +
+              ": ${playerStats.totalRounds}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
@@ -357,9 +364,9 @@ private fun StatsMetricChip(label: String, value: String, modifier: Modifier = M
 }
 
 @Immutable
-data class PlayerStats(
+private data class PlayerStats(
   val player: Player,
-  val totalGames: Int,
+  val totalRounds: Int,
   val totalScore: Int,
   val averageScore: Float,
   val bestScore: Int,
@@ -377,18 +384,19 @@ data class ScorePoint(
   val epochMillis: Long = date.toEpochMilliseconds(),
 )
 
-fun buildPlayerStats(games: List<Game>): List<PlayerStats> {
-  if (games.isEmpty()) return emptyList()
-  val sortedGames = games.sortedBy { it.startedAt }
+fun buildPlayerStats(game: Game): List<PlayerStats> {
+  if (game.rounds.isEmpty()) return emptyList()
+  
+  val sortedRounds = game.rounds.sortedBy { it.createdAt }
   val scoreHistory = mutableMapOf<Player, MutableList<Int>>()
   val cumulativeScores = mutableMapOf<Player, Int>()
   val timelines = mutableMapOf<Player, MutableList<ScorePoint>>()
   val wins = mutableMapOf<Player, Int>()
   val placements = mutableMapOf<Player, Int>()
 
-  sortedGames.forEach { game ->
-    val gameScores = Scores.globalScores(game)
-    val ranking = gameScores.scores.entries.sortedByDescending { it.value }
+  sortedRounds.forEach { round ->
+    val roundScores = Scores.roundScores(round, game)
+    val ranking = roundScores.scores.entries.sortedByDescending { it.value }
 
     ranking.forEachIndexed { index, entry ->
       placements[entry.key] = (placements[entry.key] ?: 0) + (index + 1)
@@ -397,35 +405,35 @@ fun buildPlayerStats(games: List<Game>): List<PlayerStats> {
       }
     }
 
-    gameScores.scores.forEach { (player, score) ->
+    roundScores.scores.forEach { (player, score) ->
       scoreHistory.getOrPut(player) { mutableListOf() }.add(score)
       val updated = (cumulativeScores[player] ?: 0) + score
       cumulativeScores[player] = updated
-      timelines.getOrPut(player) { mutableListOf() }.add(ScorePoint(game.startedAt, updated))
+      timelines.getOrPut(player) { mutableListOf() }.add(ScorePoint(round.createdAt, updated))
     }
   }
 
   return scoreHistory
     .map { (player, scores) ->
-      val totalGames = scores.size
+      val totalRounds = scores.size
       val totalScore = scores.sum()
       PlayerStats(
         player = player,
-        totalGames = totalGames,
+        totalRounds = totalRounds,
         totalScore = totalScore,
-        averageScore = if (totalGames > 0) scores.average().toFloat() else 0f,
+        averageScore = if (totalRounds > 0) scores.average().toFloat() else 0f,
         bestScore = scores.maxOrNull() ?: 0,
         worstScore = scores.minOrNull() ?: 0,
         wins = wins[player] ?: 0,
         winRate =
-          if (totalGames > 0) {
-            ((wins[player] ?: 0) * 100f) / totalGames
+          if (totalRounds > 0) {
+            ((wins[player] ?: 0) * 100f) / totalRounds
           } else {
             0f
           },
         averagePlacement =
-          if (totalGames > 0) {
-            (placements[player]?.toFloat() ?: totalGames.toFloat()) / totalGames
+          if (totalRounds > 0) {
+            (placements[player]?.toFloat() ?: totalRounds.toFloat()) / totalRounds
           } else {
             0f
           },
@@ -433,60 +441,6 @@ fun buildPlayerStats(games: List<Game>): List<PlayerStats> {
       )
     }
     .sortedBy { it.player.name.lowercase() }
-}
-
-internal val SamplePlayerStats: List<PlayerStats> by lazy {
-  val playerA = Player(name = "Ava")
-  val playerB = Player(name = "Léo")
-  val playerC = Player(name = "Mila")
-  val now = DateUtil.now()
-
-  fun timeline(base: Int): List<ScorePoint> =
-    listOf(
-      ScorePoint(now - 7.days, base - 20),
-      ScorePoint(now - 5.days, base - 10),
-      ScorePoint(now - 3.days, base + 5),
-      ScorePoint(now - 1.days, base + 22),
-    )
-
-  listOf(
-    PlayerStats(
-      player = playerA,
-      totalGames = 4,
-      totalScore = 65,
-      averageScore = 16.25f,
-      bestScore = 28,
-      worstScore = -5,
-      wins = 2,
-      winRate = 50f,
-      averagePlacement = 1.8f,
-      cumulativeTimeline = timeline(10),
-    ),
-    PlayerStats(
-      player = playerB,
-      totalGames = 4,
-      totalScore = 32,
-      averageScore = 8f,
-      bestScore = 22,
-      worstScore = -8,
-      wins = 1,
-      winRate = 25f,
-      averagePlacement = 2.3f,
-      cumulativeTimeline = timeline(5),
-    ),
-    PlayerStats(
-      player = playerC,
-      totalGames = 4,
-      totalScore = -12,
-      averageScore = -3f,
-      bestScore = 12,
-      worstScore = -15,
-      wins = 1,
-      winRate = 25f,
-      averagePlacement = 2.9f,
-      cumulativeTimeline = timeline(-10),
-    ),
-  )
 }
 
 private fun Float.formatScore(): String {

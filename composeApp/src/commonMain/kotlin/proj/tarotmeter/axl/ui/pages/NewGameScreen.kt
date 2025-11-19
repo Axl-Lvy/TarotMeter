@@ -1,6 +1,5 @@
 package proj.tarotmeter.axl.ui.pages
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,19 +33,13 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.core.provider.PlayersProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
-import proj.tarotmeter.axl.ui.components.GameModeToggle
-import proj.tarotmeter.axl.ui.components.GameScreenTab
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PrimaryButton
 import proj.tarotmeter.axl.ui.components.SectionHeader
-import proj.tarotmeter.axl.ui.pages.stats.GameStatsView
-import proj.tarotmeter.axl.ui.pages.stats.SamplePlayerStats
-import proj.tarotmeter.axl.ui.pages.stats.buildPlayerStats
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.new_game_button_start
 import tarotmeter.composeapp.generated.resources.new_game_header
@@ -67,49 +60,62 @@ fun NewGameScreen(
 ) {
   var availablePlayers by remember { mutableStateOf(emptyList<Player>()) }
   val selectedPlayers = remember { mutableStateSetOf<Player>() }
-  var games by remember { mutableStateOf<List<Game>>(emptyList()) }
-  var selectedTab by remember { mutableStateOf(GameScreenTab.AddGame) }
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) { availablePlayers = playersProvider.getPlayers() }
-  LaunchedEffect(Unit) { games = gamesProvider.getGames() }
 
-  val playerStats = remember(games) { buildPlayerStats(games) }
+  val selectedCount = selectedPlayers.size
+  val isValidSelection = selectedCount in 3..5
 
   Column(
     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    GameModeToggle(
-      selectedTab = selectedTab,
-      onTabSelected = { selectedTab = it },
-      modifier = Modifier.fillMaxWidth(),
-    )
+    SectionHeader(stringResource(Res.string.new_game_header))
 
-    Crossfade(
-      targetState = selectedTab,
-      modifier = Modifier.fillMaxSize(),
-      label = "game-screen-mode",
-    ) { mode ->
-      when (mode) {
-        GameScreenTab.AddGame -> {
-          AddGameContent(
-            availablePlayers = availablePlayers,
-            selectedPlayers = selectedPlayers,
-            onStartGame = {
-              coroutineScope.launch {
-                val game = gamesProvider.createGame(selectedPlayers)
-                onGameCreated(game.id)
-              }
+    CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
+      Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(
+          stringResource(Res.string.new_game_select_players),
+          style = MaterialTheme.typography.titleMedium,
+        )
+
+        Text(
+          pluralStringResource(Res.plurals.new_game_selected_count, selectedCount, selectedCount),
+          style = MaterialTheme.typography.bodySmall,
+          color =
+            if (isValidSelection) {
+              MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+              MaterialTheme.colorScheme.error
             },
+        )
+
+        Spacer(Modifier.weight(1f))
+
+        PrimaryButton(
+          text = stringResource(Res.string.new_game_button_start),
+          onClick = {
+            coroutineScope.launch {
+              val game = gamesProvider.createGame(selectedPlayers)
+              onGameCreated(game.id)
+            }
+          },
+          enabled = isValidSelection,
+          modifier = Modifier.fillMaxWidth().widthIn(max = 400.dp),
+        )
+
+        HorizontalDivider()
+
+        if (availablePlayers.isEmpty()) {
+          Text(
+            stringResource(Res.string.new_game_no_players),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
           )
-        }
-        GameScreenTab.Stats -> {
-          GameStatsView(
-            playerStats = playerStats,
-            placeholderData = SamplePlayerStats,
-            modifier = Modifier.fillMaxSize(),
-          )
+        } else {
+          PlayersList(availablePlayers, selectedPlayers)
         }
       }
     }
@@ -182,65 +188,6 @@ private fun SelectablePlayer(player: Player, isSelected: Boolean) {
     )
     Spacer(Modifier.weight(1f))
     Checkbox(checked = isSelected, onCheckedChange = null)
-  }
-}
-
-@Composable
-private fun AddGameContent(
-  availablePlayers: List<Player>,
-  selectedPlayers: MutableSet<Player>,
-  onStartGame: () -> Unit,
-) {
-  val selectedCount = selectedPlayers.size
-  val isValidSelection = selectedCount in 3..5
-
-  Column(
-    modifier = Modifier.fillMaxSize(),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    SectionHeader(stringResource(Res.string.new_game_header))
-
-    CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
-      Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text(
-          stringResource(Res.string.new_game_select_players),
-          style = MaterialTheme.typography.titleMedium,
-        )
-
-        Text(
-          pluralStringResource(Res.plurals.new_game_selected_count, selectedCount, selectedCount),
-          style = MaterialTheme.typography.bodySmall,
-          color =
-            if (isValidSelection) {
-              MaterialTheme.colorScheme.onSurfaceVariant
-            } else {
-              MaterialTheme.colorScheme.error
-            },
-        )
-
-        Spacer(Modifier.weight(1f))
-
-        PrimaryButton(
-          text = stringResource(Res.string.new_game_button_start),
-          onClick = onStartGame,
-          enabled = isValidSelection,
-          modifier = Modifier.fillMaxWidth().widthIn(max = 400.dp),
-        )
-
-        HorizontalDivider()
-
-        if (availablePlayers.isEmpty()) {
-          Text(
-            stringResource(Res.string.new_game_no_players),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.error,
-          )
-        } else {
-          PlayersList(availablePlayers, selectedPlayers)
-        }
-      }
-    }
   }
 }
 
