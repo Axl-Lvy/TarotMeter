@@ -115,8 +115,12 @@ data class PlayerStats(
 
     /** Builds the final list of PlayerStats from accumulators. */
     private fun buildPlayerStatsList(accumulators: GameAccumulators): List<PlayerStats> {
-      return accumulators.scoreHistory
-        .map { (player, scores) -> buildPlayerStats(player, scores, accumulators) }
+      return accumulators.scoreHistory.keys
+        .map {
+          val scores: List<Int> =
+            accumulators.scoreHistory[it] ?: error("Scores not found for player $it")
+          buildPlayerStats(it, scores, accumulators)
+        }
         .sortedBy { -it.totalScore }
     }
 
@@ -184,7 +188,9 @@ private class GameAccumulators(players: List<Player>) {
   }
 
   fun updateCumulativeScore(player: Player, score: Int): Int {
-    val updated = cumulativeScores[player]!! + score
+    val playerCumulativeScore = cumulativeScores[player]
+    requireNotNull(playerCumulativeScore) { "Cumulative score for player $player not found." }
+    val updated = playerCumulativeScore + score
     cumulativeScores[player] = updated
     return updated
   }
