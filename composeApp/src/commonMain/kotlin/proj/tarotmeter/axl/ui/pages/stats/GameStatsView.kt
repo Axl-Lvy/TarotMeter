@@ -1,6 +1,7 @@
 package proj.tarotmeter.axl.ui.pages.stats
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,18 +32,16 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import kotlin.time.Instant
 import org.jetbrains.compose.resources.stringResource
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Player
-import proj.tarotmeter.axl.core.data.model.Scores
+import proj.tarotmeter.axl.core.data.model.calculated.PlayerStats
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.game_stats_chart_empty
 import tarotmeter.composeapp.generated.resources.game_stats_chart_title
 import tarotmeter.composeapp.generated.resources.game_stats_empty_state_message
 import tarotmeter.composeapp.generated.resources.game_stats_empty_state_title
-import tarotmeter.composeapp.generated.resources.game_stats_metric_avg_place
 import tarotmeter.composeapp.generated.resources.game_stats_metric_avg_score
 import tarotmeter.composeapp.generated.resources.game_stats_metric_best_score
 import tarotmeter.composeapp.generated.resources.game_stats_metric_total_rounds
@@ -59,11 +57,8 @@ import tarotmeter.composeapp.generated.resources.game_stats_metric_worst_score
  * @param modifier Modifier for the component
  */
 @Composable
-fun GameStatsView(
-  game: Game,
-  modifier: Modifier = Modifier,
-) {
-  val playerStats = remember(game) { buildPlayerStats(game) }
+fun GameStatsView(game: Game, modifier: Modifier = Modifier) {
+  val playerStats = remember(game) { PlayerStats.from(game) }
 
   if (playerStats.isEmpty()) {
     StatsEmptyState(modifier)
@@ -136,11 +131,7 @@ private fun PlayerScoreChart(
 ) {
   val timelines = stats.filter { it.cumulativeTimeline.isNotEmpty() }
   if (timelines.isEmpty()) {
-    Surface(
-      modifier = modifier,
-      shape = MaterialTheme.shapes.medium,
-      tonalElevation = 2.dp,
-    ) {
+    Surface(modifier = modifier, shape = MaterialTheme.shapes.medium, tonalElevation = 2.dp) {
       Text(
         text = stringResource(Res.string.game_stats_chart_empty),
         modifier = Modifier.padding(16.dp),
@@ -152,80 +143,110 @@ private fun PlayerScoreChart(
   }
 
   val allPoints = timelines.flatMap { it.cumulativeTimeline }
-  val minX = allPoints.minOf { it.epochMillis }.toFloat()
-  val maxX = allPoints.maxOf { it.epochMillis }.toFloat()
+  val minX = allPoints.minOf { it.roundIndex }.toFloat()
+  val maxX = allPoints.maxOf { it.roundIndex }.toFloat()
   val minY = min(0f, allPoints.minOf { it.value }.toFloat())
   val maxY = max(0f, allPoints.maxOf { it.value }.toFloat())
   val xRange = (maxX - minX).takeUnless { it == 0f } ?: 1f
   val yRange = (maxY - minY).takeUnless { it == 0f } ?: 1f
 
-  val axisColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+  val axisColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
   val defaultLineColor = MaterialTheme.colorScheme.primary
 
-  Surface(
-    modifier = modifier,
-    shape = MaterialTheme.shapes.medium,
-    tonalElevation = 2.dp,
-  ) {
+  // Prepare ticks (limit to ~12 labels)
+  val roundIndices = (minX.toInt()..maxX.toInt()).toList()
+  val tickStep = (roundIndices.size / 12).takeIf { it > 0 } ?: 1
+  val tickIndices = roundIndices.filter { (it - minX.toInt()) % tickStep == 0 }
+
+  Surface(modifier = modifier, shape = MaterialTheme.shapes.medium, tonalElevation = 2.dp) {
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       Text(
         text = stringResource(Res.string.game_stats_chart_title),
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.SemiBold,
       )
-      Canvas(modifier = Modifier.fillMaxWidth().height(220.dp)) {
-        val padding = 24.dp.toPx()
-        val chartWidth = size.width - (padding * 2)
-        val chartHeight = size.height - (padding * 2)
-        val origin = Offset(padding, size.height - padding)
-        drawLine(
-          color = axisColor,
-          start = origin,
-          end = Offset(padding, padding),
-          strokeWidth = 2f,
-        )
-        drawLine(
-          color = axisColor,
-          start = origin,
-          end = Offset(size.width - padding / 2, size.height - padding),
-          strokeWidth = 2f,
-        )
+      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Canvas(modifier = Modifier.fillMaxWidth().height(220.dp)) {
+          val padding = 32.dp.toPx()
+          val chartWidth = size.width - (padding * 2)
+          val chartHeight = size.height - (padding * 2)
+          val origin = Offset(padding, size.height - padding)
+          // Y axis
+          drawLine(
+            color = axisColor,
+            start = origin,
+            end = Offset(padding, padding),
+            strokeWidth = 2f,
+          )
+          // X axis
+          drawLine(
+            color = axisColor,
+            start = origin,
+            end = Offset(size.width - padding, size.height - padding),
+            strokeWidth = 2f,
+          )
 
-        timelines.forEach { playerStat ->
-          val color = playerColors[playerStat.player] ?: defaultLineColor
-          val path = Path()
-          playerStat.cumulativeTimeline.forEachIndexed { index, point ->
-            val xRatio = (point.epochMillis - minX) / xRange
-            val yRatio = (point.value - minY) / yRange
-            val x = padding + (xRatio * chartWidth)
-            val y = (size.height - padding) - (yRatio * chartHeight)
-            if (index == 0) {
-              path.moveTo(x, y)
-            } else {
-              path.lineTo(x, y)
-            }
-          }
-          drawPath(path = path, color = color, style = Stroke(width = 4f))
-          playerStat.cumulativeTimeline.forEach { point ->
-            val xRatio = (point.epochMillis - minX) / xRange
-            val yRatio = (point.value - minY) / yRange
-            val x = padding + (xRatio * chartWidth)
-            val y = (size.height - padding) - (yRatio * chartHeight)
-            drawCircle(
-              color = color,
-              radius = 5.dp.toPx(),
-              center = Offset(x, y),
+          // Horizontal reference lines (quartiles)
+          repeat(4) { i ->
+            val frac = i / 4f
+            val yValue = padding + (chartHeight * (1f - frac))
+            drawLine(
+              color = axisColor.copy(alpha = 0.15f),
+              start = Offset(padding, yValue),
+              end = Offset(size.width - padding, yValue),
+              strokeWidth = 1f,
             )
           }
+
+          // Draw player lines and points
+          timelines.forEach { playerStat ->
+            val color = playerColors[playerStat.player] ?: defaultLineColor
+            val path = Path()
+            playerStat.cumulativeTimeline.forEachIndexed { index, point ->
+              val xRatio = (point.roundIndex - minX) / xRange
+              val yRatio = (point.value - minY) / yRange
+              val x = padding + (xRatio * chartWidth)
+              val y = (size.height - padding) - (yRatio * chartHeight)
+              if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+            }
+            drawPath(path = path, color = color, style = Stroke(width = 3f))
+            playerStat.cumulativeTimeline.forEach { point ->
+              val xRatio = (point.roundIndex - minX) / xRange
+              val yRatio = (point.value - minY) / yRange
+              val x = padding + (xRatio * chartWidth)
+              val y = (size.height - padding) - (yRatio * chartHeight)
+              drawCircle(color = color, radius = 4.dp.toPx(), center = Offset(x, y))
+            }
+          }
+        }
+        // X axis labels
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+          tickIndices.forEach { idx ->
+            Text(
+              text = idx.toString(),
+              style = MaterialTheme.typography.labelSmall,
+              color = axisColor,
+            )
+          }
+        }
+        // Y axis min/max labels
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+          Text(
+            text = minY.roundToInt().toString(),
+            style = MaterialTheme.typography.labelSmall,
+            color = axisColor,
+          )
+          Text(
+            text = maxY.roundToInt().toString(),
+            style = MaterialTheme.typography.labelSmall,
+            color = axisColor,
+          )
         }
       }
 
       timelines.forEach { playerStat ->
         val color = playerColors[playerStat.player] ?: defaultLineColor
-        LegendItem(
-          label = playerStat.player.name,
-          color = color,
-        )
+        LegendItem(label = playerStat.player.name, color = color)
       }
     }
   }
@@ -238,10 +259,9 @@ private fun LegendItem(label: String, color: Color) {
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    Box(
-      modifier = Modifier.size(12.dp),
-      contentAlignment = Alignment.Center,
-    ) { Surface(color = color, shape = MaterialTheme.shapes.small) { Spacer(Modifier.size(12.dp)) } }
+    Box(modifier = Modifier.size(12.dp), contentAlignment = Alignment.Center) {
+      Surface(color = color, shape = MaterialTheme.shapes.small) { Spacer(Modifier.size(12.dp)) }
+    }
     Text(text = label, style = MaterialTheme.typography.bodySmall)
   }
 }
@@ -266,13 +286,17 @@ private fun PlayerStatsCard(playerStats: PlayerStats, accentColor: Color) {
             fontWeight = FontWeight.SemiBold,
           )
           Text(
-            text = stringResource(Res.string.game_stats_metric_total_rounds) +
-              ": ${playerStats.totalRounds}",
+            text =
+              stringResource(Res.string.game_stats_metric_total_rounds) +
+                ": ${playerStats.totalRounds}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       }
+
+      // Role metrics row (taker / partner / defender)
+      RoleMetricsRow(playerStats)
 
       Text(
         text = "${playerStats.totalScore} pts",
@@ -300,11 +324,97 @@ private fun PlayerStatsCard(playerStats: PlayerStats, accentColor: Color) {
           label = stringResource(Res.string.game_stats_metric_win_rate),
           value = "${playerStats.winRate.roundToInt()}%",
         )
-        StatsMetricChip(
-          label = stringResource(Res.string.game_stats_metric_avg_place),
-          value = playerStats.averagePlacement.formatScore(),
+      }
+    }
+  }
+}
+
+@Composable
+private fun RoleMetricsRow(playerStats: PlayerStats) {
+  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Text(
+      text = "Roles",
+      style = MaterialTheme.typography.labelMedium,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      RoleMetricChip(
+        label = "Taker",
+        count = playerStats.takerCount,
+        winRate = playerStats.takerWinRate,
+        modifier = Modifier.weight(1f),
+      )
+      if (playerStats.partnerCount > 0) {
+        RoleMetricChip(
+          label = "Partner",
+          count = playerStats.partnerCount,
+          winRate = playerStats.partnerWinRate,
+          modifier = Modifier.weight(1f),
         )
       }
+      RoleMetricChip(
+        label = "Defender",
+        count = playerStats.defenderCount,
+        winRate = playerStats.defenderWinRate,
+        modifier = Modifier.weight(1f),
+      )
+    }
+  }
+}
+
+@Composable
+private fun RoleMetricChip(
+  label: String,
+  count: Int,
+  winRate: Float,
+  modifier: Modifier = Modifier,
+) {
+  val roleColor =
+    when (label) {
+      "Taker" -> MaterialTheme.colorScheme.primary
+      "Partner" -> MaterialTheme.colorScheme.secondary
+      else -> MaterialTheme.colorScheme.tertiary
+    }
+  Surface(
+    modifier = modifier,
+    color = MaterialTheme.colorScheme.surfaceVariant,
+    shape = MaterialTheme.shapes.small,
+  ) {
+    Column(
+      modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      Text(
+        text = label,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+      val barFraction = if (count == 0) 0f else (winRate / 100f).coerceIn(0f, 1f)
+      // Simplified progress bar without clip / fillMaxHeight
+      Box(
+        modifier =
+          Modifier.fillMaxWidth().height(6.dp).background(MaterialTheme.colorScheme.surface)
+      ) {
+        if (barFraction > 0f) {
+          Box(
+            modifier =
+              Modifier.height(6.dp)
+                .fillMaxWidth(barFraction)
+                .background(roleColor.copy(alpha = 0.85f))
+          )
+        }
+      }
+      val rateText = if (count == 0) "—" else "${winRate.roundToInt()}%"
+      Text(
+        text = "${count}× ($rateText)",
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onSurface,
+      )
     }
   }
 }
@@ -334,95 +444,11 @@ private fun StatsMetricChip(label: String, value: String, modifier: Modifier = M
   }
 }
 
-@Immutable
-private data class PlayerStats(
-  val player: Player,
-  val totalRounds: Int,
-  val totalScore: Int,
-  val averageScore: Float,
-  val bestScore: Int,
-  val worstScore: Int,
-  val wins: Int,
-  val winRate: Float,
-  val averagePlacement: Float,
-  val cumulativeTimeline: List<ScorePoint>,
-)
-
-@Immutable
-data class ScorePoint(
-  val date: Instant,
-  val value: Int,
-  val epochMillis: Long = date.toEpochMilliseconds(),
-)
-
-fun buildPlayerStats(game: Game): List<PlayerStats> {
-  if (game.rounds.isEmpty()) return emptyList()
-  
-  val sortedRounds = game.rounds.sortedBy { it.createdAt }
-  val scoreHistory = mutableMapOf<Player, MutableList<Int>>()
-  val cumulativeScores = mutableMapOf<Player, Int>()
-  val timelines = mutableMapOf<Player, MutableList<ScorePoint>>()
-  val wins = mutableMapOf<Player, Int>()
-  val placements = mutableMapOf<Player, Int>()
-
-  sortedRounds.forEach { round ->
-    val roundScores = Scores.roundScores(round, game)
-    val ranking = roundScores.scores.entries.sortedByDescending { it.value }
-
-    ranking.forEachIndexed { index, entry ->
-      placements[entry.key] = (placements[entry.key] ?: 0) + (index + 1)
-      if (index == 0) {
-        wins[entry.key] = (wins[entry.key] ?: 0) + 1
-      }
-    }
-
-    roundScores.scores.forEach { (player, score) ->
-      scoreHistory.getOrPut(player) { mutableListOf() }.add(score)
-      val updated = (cumulativeScores[player] ?: 0) + score
-      cumulativeScores[player] = updated
-      timelines.getOrPut(player) { mutableListOf() }.add(ScorePoint(round.createdAt, updated))
-    }
-  }
-
-  return scoreHistory
-    .map { (player, scores) ->
-      val totalRounds = scores.size
-      val totalScore = scores.sum()
-      PlayerStats(
-        player = player,
-        totalRounds = totalRounds,
-        totalScore = totalScore,
-        averageScore = if (totalRounds > 0) scores.average().toFloat() else 0f,
-        bestScore = scores.maxOrNull() ?: 0,
-        worstScore = scores.minOrNull() ?: 0,
-        wins = wins[player] ?: 0,
-        winRate =
-          if (totalRounds > 0) {
-            ((wins[player] ?: 0) * 100f) / totalRounds
-          } else {
-            0f
-          },
-        averagePlacement =
-          if (totalRounds > 0) {
-            (placements[player]?.toFloat() ?: totalRounds.toFloat()) / totalRounds
-          } else {
-            0f
-          },
-        cumulativeTimeline = timelines[player].orEmpty(),
-      )
-    }
-    .sortedBy { it.player.name.lowercase() }
-}
-
 private fun Float.formatScore(): String {
   val rounded = (this * 10f).roundToInt() / 10f
   return if (rounded % 1f == 0f) {
     rounded.toInt().toString()
   } else {
-    rounded
-      .toString()
-      .trimEnd('0')
-      .trimEnd('.')
+    rounded.toString().trimEnd('0').trimEnd('.')
   }
 }
-

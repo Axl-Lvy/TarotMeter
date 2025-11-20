@@ -203,4 +203,3 @@ private fun SelectablePlayer(player: Player, isSelected: Boolean) {
     Checkbox(checked = isSelected, onCheckedChange = null)
   }
 }
-

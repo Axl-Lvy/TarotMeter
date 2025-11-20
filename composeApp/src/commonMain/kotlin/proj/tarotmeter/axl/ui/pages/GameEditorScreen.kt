@@ -47,13 +47,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Round
-import proj.tarotmeter.axl.core.data.model.Scores
+import proj.tarotmeter.axl.core.data.model.calculated.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
 import proj.tarotmeter.axl.ui.components.GameModeToggle
-import proj.tarotmeter.axl.ui.components.GameScreenTab
 import proj.tarotmeter.axl.ui.components.GameRenameDialog
+import proj.tarotmeter.axl.ui.components.GameScreenTab
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.RoundEditor
@@ -71,7 +71,6 @@ import tarotmeter.composeapp.generated.resources.Res
 @Composable
 fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) {
   var game by remember { mutableStateOf<Game?>(null) }
-  var allGames by remember { mutableStateOf<List<Game>>(emptyList()) }
   var editingRound by remember { mutableStateOf<Round?>(null) }
   var showDeleteDialog by remember { mutableStateOf(false) }
   var roundToDelete by remember { mutableStateOf<Round?>(null) }
@@ -80,7 +79,6 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(gameId) { game = gamesProvider.getGame(gameId) }
-  LaunchedEffect(Unit) { allGames = gamesProvider.getGames() }
 
   val currentGame = game
   if (currentGame == null) {
@@ -144,7 +142,6 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
                     coroutineScope.launch {
                       gamesProvider.addRound(currentGame.id, round)
                       game = gamesProvider.getGame(gameId)
-                      allGames = gamesProvider.getGames()
                     }
                   },
                 )
@@ -183,10 +180,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
           }
         }
         GameScreenTab.Stats -> {
-          GameStatsView(
-            game = currentGame,
-            modifier = Modifier.fillMaxSize(),
-          )
+          GameStatsView(game = currentGame, modifier = Modifier.fillMaxSize())
         }
       }
     }
@@ -199,7 +193,6 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
         coroutineScope.launch {
           gamesProvider.deleteRound(roundToDelete!!.id)
           game = gamesProvider.getGame(gameId)
-          allGames = gamesProvider.getGames()
           showDeleteDialog = false
           roundToDelete = null
         }
@@ -235,7 +228,6 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
         coroutineScope.launch {
           gamesProvider.updateRound(updatedRound)
           game = gamesProvider.getGame(gameId)
-          allGames = gamesProvider.getGames()
           editingRound = null
         }
       },

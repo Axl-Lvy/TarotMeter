@@ -20,9 +20,7 @@ import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.game_editor_toggle_add_game
 import tarotmeter.composeapp.generated.resources.game_editor_toggle_stats
 
-/**
- * Enum representing the tabs available in the game screen.
- */
+/** Enum representing the tabs available in the game screen. */
 enum class GameScreenTab {
   AddGame,
   Stats,
@@ -41,21 +39,18 @@ fun GameModeToggle(
   onTabSelected: (GameScreenTab) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row(
-    modifier = modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
-  ) {
+  Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
     ModeChip(
       text = stringResource(Res.string.game_editor_toggle_add_game),
       selected = selectedTab == AddGame,
       onClick = { onTabSelected(AddGame) },
-      modifier = Modifier.weight(1f)
+      modifier = Modifier.weight(1f),
     )
     ModeChip(
       text = stringResource(Res.string.game_editor_toggle_stats),
       selected = selectedTab == Stats,
       onClick = { onTabSelected(Stats) },
-      modifier = Modifier.weight(1f)
+      modifier = Modifier.weight(1f),
     )
   }
 }
@@ -99,4 +94,3 @@ private fun ModeChip(
     )
   }
 }
-
