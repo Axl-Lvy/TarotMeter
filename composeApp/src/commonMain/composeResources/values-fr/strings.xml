@@ -96,7 +96,7 @@
   <string name="round_editor_edit">Modifier la Donne</string>
 
   <!-- Game Editor Screen -->
-  <string name="game_editor_toggle_add_game">Ajouter une Partie</string>
+  <string name="game_editor_toggle_add_game">Modifier la Partie</string>
   <string name="game_editor_toggle_stats">Statistiques</string>
   <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
   <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !

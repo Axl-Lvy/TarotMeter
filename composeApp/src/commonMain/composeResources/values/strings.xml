@@ -95,7 +95,7 @@
   <string name="round_editor_edit">Edit Round</string>
 
   <!-- Game Editor Screen -->
-  <string name="game_editor_toggle_add_game">Add Game</string>
+  <string name="game_editor_toggle_add_game">Edit Game</string>
   <string name="game_editor_toggle_stats">Stats</string>
   <string name="game_editor_round_history">Round History (%1$d)</string>
   <string name="game_editor_empty_state">No rounds yet. Add your first round above!</string>

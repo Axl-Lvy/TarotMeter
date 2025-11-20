@@ -54,8 +54,8 @@ import proj.tarotmeter.axl.core.data.model.calculated.Scores
 import proj.tarotmeter.axl.core.provider.DataProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
-import proj.tarotmeter.axl.ui.components.GameModeToggle
 import proj.tarotmeter.axl.ui.components.GameInvitationDialog
+import proj.tarotmeter.axl.ui.components.GameModeToggle
 import proj.tarotmeter.axl.ui.components.GameRenameDialog
 import proj.tarotmeter.axl.ui.components.GameScreenTab
 import proj.tarotmeter.axl.ui.components.GameSourceBadge
@@ -64,8 +64,21 @@ import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.RoundEditor
 import proj.tarotmeter.axl.ui.components.ScoreText
 import proj.tarotmeter.axl.ui.pages.stats.GameStatsView
-import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.cd_edit
+import tarotmeter.composeapp.generated.resources.cd_navigate_back
+import tarotmeter.composeapp.generated.resources.game_editor_delete_confirm_message
+import tarotmeter.composeapp.generated.resources.game_editor_delete_confirm_title
+import tarotmeter.composeapp.generated.resources.game_editor_edit
+import tarotmeter.composeapp.generated.resources.game_editor_empty_state
+import tarotmeter.composeapp.generated.resources.game_editor_invite
+import tarotmeter.composeapp.generated.resources.game_editor_round_history
+import tarotmeter.composeapp.generated.resources.game_editor_taker_points
+import tarotmeter.composeapp.generated.resources.general_cancel
+import tarotmeter.composeapp.generated.resources.general_delete
+import tarotmeter.composeapp.generated.resources.general_with
+import tarotmeter.composeapp.generated.resources.history_rename_game
+import tarotmeter.composeapp.generated.resources.tarot_oudlers
 
 /**
  * Screen for editing a specific game. Displays game scores, allows adding rounds, and shows round
@@ -75,180 +88,245 @@ import tarotmeter.composeapp.generated.resources.Res
  */
 @Composable
 fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
-  var game by remember { mutableStateOf<Game?>(null) }
-  var editingRound by remember { mutableStateOf<Round?>(null) }
-  var showDeleteDialog by remember { mutableStateOf(false) }
-  var roundToDelete by remember { mutableStateOf<Round?>(null) }
-  var selectedTab by remember { mutableStateOf(GameScreenTab.AddGame) }
-  var showInvitationDialog by remember { mutableStateOf(false) }
-  var showRenameDialog by remember { mutableStateOf(false) }
-  val coroutineScope = rememberCoroutineScope()
-  var isRefreshing by remember { mutableStateOf(false) }
+  val state = rememberGameEditorState(gameId, dataProvider)
 
-  LaunchedEffect(gameId) { game = dataProvider.getGame(gameId) }
-  LaunchedEffect(isRefreshing) {
-    if (isRefreshing) {
-      dataProvider.syncData()
-      game = dataProvider.getGame(gameId)
-      isRefreshing = false
-    }
-  }
-
-  val currentGame = game
+  val currentGame = state.game
   if (currentGame == null) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+    LoadingState()
     return
   }
 
-  val globalScores = Scores.globalScores(currentGame)
-  PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { isRefreshing = true }) {
-    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
-      ) {
-    GameModeToggle(
-      selectedTab = selectedTab,
-      onTabSelected = { selectedTab = it },
-      modifier = Modifier.fillMaxWidth(),
-    )
-
-    Crossfade(
-      targetState = selectedTab,
-      modifier = Modifier.fillMaxSize(),
-      label = "game-editor-mode",
-    ) { mode ->
-      when (mode) {
-        GameScreenTab.AddGame -> {
-          Column(Modifier.fillMaxSize()) {
-
-      // Game name header with rename and invite buttons
-              GameHeader(currentGame, { showInvitationDialog = true }, { showRenameDialog = true })
-
-      Spacer(modifier = Modifier.size(16.dp))
-
-      PlayerScoresRow(
-        playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
+  PullToRefreshBox(isRefreshing = state.isRefreshing, onRefresh = { state.triggerRefresh() }) {
+    Column(
+      modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+      GameModeToggle(
+        selectedTab = state.selectedTab,
+        onTabSelected = { state.selectedTab = it },
+        modifier = Modifier.fillMaxWidth(),
       )
 
-
-      LazyColumn(
+      Crossfade(
+        targetState = state.selectedTab,
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-      ) {
-        item {
-          Spacer(modifier = Modifier.size(16.dp))
+        label = "game-editor-mode",
+      ) { mode ->
+        when (mode) {
+          GameScreenTab.EDIT_GAME -> GameEditingTabContent(state = state)
+          GameScreenTab.STATS -> StatsTabContent(game = currentGame)
+        }
+      }
+    }
 
-          RoundEditor(
-            game = currentGame,
-            onValidate = { round ->
-              coroutineScope.launch {
-                dataProvider.addRound(currentGame.id, round)
-                game = dataProvider.getGame(gameId)
-              }
+    GameEditorDialogs(state = state, gameId = gameId)
+  }
+}
+
+/**
+ * State holder for the GameEditorScreen, managing game data and UI state.
+ *
+ * @param gameId The ID of the game being edited
+ * @param dataProvider The data provider for fetching and updating game data
+ * @param game The current game data
+ * @param editingRound The round currently being edited, if any
+ * @param showDeleteDialog Whether to show the delete round confirmation dialog
+ * @param roundToDelete The round selected for deletion, if any
+ * @param selectedTab The currently selected tab in the game editor
+ * @param showInvitationDialog Whether to show the game invitation dialog
+ * @param showRenameDialog Whether to show the game rename dialog
+ * @param isRefreshing Whether a data refresh is in progress
+ */
+private class GameEditorState(val gameId: Uuid, private val dataProvider: DataProvider) {
+  var game by mutableStateOf<Game?>(null)
+  var editingRound by mutableStateOf<Round?>(null)
+  var showDeleteDialog by mutableStateOf(false)
+  var roundToDelete by mutableStateOf<Round?>(null)
+  var selectedTab by mutableStateOf(GameScreenTab.EDIT_GAME)
+  var showInvitationDialog by mutableStateOf(false)
+  var showRenameDialog by mutableStateOf(false)
+  var isRefreshing by mutableStateOf(false)
+
+  suspend fun loadGame() {
+    game = dataProvider.getGame(gameId)
+  }
+
+  fun triggerRefresh() {
+    isRefreshing = true
+  }
+
+  suspend fun performRefresh() {
+    dataProvider.syncData()
+    loadGame()
+    isRefreshing = false
+  }
+
+  suspend fun addRound(round: Round) {
+    dataProvider.addRound(gameId, round)
+    loadGame()
+  }
+
+  suspend fun updateRound(round: Round) {
+    dataProvider.updateRound(round)
+    loadGame()
+  }
+
+  suspend fun deleteRound(roundId: Uuid) {
+    dataProvider.deleteRound(roundId)
+    loadGame()
+  }
+
+  suspend fun renameGame(newName: String) {
+    dataProvider.renameGame(gameId, newName)
+    loadGame()
+  }
+}
+
+@Composable
+private fun rememberGameEditorState(gameId: Uuid, dataProvider: DataProvider): GameEditorState {
+  val state = remember(gameId) { GameEditorState(gameId, dataProvider) }
+  val scope = rememberCoroutineScope()
+
+  LaunchedEffect(gameId) { state.loadGame() }
+  LaunchedEffect(state.isRefreshing) {
+    if (state.isRefreshing) {
+      scope.launch { state.performRefresh() }
+    }
+  }
+  return state
+}
+
+/** Content for the [Edit Game][GameScreenTab.EDIT_GAME] tab in the Game Editor screen. */
+@Composable
+private fun GameEditingTabContent(state: GameEditorState) {
+  val game = state.game ?: return
+  val coroutineScope = rememberCoroutineScope()
+  val globalScores = Scores.globalScores(game)
+
+  Column(Modifier.fillMaxSize()) {
+    GameHeader(
+      currentGame = game,
+      showInvitationDialog = { state.showInvitationDialog = true },
+      showRenameDialog = { state.showRenameDialog = true },
+    )
+
+    Spacer(Modifier.size(16.dp))
+
+    PlayerScoresRow(playerScores = game.players.map { it.name to (globalScores.scores[it] ?: 0) })
+
+    LazyColumn(
+      modifier = Modifier.fillMaxSize(),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+      item {
+        Spacer(Modifier.size(16.dp))
+        RoundEditor(
+          game = game,
+          onValidate = { round -> coroutineScope.launch { state.addRound(round) } },
+        )
+      }
+
+      item { HorizontalDivider() }
+
+      item {
+        Text(
+          stringResource(Res.string.game_editor_round_history, game.rounds.size),
+          style = MaterialTheme.typography.titleMedium,
+        )
+      }
+
+      if (game.rounds.isEmpty()) {
+        item {
+          EmptyState(
+            message = stringResource(Res.string.game_editor_empty_state),
+            modifier = Modifier.fillParentMaxHeight(0.3f),
+          )
+        }
+      } else {
+        items(game.rounds.reversed()) { round ->
+          RoundCard(
+            round = round,
+            game = game,
+            onEdit = { state.editingRound = round },
+            onDelete = {
+              state.roundToDelete = round
+              state.showDeleteDialog = true
             },
           )
-        }
-
-        item { HorizontalDivider() }
-
-        item {
-          Text(
-            stringResource(Res.string.game_editor_round_history, currentGame.rounds.size),
-            style = MaterialTheme.typography.titleMedium,
-          )
-        }
-
-              if (currentGame.rounds.isEmpty()) {
-                item {
-                  EmptyState(
-                    message = stringResource(Res.string.game_editor_empty_state),
-                    modifier = Modifier.fillParentMaxHeight(0.3f),
-                  )
-                }
-              } else {
-                items(currentGame.rounds.reversed()) { round ->
-                  RoundCard(
-                    round = round,
-                    game = currentGame,
-                    onEdit = { editingRound = round },
-                    onDelete = {
-                      roundToDelete = round
-                      showDeleteDialog = true
-                    },
-                  )
-                }
-              }
-            }
-          }
-        }
-        GameScreenTab.Stats -> {
-          GameStatsView(game = currentGame, modifier = Modifier.fillMaxSize())
         }
       }
     }
   }
+}
 
-  // Delete confirmation dialog
-  if (showDeleteDialog && roundToDelete != null) {
+@Composable
+private fun StatsTabContent(game: Game) {
+  GameStatsView(game = game, modifier = Modifier.fillMaxSize())
+}
+
+/** Centralized management of all dialogs in the Game Editor screen. */
+@Composable
+private fun GameEditorDialogs(state: GameEditorState, gameId: Uuid) {
+  val game = state.game ?: return
+  val scope = rememberCoroutineScope()
+
+  if (state.showDeleteDialog && state.roundToDelete != null) {
     DeleteRoundDialog(
       onConfirm = {
-        coroutineScope.launch {
-          dataProvider.deleteRound(roundToDelete!!.id)
-          game = dataProvider.getGame(gameId)
-          showDeleteDialog = false
-          roundToDelete = null
+        scope.launch {
+          state.deleteRound(state.roundToDelete!!.id)
+          state.showDeleteDialog = false
+          state.roundToDelete = null
         }
       },
       onDismiss = {
-        showDeleteDialog = false
-        roundToDelete = null
+        state.showDeleteDialog = false
+        state.roundToDelete = null
       },
     )
   }
 
-  // Rename game dialog
-  if (showRenameDialog) {
+  if (state.showRenameDialog) {
     GameRenameDialog(
-      currentName = currentGame.name,
-      onDismiss = { showRenameDialog = false },
+      currentName = game.name,
+      onDismiss = { state.showRenameDialog = false },
       onConfirm = { newName ->
-        coroutineScope.launch {
-          dataProvider.renameGame(gameId, newName)
-          game = dataProvider.getGame(gameId)
-          showRenameDialog = false
+        scope.launch {
+          state.renameGame(newName)
+          state.showRenameDialog = false
         }
       },
     )
   }
 
-  // Invitation dialog
-  if (showInvitationDialog) {
-    GameInvitationDialog(gameId = gameId, onDismiss = { showInvitationDialog = false })
+  if (state.showInvitationDialog) {
+    GameInvitationDialog(gameId = gameId, onDismiss = { state.showInvitationDialog = false })
   }
 
-  if (editingRound != null) {
+  if (state.editingRound != null) {
     RoundEditorDialog(
-      game = currentGame,
-      existingRound = editingRound,
-      onDismiss = { editingRound = null },
+      game = game,
+      existingRound = state.editingRound,
+      onDismiss = { state.editingRound = null },
       onValidate = { updatedRound ->
-        coroutineScope.launch {
-          dataProvider.updateRound(updatedRound)
-          game = dataProvider.getGame(gameId)
-          editingRound = null
+        scope.launch {
+          state.updateRound(updatedRound)
+          state.editingRound = null
         }
       },
     )
   }
 }
 
+/** Simple loading state with a centered circular progress indicator. */
+@Composable
+private fun LoadingState() {
+  Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+}
+
 /**
  * Header section displaying the game name and action buttons for inviting players and renaming the
  * game.
- *
- * @param currentGame The current game being edited
- * @param showInvitationDialog Whether to show the invitation dialog
- * @param showRenameDialog Whether to show the rename dialog
- * @return Pair of updated showInvitationDialog and showRenameDialog states
  */
 @Composable
 private fun GameHeader(
@@ -300,7 +378,6 @@ private fun RoundCard(round: Round, game: Game, onEdit: () -> Unit, onDelete: ()
       onLongClick = { showActions.value = true },
     ) {
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        // Round header
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -328,7 +405,6 @@ private fun RoundCard(round: Round, game: Game, onEdit: () -> Unit, onDelete: ()
           }
         }
 
-        // Taker and partner info
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -355,7 +431,6 @@ private fun RoundCard(round: Round, game: Game, onEdit: () -> Unit, onDelete: ()
 
         HorizontalDivider()
 
-        // Round scores
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
           val roundScore = Scores.roundScores(round, game)
           game.players.forEach { player ->
@@ -372,21 +447,12 @@ private fun RoundCard(round: Round, game: Game, onEdit: () -> Unit, onDelete: ()
         }
       }
     }
-
-    // Blurred overlay with Edit, Delete, and Cancel buttons
     if (showActions.value) {
       RoundCardActions(showActions, onEdit, onDelete)
     }
   }
 }
 
-/**
- * Overlay with round action buttons: Edit, Delete, and Cancel
- *
- * @param showActions State controlling visibility of the actions overlay
- * @param onEdit Callback when Edit is selected
- * @param onDelete Callback when Delete is selected
- */
 @Composable
 private fun BoxScope.RoundCardActions(
   showActions: MutableState<Boolean>,
@@ -471,12 +537,6 @@ private fun BoxScope.RoundCardActions(
   }
 }
 
-/**
- * Dialog for confirming round deletion
- *
- * @param onConfirm Callback when user confirms deletion
- * @param onDismiss Callback when user dismisses the dialog
- */
 @Composable
 private fun DeleteRoundDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
   AlertDialog(
