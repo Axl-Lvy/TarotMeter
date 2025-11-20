@@ -94,6 +94,8 @@
   <string name="round_editor_edit">Modifier la Donne</string>
 
   <!-- Game Editor Screen -->
+  <string name="game_editor_toggle_add_game">Ajouter une Partie</string>
+  <string name="game_editor_toggle_stats">Statistiques</string>
   <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
   <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !
   </string>
@@ -101,6 +103,19 @@
   <string name="game_editor_delete_confirm_title">Supprimer la Donne ?</string>
   <string name="game_editor_delete_confirm_message">Êtes-vous sûr de vouloir supprimer cette donne ? Cette action est irréversible.</string>
   <string name="game_editor_taker_points">Preneur • %1$d pts</string>
+
+  <!-- Game Stats -->
+  <string name="game_stats_chart_title">Évolution des scores</string>
+  <string name="game_stats_empty_state_title">Pas encore de stats</string>
+  <string name="game_stats_empty_state_message">Jouez ou importez une partie pour débloquer les analyses en direct.</string>
+  <string name="game_stats_placeholder_notice">Affichage des données d'exemple en attendant vos premières parties.</string>
+  <string name="game_stats_chart_empty">Ajoutez au moins une partie terminée pour voir les courbes.</string>
+  <string name="game_stats_metric_avg_score">Moy. score</string>
+  <string name="game_stats_metric_best_score">Meilleur</string>
+  <string name="game_stats_metric_worst_score">Pire</string>
+  <string name="game_stats_metric_total_rounds">Donnes</string>
+  <string name="game_stats_metric_win_rate">Taux de victoires</string>
+  <string name="game_stats_metric_avg_place">Moy. place</string>
 
   <!-- History Screen -->
   <plurals name="history_game_count">

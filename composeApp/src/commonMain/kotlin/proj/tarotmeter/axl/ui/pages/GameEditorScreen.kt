@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.ui.pages
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -46,15 +47,18 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.Round
-import proj.tarotmeter.axl.core.data.model.Scores
+import proj.tarotmeter.axl.core.data.model.calculated.Scores
 import proj.tarotmeter.axl.core.provider.GamesProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
+import proj.tarotmeter.axl.ui.components.GameModeToggle
 import proj.tarotmeter.axl.ui.components.GameRenameDialog
+import proj.tarotmeter.axl.ui.components.GameScreenTab
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.RoundEditor
 import proj.tarotmeter.axl.ui.components.ScoreText
+import proj.tarotmeter.axl.ui.pages.stats.GameStatsView
 import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
 
@@ -70,6 +74,7 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
   var editingRound by remember { mutableStateOf<Round?>(null) }
   var showDeleteDialog by remember { mutableStateOf(false) }
   var roundToDelete by remember { mutableStateOf<Round?>(null) }
+  var selectedTab by remember { mutableStateOf(GameScreenTab.AddGame) }
   var showRenameDialog by remember { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
 
@@ -83,81 +88,99 @@ fun GameEditorScreen(gameId: Uuid, gamesProvider: GamesProvider = koinInject()) 
 
   val globalScores = Scores.globalScores(currentGame)
 
-  Column(Modifier.fillMaxSize()) {
-    Spacer(modifier = Modifier.size(16.dp))
-
-    // Game name header with rename button
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Text(
-        text = currentGame.name,
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.primary,
-      )
-      TextButton(onClick = { showRenameDialog = true }) {
-        Icon(
-          imageVector = FontAwesomeIcons.Regular.Edit,
-          contentDescription = stringResource(Res.string.history_rename_game),
-          modifier = Modifier.size(20.dp),
-        )
-      }
-    }
-
-    Spacer(modifier = Modifier.size(8.dp))
-    // Fixed scores at the top
-    PlayerScoresRow(
-      playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
+  Column(
+    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    GameModeToggle(
+      selectedTab = selectedTab,
+      onTabSelected = { selectedTab = it },
+      modifier = Modifier.fillMaxWidth(),
     )
 
-    // Scrollable list with header content
-    LazyColumn(
+    Crossfade(
+      targetState = selectedTab,
       modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      item {
-        Spacer(modifier = Modifier.size(16.dp))
-        // Add/Edit round section
-        RoundEditor(
-          game = currentGame,
-          onValidate = { round ->
-            coroutineScope.launch {
-              gamesProvider.addRound(currentGame.id, round)
-              game = gamesProvider.getGame(gameId)
+      label = "game-editor-mode",
+    ) { mode ->
+      when (mode) {
+        GameScreenTab.AddGame -> {
+          Column(Modifier.fillMaxSize()) {
+
+            // Game name header with rename button
+            Row(
+              modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+              horizontalArrangement = Arrangement.SpaceBetween,
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Text(
+                text = currentGame.name,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary,
+              )
+              TextButton(onClick = { showRenameDialog = true }) {
+                Icon(
+                  imageVector = FontAwesomeIcons.Regular.Edit,
+                  contentDescription = stringResource(Res.string.history_rename_game),
+                  modifier = Modifier.size(20.dp),
+                )
+              }
             }
-          },
-        )
-      }
+            Spacer(modifier = Modifier.size(16.dp))
+            PlayerScoresRow(
+              playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
+            )
+            LazyColumn(
+              modifier = Modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+              item {
+                Spacer(modifier = Modifier.size(16.dp))
+                RoundEditor(
+                  game = currentGame,
+                  onValidate = { round ->
+                    coroutineScope.launch {
+                      gamesProvider.addRound(currentGame.id, round)
+                      game = gamesProvider.getGame(gameId)
+                    }
+                  },
+                )
+              }
 
-      item { HorizontalDivider() }
+              item { HorizontalDivider() }
 
-      item {
-        Text(
-          stringResource(Res.string.game_editor_round_history, currentGame.rounds.size),
-          style = MaterialTheme.typography.titleMedium,
-        )
-      }
+              item {
+                Text(
+                  stringResource(Res.string.game_editor_round_history, currentGame.rounds.size),
+                  style = MaterialTheme.typography.titleMedium,
+                )
+              }
 
-      if (currentGame.rounds.isEmpty()) {
-        item {
-          EmptyState(
-            message = stringResource(Res.string.game_editor_empty_state),
-            modifier = Modifier.fillParentMaxHeight(0.3f),
-          )
+              if (currentGame.rounds.isEmpty()) {
+                item {
+                  EmptyState(
+                    message = stringResource(Res.string.game_editor_empty_state),
+                    modifier = Modifier.fillParentMaxHeight(0.3f),
+                  )
+                }
+              } else {
+                items(currentGame.rounds.reversed()) { round ->
+                  RoundCard(
+                    round = round,
+                    game = currentGame,
+                    onEdit = { editingRound = round },
+                    onDelete = {
+                      roundToDelete = round
+                      showDeleteDialog = true
+                    },
+                  )
+                }
+              }
+            }
+          }
         }
-      } else {
-        items(currentGame.rounds.reversed()) { round ->
-          RoundCard(
-            round = round,
-            game = currentGame,
-            onEdit = { editingRound = round },
-            onDelete = {
-              roundToDelete = round
-              showDeleteDialog = true
-            },
-          )
+        GameScreenTab.Stats -> {
+          GameStatsView(game = currentGame, modifier = Modifier.fillMaxSize())
         }
       }
     }

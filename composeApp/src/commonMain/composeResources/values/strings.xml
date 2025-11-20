@@ -93,12 +93,27 @@
   <string name="round_editor_edit">Edit Round</string>
 
   <!-- Game Editor Screen -->
+  <string name="game_editor_toggle_add_game">Add Game</string>
+  <string name="game_editor_toggle_stats">Stats</string>
   <string name="game_editor_round_history">Round History (%1$d)</string>
   <string name="game_editor_empty_state">No rounds yet. Add your first round above!</string>
   <string name="game_editor_edit">Edit</string>
   <string name="game_editor_delete_confirm_title">Delete Round?</string>
   <string name="game_editor_delete_confirm_message">Are you sure you want to delete this round? This action cannot be undone.</string>
   <string name="game_editor_taker_points">Taker • %1$d pts</string>
+
+  <!-- Game Stats -->
+  <string name="game_stats_chart_title">Score evolution</string>
+  <string name="game_stats_empty_state_title">No stats yet</string>
+  <string name="game_stats_empty_state_message">Play or import a game to unlock live analytics.</string>
+  <string name="game_stats_placeholder_notice">Showing sample data until your first games are recorded.</string>
+  <string name="game_stats_chart_empty">Add at least one finished game to see the score curves.</string>
+  <string name="game_stats_metric_avg_score">Avg. score</string>
+  <string name="game_stats_metric_best_score">Best</string>
+  <string name="game_stats_metric_worst_score">Worst</string>
+  <string name="game_stats_metric_total_rounds">Rounds</string>
+  <string name="game_stats_metric_win_rate">Win rate</string>
+  <string name="game_stats_metric_avg_place">Avg. place</string>
 
   <!-- History Screen -->
   <plurals name="history_game_count">
