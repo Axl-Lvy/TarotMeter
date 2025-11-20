@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
-import proj.tarotmeter.axl.core.data.model.Scores
+import proj.tarotmeter.axl.core.data.model.calculated.Scores
 import proj.tarotmeter.axl.core.provider.DataProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState

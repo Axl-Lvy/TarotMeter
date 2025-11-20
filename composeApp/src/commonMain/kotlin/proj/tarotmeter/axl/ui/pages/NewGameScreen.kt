@@ -67,7 +67,7 @@ fun NewGameScreen(onGameCreated: (Uuid) -> Unit, dataProvider: DataProvider = ko
   val isValidSelection = selectedCount in 3..5 && gameName.trim().isNotBlank()
 
   Column(
-    Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {

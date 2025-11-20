@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.ui.pages
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -49,17 +50,20 @@ import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Game
 import proj.tarotmeter.axl.core.data.model.GameSource
 import proj.tarotmeter.axl.core.data.model.Round
-import proj.tarotmeter.axl.core.data.model.Scores
+import proj.tarotmeter.axl.core.data.model.calculated.Scores
 import proj.tarotmeter.axl.core.provider.DataProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
+import proj.tarotmeter.axl.ui.components.GameModeToggle
 import proj.tarotmeter.axl.ui.components.GameInvitationDialog
 import proj.tarotmeter.axl.ui.components.GameRenameDialog
+import proj.tarotmeter.axl.ui.components.GameScreenTab
 import proj.tarotmeter.axl.ui.components.GameSourceBadge
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
 import proj.tarotmeter.axl.ui.components.PlayerScoresRow
 import proj.tarotmeter.axl.ui.components.RoundEditor
 import proj.tarotmeter.axl.ui.components.ScoreText
+import proj.tarotmeter.axl.ui.pages.stats.GameStatsView
 import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
 
@@ -75,6 +79,7 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
   var editingRound by remember { mutableStateOf<Round?>(null) }
   var showDeleteDialog by remember { mutableStateOf(false) }
   var roundToDelete by remember { mutableStateOf<Round?>(null) }
+  var selectedTab by remember { mutableStateOf(GameScreenTab.AddGame) }
   var showInvitationDialog by remember { mutableStateOf(false) }
   var showRenameDialog by remember { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
@@ -97,26 +102,41 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
 
   val globalScores = Scores.globalScores(currentGame)
   PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { isRefreshing = true }) {
-    Column(Modifier.fillMaxSize()) {
-      Spacer(modifier = Modifier.size(16.dp))
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+    GameModeToggle(
+      selectedTab = selectedTab,
+      onTabSelected = { selectedTab = it },
+      modifier = Modifier.fillMaxWidth(),
+    )
+
+    Crossfade(
+      targetState = selectedTab,
+      modifier = Modifier.fillMaxSize(),
+      label = "game-editor-mode",
+    ) { mode ->
+      when (mode) {
+        GameScreenTab.AddGame -> {
+          Column(Modifier.fillMaxSize()) {
 
       // Game name header with rename and invite buttons
-      GameHeader(currentGame, { showInvitationDialog = true }, { showRenameDialog = true })
+              GameHeader(currentGame, { showInvitationDialog = true }, { showRenameDialog = true })
 
-      Spacer(modifier = Modifier.size(8.dp))
-      // Fixed scores at the top
+      Spacer(modifier = Modifier.size(16.dp))
+
       PlayerScoresRow(
         playerScores = currentGame.players.map { it.name to (globalScores.scores[it] ?: 0) }
       )
 
-      // Scrollable list with header content
+
       LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         item {
           Spacer(modifier = Modifier.size(16.dp))
-          // Add/Edit round section
+
           RoundEditor(
             game = currentGame,
             onValidate = { round ->
@@ -137,25 +157,31 @@ fun GameEditorScreen(gameId: Uuid, dataProvider: DataProvider = koinInject()) {
           )
         }
 
-        if (currentGame.rounds.isEmpty()) {
-          item {
-            EmptyState(
-              message = stringResource(Res.string.game_editor_empty_state),
-              modifier = Modifier.fillParentMaxHeight(0.3f),
-            )
+              if (currentGame.rounds.isEmpty()) {
+                item {
+                  EmptyState(
+                    message = stringResource(Res.string.game_editor_empty_state),
+                    modifier = Modifier.fillParentMaxHeight(0.3f),
+                  )
+                }
+              } else {
+                items(currentGame.rounds.reversed()) { round ->
+                  RoundCard(
+                    round = round,
+                    game = currentGame,
+                    onEdit = { editingRound = round },
+                    onDelete = {
+                      roundToDelete = round
+                      showDeleteDialog = true
+                    },
+                  )
+                }
+              }
+            }
           }
-        } else {
-          items(currentGame.rounds.reversed()) { round ->
-            RoundCard(
-              round = round,
-              game = currentGame,
-              onEdit = { editingRound = round },
-              onDelete = {
-                roundToDelete = round
-                showDeleteDialog = true
-              },
-            )
-          }
+        }
+        GameScreenTab.Stats -> {
+          GameStatsView(game = currentGame, modifier = Modifier.fillMaxSize())
         }
       }
     }

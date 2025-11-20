@@ -1,13 +1,17 @@
-package proj.tarotmeter.axl.core.data.model
+package proj.tarotmeter.axl.core.data.model.calculated
 
 import androidx.compose.runtime.Immutable
 import kotlin.collections.iterator
 import kotlin.math.abs
+import proj.tarotmeter.axl.core.data.model.Game
+import proj.tarotmeter.axl.core.data.model.Player
+import proj.tarotmeter.axl.core.data.model.Round
 
 /**
  * Represents the scores of players in a Tarot game.
  *
- * @property scores A map associating each [Player] with their score as an [Int].
+ * @property scores A map associating each [proj.tarotmeter.axl.core.data.model.Player] with their
+ *   score as an [Int].
  */
 @Immutable
 data class Scores(val scores: Map<Player, Int>) {
@@ -52,8 +56,8 @@ data class Scores(val scores: Map<Player, Int>) {
      * Calculates the scores for a single round based on the round details and the game
      * configuration.
      *
-     * @param round The [Round] for which to calculate scores.
-     * @param game The [Game] context containing the players.
+     * @param round The [proj.tarotmeter.axl.core.data.model.Round] for which to calculate scores.
+     * @param game The [proj.tarotmeter.axl.core.data.model.Game] context containing the players.
      * @return A [Scores] object representing the scores for the round.
      * @throws IllegalStateException if the partner is not set in a 5-player game.
      */
