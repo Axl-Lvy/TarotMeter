@@ -17,6 +17,7 @@ import proj.tarotmeter.axl.util.DateUtil
 
 private const val PLAYERS_KEY = "tarotmeter_players"
 private const val GAMES_KEY = "tarotmeter_games"
+private const val DEVICE_ID_KEY = "tarotmeter_device_id"
 
 /** LocalStorage-based implementation of DatabaseManager for web. */
 class LocalStorageDatabaseManager(
@@ -264,6 +265,19 @@ class LocalStorageDatabaseManager(
     }
     notifyChange()
   }
+
+  override suspend fun insertDeviceId(deviceId: Uuid) {
+    if (getDeviceId() != null) error("Device ID is already set and cannot be changed.")
+    withContext(coroutineDispatcher) {
+      window.localStorage.setItem(DEVICE_ID_KEY, deviceId.toString())
+    }
+  }
+
+  override suspend fun getDeviceId(): Uuid? =
+    withContext(coroutineDispatcher) {
+      val raw = window.localStorage.getItem(DEVICE_ID_KEY) ?: return@withContext null
+      runCatching { Uuid.parse(raw) }.getOrNull()
+    }
 }
 
 actual fun getPlatformSpecificDatabaseManager(): DatabaseManager {

@@ -14,16 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
-import proj.tarotmeter.axl.ui.components.GameScreenTab.AddGame
-import proj.tarotmeter.axl.ui.components.GameScreenTab.Stats
+import proj.tarotmeter.axl.ui.components.GameScreenTab.EDIT_GAME
+import proj.tarotmeter.axl.ui.components.GameScreenTab.STATS
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.game_editor_toggle_add_game
 import tarotmeter.composeapp.generated.resources.game_editor_toggle_stats
 
 /** Enum representing the tabs available in the game screen. */
 enum class GameScreenTab {
-  AddGame,
-  Stats,
+
+  /** Tab for editing a game. */
+  EDIT_GAME,
+
+  /** Tab for viewing game statistics. */
+  STATS,
 }
 
 /**
@@ -42,14 +46,14 @@ fun GameModeToggle(
   Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
     ModeChip(
       text = stringResource(Res.string.game_editor_toggle_add_game),
-      selected = selectedTab == AddGame,
-      onClick = { onTabSelected(AddGame) },
+      selected = selectedTab == EDIT_GAME,
+      onClick = { onTabSelected(EDIT_GAME) },
       modifier = Modifier.weight(1f),
     )
     ModeChip(
       text = stringResource(Res.string.game_editor_toggle_stats),
-      selected = selectedTab == Stats,
-      onClick = { onTabSelected(Stats) },
+      selected = selectedTab == STATS,
+      onClick = { onTabSelected(STATS) },
       modifier = Modifier.weight(1f),
     )
   }

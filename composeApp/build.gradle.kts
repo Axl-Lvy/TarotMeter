@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -48,10 +49,13 @@ kotlin {
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
     common {
-      group("standalone") {
+      group("mobile") {
         withAndroidTarget()
-        withJvm()
         group("ios") { withIos() }
+      }
+      group("standalone") {
+        withJvm()
+        group("mobile")
       }
     }
   }
@@ -112,6 +116,8 @@ kotlin {
       }
       configurations { implementation { exclude(group = "org.jetbrains", module = "annotations") } }
     }
+
+    val mobileMain by getting { dependencies { implementation(libs.belzspeedscan) } }
 
     androidMain.dependencies {
       implementation(compose.preview)

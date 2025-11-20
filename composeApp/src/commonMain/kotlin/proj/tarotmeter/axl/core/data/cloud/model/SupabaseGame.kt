@@ -1,8 +1,10 @@
 package proj.tarotmeter.axl.core.data.cloud.model
 
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import proj.tarotmeter.axl.core.data.sync.GameSync
 
 /**
  * Supabase data model for Game table.
@@ -21,4 +23,14 @@ data class SupabaseGame(
   @SerialName("updated_at") val updatedAt: Instant,
   @SerialName("created_at") val createdAt: Instant,
   @SerialName("is_deleted") val isDeleted: Boolean,
-)
+) {
+  fun toGameSync(playerIds: List<Uuid> = emptyList()) =
+    GameSync(
+      id = Uuid.parse(gameId),
+      name = name,
+      startedAt = createdAt,
+      updatedAt = updatedAt,
+      isDeleted = isDeleted,
+      playerIds = playerIds,
+    )
+}

@@ -97,4 +97,28 @@ sealed interface Route {
       const val TITLE = "Confirm Email"
     }
   }
+
+  /**
+   * Join game screen route with an invitation code. This screen joins a game using the provided
+   * code.
+   *
+   * @property invitationCode The 8-digit invitation code from the QR code or deep link
+   */
+  @Serializable
+  @SerialName("join")
+  data class JoinGame(val invitationCode: String) : Route {
+    override val route: String
+      get() = ROUTE
+
+    override val title: String
+      get() = TITLE
+
+    companion object {
+      /** The base route path for joining a game. */
+      const val ROUTE = "join"
+
+      /** The title displayed when joining a game. */
+      const val TITLE = "Join Game"
+    }
+  }
 }

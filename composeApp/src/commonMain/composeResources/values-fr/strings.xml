@@ -9,7 +9,8 @@
   <string name="general_delete">Supprimer</string>
   <string name="general_save">Sauvegarder</string>
   <string name="general_cancel">Annuler</string>
-  <string name="game_editor_with">Avec</string>
+  <string name="general_unknown_error">Erreur inconnue</string>
+  <string name="general_with">Avec</string>
 
   <!-- Tarot Specific Terms -->
   <string name="tarot_taker">Preneur</string>
@@ -50,6 +51,7 @@
   <string name="title_game_history">Historique des Parties</string>
   <string name="title_game_editor">Éditeur de Partie</string>
   <string name="title_confirm_email">Confirmer l'Email</string>
+  <string name="title_join_game">Rejoindre une Partie</string>
 
   <!-- Home Screen -->
   <string name="home_subtitle">Suivez vos parties de Tarot avec élégance</string>
@@ -94,7 +96,7 @@
   <string name="round_editor_edit">Modifier la Donne</string>
 
   <!-- Game Editor Screen -->
-  <string name="game_editor_toggle_add_game">Ajouter une Partie</string>
+  <string name="game_editor_toggle_add_game">Modifier la Partie</string>
   <string name="game_editor_toggle_stats">Statistiques</string>
   <string name="game_editor_round_history">Historique des Donnes (%1$d)</string>
   <string name="game_editor_empty_state">Aucune donne pour l'instant. Ajoutez votre première donne ci-dessus !
@@ -103,6 +105,7 @@
   <string name="game_editor_delete_confirm_title">Supprimer la Donne ?</string>
   <string name="game_editor_delete_confirm_message">Êtes-vous sûr de vouloir supprimer cette donne ? Cette action est irréversible.</string>
   <string name="game_editor_taker_points">Preneur • %1$d pts</string>
+  <string name="game_editor_invite">Inviter des utilisateurs</string>
 
   <!-- Game Stats -->
   <string name="game_stats_chart_title">Évolution des scores</string>
@@ -131,6 +134,32 @@
   <string name="history_rename_game">Renommer la Partie</string>
   <string name="history_rename_game_label">Nom de la Partie</string>
   <string name="history_rename_game_placeholder">Entrez le nouveau nom de la partie</string>
+  <string name="history_join_game">Rejoindre une partie</string>
+
+  <!-- Game Source Labels -->
+  <string name="game_source_local">Local</string>
+  <string name="game_source_remote">Partagée</string>
+
+  <!-- Invitation Code -->
+  <string name="invitation_code_dialog_title">Code d'invitation</string>
+  <string name="invitation_code_dialog_message">Partagez ce code à d'autres utilisateurs pour qu'il rejoignent votre partie:</string>
+  <string name="invitation_code_dialog_generating">Génération du code d'invitation…</string>
+  <string name="invitation_code_dialog_error">Érreur: %1$s</string>
+  <string name="invitation_code_dialog_copy">Copier</string>
+  <string name="invitation_code_dialog_qr">Générer un QR code</string>
+
+  <!-- Join Game Dialog -->
+  <string name="join_game_dialog_title">Rejoindre une partie</string>
+  <string name="join_game_dialog_message">Entrez le code d'invitation à 8 chiffres:</string>
+  <string name="join_game_dialog_input_label">Code d'invitation</string>
+  <string name="join_game_dialog_button">Rejoindre</string>
+  <string name="join_game_dialog_success">Partie rejointe !</string>
+  <string name="join_game_dialog_error">Échec de la connexion à la partie</string>
+  <string name="join_game_dialog_not_authenticated">Vous devez être connecté pour rejoindre une partie.</string>
+  <string name="join_game_dialog_invalid_code">Code d'invitation invalide ou expiré.</string>
+  <string name="join_game_dialog_game_not_found">Partie introuvable.</string>
+  <string name="join_game_dialog_cannot_join_own">Vous ne pouvez pas rejoindre votre propre partie.</string>
+  <string name="join_game_dialog_qr_scan">Scanner le code QR</string>
 
   <!-- Settings Screen -->
   <string name="settings_header">Paramètres</string>
@@ -182,4 +211,11 @@
   <string name="confirm_email_success_title">E-mail vérifié avec succès !</string>
   <string name="confirm_email_success_message">Vous êtes maintenant connecté</string>
   <string name="confirm_email_error_title">Échec de la vérification</string>
+
+  <!-- Join Game Screen -->
+  <string name="join_game_joining">Rejoindre la partie…</string>
+  <string name="join_game_success_title">Partie rejointe avec succès !</string>
+  <string name="join_game_success_message">Redirection vers l'historique…</string>
+  <string name="join_game_error_title">Échec de rejoindre la partie</string>
+  <string name="join_game_invalid_code">Code d'invitation invalide</string>
 </resources>

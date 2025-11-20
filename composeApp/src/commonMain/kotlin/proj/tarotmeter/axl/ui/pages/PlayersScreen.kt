@@ -36,7 +36,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import proj.tarotmeter.axl.core.data.model.Player
-import proj.tarotmeter.axl.core.provider.PlayersProvider
+import proj.tarotmeter.axl.core.provider.DataProvider
 import proj.tarotmeter.axl.ui.components.CustomElevatedCard
 import proj.tarotmeter.axl.ui.components.EmptyState
 import proj.tarotmeter.axl.ui.components.PlayerAvatar
@@ -49,7 +49,7 @@ import tarotmeter.composeapp.generated.resources.Res
 
 /** Screen for managing players. Allows adding, renaming, and removing players. */
 @Composable
-fun PlayersScreen(playersProvider: PlayersProvider = koinInject()) {
+fun PlayersScreen(playersProvider: DataProvider = koinInject()) {
   var newName by remember { mutableStateOf("") }
   var players by remember { mutableStateOf(emptyList<Player>()) }
   val coroutineScope = rememberCoroutineScope()
@@ -186,11 +186,14 @@ private fun EditablePlayerCard(name: String, onRename: (String) -> Unit, onDelet
             enabled = editedName.trim().isNotEmpty(),
           )
         } else {
-          SecondaryButton(
-            text = stringResource(Res.string.players_button_rename),
+          OutlinedButton(
             onClick = { editing = true },
             modifier = Modifier.weight(1f),
-          )
+            colors =
+              ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+          ) {
+            Text(stringResource(Res.string.players_button_rename))
+          }
           OutlinedButton(
             onClick = onDelete,
             modifier = Modifier.weight(1f),
