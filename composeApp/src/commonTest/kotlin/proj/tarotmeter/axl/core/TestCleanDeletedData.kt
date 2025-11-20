@@ -7,6 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -228,6 +229,8 @@ class TestCleanDeletedData : TestAuthenticated() {
     assertTrue(playersIncludingDeleted.any { it.id == player.id && it.isDeleted })
 
     localDb.cleanDeletedData(Instant.DISTANT_FUTURE)
+
+    delay(1.seconds)
 
     playersIncludingDeleted = localDb.getPlayersUpdatedSince(Instant.DISTANT_PAST)
     assertTrue(playersIncludingDeleted.none { it.id == player.id })
