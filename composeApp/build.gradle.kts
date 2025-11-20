@@ -92,7 +92,6 @@ kotlin {
       // Utilities
       implementation(libs.multiplatform.settings)
       implementation(libs.kermit.logging)
-      implementation(libs.goquati.qr)
 
       // Backend and networking
       implementation(libs.ktor.client.core)
