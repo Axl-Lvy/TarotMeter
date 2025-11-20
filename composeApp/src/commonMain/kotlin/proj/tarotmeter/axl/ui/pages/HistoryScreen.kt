@@ -36,7 +36,6 @@ import proj.tarotmeter.axl.ui.components.ScoreText
 import tarotmeter.composeapp.generated.resources.Res
 import tarotmeter.composeapp.generated.resources.history_empty_state
 import tarotmeter.composeapp.generated.resources.history_game_count
-import tarotmeter.composeapp.generated.resources.history_game_label
 import tarotmeter.composeapp.generated.resources.history_round_count
 
 /**
@@ -87,7 +86,7 @@ private fun GameHistoryCard(game: Game, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
-          text = stringResource(Res.string.history_game_label),
+          text = game.name,
           style = MaterialTheme.typography.titleLarge,
           color = MaterialTheme.colorScheme.primary,
         )

@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.builtin.Email
@@ -58,7 +59,7 @@ class AuthManager() : KoinComponent {
     if (refreshToken.isNotEmpty()) {
       try {
         supabaseClient.auth.refreshSession(refreshToken = refreshToken)
-      } catch (e: AuthRestException) {
+      } catch (_: AuthRestException) {
         KEEP_LOGGED_IN.reset()
         updateSavedTokens()
       }
@@ -111,5 +112,33 @@ class AuthManager() : KoinComponent {
         listener(it)
       }
     }
+  }
+
+  fun registerAuthenticationListener(listener: suspend () -> Unit) {
+    registerListener {
+      if (it is SessionStatus.Authenticated) {
+        listener()
+      }
+    }
+  }
+
+  /**
+   * Sign up with email.
+   *
+   * @param providedEmail email
+   * @param providedPassword password
+   */
+  suspend fun signUpWithEmail(providedEmail: String, providedPassword: String) {
+    supabaseClient.auth.signUpWith(
+      provider = Email,
+      redirectUrl = "https://www.axl-lvy.fr/tarotmeter#confirm-email",
+    ) {
+      email = providedEmail
+      password = providedPassword
+    }
+  }
+
+  suspend fun verifyEmail(tokenHash: String) {
+    supabaseClient.auth.verifyEmailOtp(OtpType.Email.EMAIL, tokenHash = tokenHash)
   }
 }

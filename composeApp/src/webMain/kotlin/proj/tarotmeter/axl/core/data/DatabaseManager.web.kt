@@ -99,6 +99,7 @@ class LocalStorageDatabaseManager(
                 )
               }
               .toMutableList(),
+            game.name,
             game.startedAt,
             game.updatedAt,
           )
@@ -117,6 +118,19 @@ class LocalStorageDatabaseManager(
         }
       }
       window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
+    }
+    notifyChange()
+  }
+
+  override suspend fun renameGame(id: Uuid, newName: String) {
+    withContext(coroutineDispatcher) {
+      val games = getGameEntities()
+      val game = games.find { it.id == id }
+      if (game != null) {
+        val updatedGame = game.copy(name = newName, updatedAtInternal = DateUtil.now())
+        val updatedGames = games.map { if (it.id == id) updatedGame else it }
+        window.localStorage.setItem(GAMES_KEY, json.encodeToString(updatedGames))
+      }
     }
     notifyChange()
   }
@@ -191,6 +205,7 @@ class LocalStorageDatabaseManager(
         .map { game ->
           GameSync(
             id = game.id,
+            name = game.name,
             startedAt = game.startedAt,
             updatedAt = game.updatedAtInternal,
             isDeleted = game.isDeleted,
@@ -228,6 +243,24 @@ class LocalStorageDatabaseManager(
     withContext(coroutineDispatcher) {
       window.localStorage.removeItem(PLAYERS_KEY)
       window.localStorage.removeItem(GAMES_KEY)
+    }
+    notifyChange()
+  }
+
+  override suspend fun cleanDeletedData(dateLimit: Instant) {
+    withContext(coroutineDispatcher) {
+      // Remove deleted players
+      val players = getPlayerEntities().filter { !it.isDeleted && it.updatedAt <= dateLimit }
+      window.localStorage.setItem(PLAYERS_KEY, json.encodeToString(players))
+
+      // Remove deleted games and rounds
+      val games =
+        getGameEntities()
+          .filter { !it.isDeleted && it.updatedAtInternal <= dateLimit }
+          .map { game ->
+            game.copy(roundsInternal = game.roundsInternal.filter { !it.isDeleted }.toMutableList())
+          }
+      window.localStorage.setItem(GAMES_KEY, json.encodeToString(games))
     }
     notifyChange()
   }

@@ -1,5 +1,6 @@
 package proj.tarotmeter.axl.core.data
 
+import co.touchlab.kermit.Logger
 import kotlin.time.Instant
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -25,4 +26,9 @@ abstract class LocalDatabaseManager : DatabaseManager, KoinComponent {
   abstract suspend fun getRoundsUpdatedSince(since: Instant): List<RoundSync>
 
   abstract suspend fun clear()
+
+  /** Permanently removes all data marked as deleted from the local database. */
+  abstract suspend fun cleanDeletedData(dateLimit: Instant)
 }
+
+private val LOGGER = Logger.withTag("LocalDatabaseManager")

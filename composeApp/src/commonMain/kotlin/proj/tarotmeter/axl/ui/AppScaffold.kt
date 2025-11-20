@@ -29,7 +29,7 @@ import tarotmeter.composeapp.generated.resources.Res
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppScaffold(onNavHostReady: suspend (NavController) -> Unit) {
+fun AppScaffold(initialRoute: String? = null, onNavHostReady: suspend (NavController) -> Unit) {
   val navController = rememberNavController()
   val backStackEntry by navController.currentBackStackEntryAsState()
   val route = backStackEntry?.destination?.route ?: Route.Home.route
@@ -42,6 +42,7 @@ fun AppScaffold(onNavHostReady: suspend (NavController) -> Unit) {
       route == Route.NewGame.route -> stringResource(Res.string.title_new_game)
       route == Route.History.route -> stringResource(Res.string.title_game_history)
       route.startsWith(Route.Game.ROUTE) -> stringResource(Res.string.title_game_editor)
+      route.startsWith(Route.ConfirmEmail.ROUTE) -> stringResource(Res.string.title_confirm_email)
       else -> stringResource(Res.string.title_home)
     }
 
@@ -49,7 +50,19 @@ fun AppScaffold(onNavHostReady: suspend (NavController) -> Unit) {
     topBar = {
       TopAppBar(
         title = { Text(title) },
-        navigationIcon = { BackButton(route) { navController.popBackStack() } },
+        navigationIcon = {
+          BackButton(route) {
+            // If we can't pop back (e.g., direct navigation to a route), go to Home instead
+            if (!navController.popBackStack()) {
+              navController.navigate(Route.Home.route) {
+                // Clear the back stack to prevent loops
+                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                // Avoid multiple copies of the same destination
+                launchSingleTop = true
+              }
+            }
+          }
+        },
         colors =
           TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -59,7 +72,9 @@ fun AppScaffold(onNavHostReady: suspend (NavController) -> Unit) {
       )
     }
   ) { padding ->
-    Box(Modifier.fillMaxSize().padding(padding)) { AppNavHost(navController = navController) }
+    Box(Modifier.fillMaxSize().padding(padding)) {
+      AppNavHost(navController = navController, startDestination = initialRoute ?: Route.Home.route)
+    }
   }
   LaunchedEffect(navController) { onNavHostReady(navController) }
 }

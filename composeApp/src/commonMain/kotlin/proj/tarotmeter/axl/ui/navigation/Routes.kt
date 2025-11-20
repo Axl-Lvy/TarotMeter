@@ -73,4 +73,28 @@ sealed interface Route {
       const val TITLE = "Game Editor"
     }
   }
+
+  /**
+   * Email confirmation screen route with a token hash. This screen verifies the user's email
+   * address.
+   *
+   * @property tokenHash The token hash received from the verification email
+   */
+  @Serializable
+  @SerialName("confirm-email")
+  data class ConfirmEmail(val tokenHash: String) : Route {
+    override val route: String
+      get() = ROUTE
+
+    override val title: String
+      get() = TITLE
+
+    companion object {
+      /** The base route path for email confirmation. */
+      const val ROUTE = "confirm-email"
+
+      /** The title displayed during email confirmation. */
+      const val TITLE = "Confirm Email"
+    }
+  }
 }

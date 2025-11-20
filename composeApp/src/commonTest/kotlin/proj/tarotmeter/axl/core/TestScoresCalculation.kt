@@ -46,7 +46,7 @@ class TestScoresCalculation {
   fun testTargetPointsForOudlers() {
     // Test target points calculation based on oudlers
     val players = createPlayers(3)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // 0 oudlers = 56 points needed
     val round0 = createBasicRound(players[0], oudlerCount = 0, takerPoints = 56)
@@ -72,7 +72,7 @@ class TestScoresCalculation {
   @Test
   fun testBasicScoreCalculation3Players() {
     val players = createPlayers(3)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // Taker wins with exact target
     val winningRound = createBasicRound(players[0], oudlerCount = 1, takerPoints = 51)
@@ -94,7 +94,7 @@ class TestScoresCalculation {
   @Test
   fun testBasicScoreCalculation4Players() {
     val players = createPlayers(4)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // Taker wins with exact target
     val winningRound = createBasicRound(players[0], oudlerCount = 1, takerPoints = 51)
@@ -109,7 +109,7 @@ class TestScoresCalculation {
   @Test
   fun testBasicScoreCalculation5Players() {
     val players = createPlayers(5)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // Taker with partner (different players)
     val winningRound =
@@ -137,7 +137,7 @@ class TestScoresCalculation {
   @Test
   fun testContractMultipliers() {
     val players = createPlayers(3)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // Test all contract types with winning scenario
     val basePoints = 51 // 1 oudler target
@@ -170,7 +170,7 @@ class TestScoresCalculation {
   @Test
   fun testPoigneeBonus() {
     val players = createPlayers(3)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // Test different poignee values when taker wins
     val baseRound = createBasicRound(players[0], oudlerCount = 1, takerPoints = 51)
@@ -200,7 +200,7 @@ class TestScoresCalculation {
   @Test
   fun testPetitAuBout() {
     val players = createPlayers(3)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // Petit au bout won by taker
     val takerPetitRound =
@@ -230,7 +230,7 @@ class TestScoresCalculation {
   @Test
   fun testChelem() {
     val players = createPlayers(3)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // Non-announced chelem
     val nonAnnouncedRound =
@@ -260,7 +260,7 @@ class TestScoresCalculation {
   @Test
   fun testComplexScenario() {
     val players = createPlayers(4)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     // Complex scenario: Garde Sans + Double Poignee + Petit au Bout + high points
     val complexRound =
@@ -303,7 +303,7 @@ class TestScoresCalculation {
   @Test
   fun testGlobalScores() {
     val players = createPlayers(3)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     val round1 = createBasicRound(players[0], oudlerCount = 1, takerPoints = 60) // Taker wins big
     val round2 = createBasicRound(players[1], oudlerCount = 1, takerPoints = 45) // Player 1 loses
@@ -338,13 +338,13 @@ class TestScoresCalculation {
   fun testInvalidPlayerCount() {
     val players = createPlayers(6) // Invalid: too many players
 
-    assertFailsWith<IllegalArgumentException> { Game(players) }
+    assertFailsWith<IllegalArgumentException> { Game(players, "Test Game") }
   }
 
   @Test
   fun testPartnerRequiredFor5Players() {
     val players = createPlayers(5)
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
 
     val roundWithoutPartner = createBasicRound(players[0], partner = null)
 

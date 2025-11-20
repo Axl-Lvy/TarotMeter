@@ -10,6 +10,7 @@ data class GameLocalStorage(
   val players: List<PlayerLocalStorage>,
   val id: Uuid,
   val roundsInternal: MutableList<RoundLocalStorage>,
+  val name: String,
   val startedAt: Instant,
   var updatedAtInternal: Instant,
   val isDeleted: Boolean = false,
@@ -17,6 +18,7 @@ data class GameLocalStorage(
   fun toGame(): Game {
     return Game(
       players = players.map { it.toPlayer() },
+      name = name,
       id = id,
       roundsInternal = roundsInternal.map { it.toRound() }.toMutableList(),
       startedAt = startedAt,

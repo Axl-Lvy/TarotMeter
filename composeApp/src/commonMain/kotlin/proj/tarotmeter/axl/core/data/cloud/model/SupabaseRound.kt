@@ -41,7 +41,7 @@ data class SupabaseRound(
   val chelem: Chelem,
   val index: Int,
   @SerialName("game_id") val gameId: String,
-  @SerialName("is_deleted") val isDeleted: Boolean = false,
+  @SerialName("is_deleted") val isDeleted: Boolean,
 ) {
   constructor(
     round: Round,
@@ -59,6 +59,7 @@ data class SupabaseRound(
     chelem = round.chelem,
     index = round.index,
     gameId = gameId,
+    isDeleted = false,
   )
 
   fun toRound(playerProvider: (String) -> Player) =

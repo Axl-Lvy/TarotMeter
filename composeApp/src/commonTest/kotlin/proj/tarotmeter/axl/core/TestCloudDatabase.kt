@@ -69,7 +69,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     databaseManager.deletePlayer(players.first().id)
@@ -83,7 +83,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val games = databaseManager.getGames()
@@ -100,7 +100,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val retrievedGame = databaseManager.getGame(game.id)
@@ -122,7 +122,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val round =
@@ -157,7 +157,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val round1 =
@@ -200,7 +200,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val gamesBeforeRemoval = databaseManager.getGames()
@@ -228,7 +228,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val round =
@@ -266,7 +266,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val retrievedGame = databaseManager.getGame(game.id)
@@ -287,7 +287,7 @@ class TestCloudDatabase : TestAuthenticated() {
 
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val retrievedGame = databaseManager.getGame(game.id)
@@ -328,7 +328,7 @@ class TestCloudDatabase : TestAuthenticated() {
       )
 
     val game =
-      Game(players).apply {
+      Game(players, "Test Game").apply {
         addRound(round1)
         addRound(round2)
       }
@@ -356,7 +356,7 @@ class TestCloudDatabase : TestAuthenticated() {
     // Test bulk player insertion
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     // Verify all players and game were inserted
@@ -374,7 +374,7 @@ class TestCloudDatabase : TestAuthenticated() {
     val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val round =
@@ -403,7 +403,7 @@ class TestCloudDatabase : TestAuthenticated() {
     val players = listOf(Player("Player1"), Player("Player2"), Player("Player3"))
     players.forEach { databaseManager.insertPlayer(it) }
 
-    val game = Game(players)
+    val game = Game(players, name = "Test Game")
     databaseManager.insertGame(game)
 
     val round =

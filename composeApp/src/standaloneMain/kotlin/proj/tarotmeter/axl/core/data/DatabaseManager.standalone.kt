@@ -35,7 +35,9 @@ internal class StandaloneDatabaseManager(
 
   override suspend fun deletePlayer(id: Uuid) {
     val now = DateUtil.now()
+    val deletedGames = database.getGameDao().getGameIdsFromPlayer(id)
     database.getGameDao().deleteGamesFromPlayer(id, now)
+    deletedGames.forEach { database.getGameDao().deleteRoundsForGame(it) }
     database.getPlayerDao().deletePlayer(id, now)
     notifyChange()
   }
@@ -52,10 +54,15 @@ internal class StandaloneDatabaseManager(
     for (player in game.players) {
       insertPlayer(player)
     }
-    database.getGameDao().insertGame(GameEntity(game.id, game.startedAt, game.updatedAt))
+    database.getGameDao().insertGame(GameEntity(game.id, game.name, game.startedAt, game.updatedAt))
     for (player in game.players) {
       database.getGameDao().insertGamePlayerCrossRef(GamePlayerCrossRef(game.id, player.id))
     }
+    notifyChange()
+  }
+
+  override suspend fun renameGame(id: Uuid, newName: String) {
+    database.getGameDao().renameGame(id, newName, DateUtil.now())
     notifyChange()
   }
 
@@ -112,6 +119,7 @@ internal class StandaloneDatabaseManager(
     return dao.getGamesUpdatedSince(since).map { gameEntity ->
       GameSync(
         id = gameEntity.id,
+        name = gameEntity.name,
         startedAt = gameEntity.startedAt,
         updatedAt = gameEntity.updatedAt,
         isDeleted = gameEntity.isDeleted,
@@ -144,6 +152,12 @@ internal class StandaloneDatabaseManager(
     database.getPlayerDao().clearPlayers()
     database.getGameDao().clearGamePlayerCrossRef()
     database.getGameDao().clearGames()
+  }
+
+  override suspend fun cleanDeletedData(dateLimit: Instant) {
+    database.getGameDao().cleanDeletedRounds(dateLimit)
+    database.getGameDao().cleanDeletedGames(dateLimit)
+    database.getPlayerDao().cleanDeletedPlayers(dateLimit)
   }
 }
 

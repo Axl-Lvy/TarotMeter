@@ -17,6 +17,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Deeplink intent filter for email confirmation -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="www.axl-lvy.fr"
+                      android:pathPrefix="/tarotmeter" />
+            </intent-filter>
         </activity>
     </application>
 

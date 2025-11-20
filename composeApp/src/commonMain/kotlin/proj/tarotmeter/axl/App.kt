@@ -12,7 +12,7 @@ import proj.tarotmeter.axl.ui.theme.AppTheme
 
 @Composable
 @Preview
-fun App(onNavHostReady: suspend (NavController) -> Unit = {}) {
+fun App(initialRoute: String? = null, onNavHostReady: suspend (NavController) -> Unit = {}) {
   val modules = initKoinModules()
   KoinApplication(application = { modules(*modules) }) {
     // Apply saved language on app startup
@@ -29,6 +29,6 @@ fun App(onNavHostReady: suspend (NavController) -> Unit = {}) {
       localization.applyLanguage(languageToApply)
     }
 
-    AppTheme { AppScaffold(onNavHostReady) }
+    AppTheme { AppScaffold(initialRoute = initialRoute, onNavHostReady = onNavHostReady) }
   }
 }

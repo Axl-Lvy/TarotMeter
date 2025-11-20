@@ -91,6 +91,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
           name = player.name,
           updatedAt = player.updatedAt,
           userId = user.id,
+          isDeleted = false,
         )
       )
   }
@@ -216,6 +217,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
         } ?: emptyList()
       Game(
         players,
+        it.value.name,
         Uuid.parse(it.value.gameId),
         rounds.toMutableList(),
         it.value.createdAt,
@@ -260,6 +262,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
       }
     return Game(
       players.values.toList(),
+      supabaseGame.name,
       Uuid.parse(supabaseGame.gameId),
       rounds.toMutableList(),
       supabaseGame.createdAt,
@@ -278,6 +281,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
             name = player.name,
             updatedAt = player.updatedAt,
             userId = user.id,
+            isDeleted = false,
           )
         }
       supabaseClient.from("player").upsert(playerDtos)
@@ -289,8 +293,10 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
         SupabaseGame(
           gameId = game.id.toString(),
           userId = user.id,
+          name = game.name,
           updatedAt = game.updatedAt,
           createdAt = game.startedAt,
+          isDeleted = false,
         )
       )
     // Insert cross-references for each player in bulk
@@ -301,6 +307,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
             playerId = player.id.toString(),
             updatedAt = game.updatedAt,
             gameId = game.id.toString(),
+            isDeleted = false,
           )
         }
       supabaseClient.from("game_cross_player").insert(crossRefs)
@@ -315,6 +322,13 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
   override suspend fun addRound(gameId: Uuid, round: Round) {
     if (authManager.user == null) return
     supabaseClient.from("round").insert(SupabaseRound(round, gameId.toString()))
+  }
+
+  override suspend fun renameGame(id: Uuid, newName: String) {
+    if (authManager.user == null) return
+    supabaseClient.from("game").update(mapOf("name" to newName)) {
+      filterForUser { eq("game_id", id.toString()) }
+    }
   }
 
   override suspend fun deleteRound(roundId: Uuid) {
@@ -376,6 +390,7 @@ class CloudDatabaseManager : DatabaseManager, KoinComponent {
         SupabaseGame(
           gameId = it.id.toString(),
           userId = user.id,
+          name = it.name,
           updatedAt = it.updatedAt,
           createdAt = it.startedAt,
           isDeleted = it.isDeleted,
