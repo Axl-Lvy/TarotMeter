@@ -1,2 +1,2 @@
 # Auto-generated .gitignore
-src/commonMain/kotlin/proj/tarotmeter/axl/util/generated/Secrets.kt
+src/commonMain/kotlin/fr/axllvy/tarotmeter/util/generated/Secrets.kt
