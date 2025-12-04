@@ -92,6 +92,7 @@ kotlin {
       // Utilities
       implementation(libs.multiplatform.settings)
       implementation(libs.kermit.logging)
+      implementation(libs.qr)
 
       // Backend and networking
       implementation(libs.ktor.client.core)
@@ -144,11 +145,11 @@ kotlin {
 }
 
 android {
-  namespace = "proj.tarotmeter.axl"
+  namespace = "fr.axllvy"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   defaultConfig {
-    applicationId = "proj.tarotmeter.axl"
+    applicationId = "fr.axllvy.tarotmeter"
     minSdk = libs.versions.android.minSdk.get().toInt()
     targetSdk = libs.versions.android.targetSdk.get().toInt()
     versionCode = 1
@@ -175,15 +176,16 @@ dependencies {
   add("kspIosX64", libs.androidx.room.compiler)
   add("kspIosArm64", libs.androidx.room.compiler)
   add("kspJvm", libs.androidx.room.compiler)
+  lintChecks(libs.insights.lint)
 }
 
 compose.desktop {
   application {
-    mainClass = "proj.tarotmeter.axl.MainKt"
+    mainClass = "fr.axllvy.tarotmeter.MainKt"
 
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-      packageName = "proj.tarotmeter.axl"
+      packageName = "fr.axllvy.tarotmeter"
       packageVersion = "1.0.0"
     }
   }

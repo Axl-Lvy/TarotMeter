@@ -43,9 +43,9 @@ val generateSecretsTask by
 
       // Generate Secrets.kt content
       val content = buildString {
-        appendLine("package proj.tarotmeter.axl.util.generated")
+        appendLine("package fr.axllvy.tarotmeter.util.generated")
         appendLine()
-        appendLine("import proj.tarotmeter.axl.util.SecretsTemplate")
+        appendLine("import fr.axllvy.tarotmeter.util.SecretsTemplate")
         appendLine()
         appendLine("/**")
         appendLine(" * Contains secrets stored in local.properties.")
@@ -99,7 +99,7 @@ val cleanSecretsTask by
 // Helper functions
 fun getGeneratedFileName(projectDir: File): Pair<File, File> {
   val secretsPackageDir =
-    File("$projectDir/src/commonMain/kotlin/proj/tarotmeter/axl/util/generated")
+    File("$projectDir/src/commonMain/kotlin/fr/axllvy/tarotmeter/util/generated")
   val secretsFile = File(secretsPackageDir, "Secrets.kt")
   return Pair(secretsPackageDir, secretsFile)
 }

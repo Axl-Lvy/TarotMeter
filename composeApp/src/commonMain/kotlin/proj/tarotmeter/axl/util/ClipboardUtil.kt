@@ -1,5 +1,0 @@
-package proj.tarotmeter.axl.util
-
-import androidx.compose.ui.platform.ClipEntry
-
-expect fun String.toClipEntry(): ClipEntry
