@@ -92,6 +92,7 @@ kotlin {
       // Utilities
       implementation(libs.multiplatform.settings)
       implementation(libs.kermit.logging)
+      implementation(libs.qr)
 
       // Backend and networking
       implementation(libs.ktor.client.core)
@@ -175,6 +176,7 @@ dependencies {
   add("kspIosX64", libs.androidx.room.compiler)
   add("kspIosArm64", libs.androidx.room.compiler)
   add("kspJvm", libs.androidx.room.compiler)
+  lintChecks(libs.insights.lint)
 }
 
 compose.desktop {
