@@ -145,11 +145,11 @@ kotlin {
 }
 
 android {
-  namespace = "proj.tarotmeter.axl"
+  namespace = "fr.axllvy"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   defaultConfig {
-    applicationId = "proj.tarotmeter.axl"
+    applicationId = "fr.axllvy.tarotmeter"
     minSdk = libs.versions.android.minSdk.get().toInt()
     targetSdk = libs.versions.android.targetSdk.get().toInt()
     versionCode = 1
@@ -181,11 +181,11 @@ dependencies {
 
 compose.desktop {
   application {
-    mainClass = "proj.tarotmeter.axl.MainKt"
+    mainClass = "fr.axllvy.tarotmeter.MainKt"
 
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-      packageName = "proj.tarotmeter.axl"
+      packageName = "fr.axllvy.tarotmeter"
       packageVersion = "1.0.0"
     }
   }

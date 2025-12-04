@@ -1,0 +1,540 @@
+package fr.tarotmeter.core.data.cloud
+
+import fr.tarotmeter.core.data.DatabaseManager
+import fr.tarotmeter.core.data.cloud.auth.AuthManager
+import fr.tarotmeter.core.data.cloud.model.SupabaseDeviceId
+import fr.tarotmeter.core.data.cloud.model.SupabaseGame
+import fr.tarotmeter.core.data.cloud.model.SupabaseGameCrossPlayer
+import fr.tarotmeter.core.data.cloud.model.SupabasePlayer
+import fr.tarotmeter.core.data.cloud.model.SupabaseRound
+import fr.tarotmeter.core.data.model.Game
+import fr.tarotmeter.core.data.model.Player
+import fr.tarotmeter.core.data.model.Round
+import fr.tarotmeter.core.data.sync.GameSync
+import fr.tarotmeter.core.data.sync.PlayerSync
+import fr.tarotmeter.core.data.sync.RoundSync
+import fr.tarotmeter.util.DateUtil
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.PostgrestFilterDSL
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.PostgrestQueryBuilder
+import io.github.jan.supabase.postgrest.query.PostgrestRequestBuilder
+import io.github.jan.supabase.postgrest.query.filter.PostgrestFilterBuilder
+import io.github.jan.supabase.postgrest.result.PostgrestResult
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+/**
+ * CloudDatabaseManager implementation using Supabase as the backend.
+ *
+ * This class provides methods to interact with the Supabase database for managing players and
+ * games. It ensures that all operations are performed in the context of the authenticated user.
+ */
+class CloudDatabaseManager : DatabaseManager, KoinComponent {
+
+  private val supabaseClient: SupabaseClient by inject()
+  private val authManager: AuthManager by inject()
+
+  private suspend fun selectForUser(
+    table: String,
+    block: @PostgrestFilterDSL (PostgrestFilterBuilder.() -> Unit) = {},
+  ): PostgrestResult? {
+    if (authManager.user == null) return null
+    return supabaseClient.from(table).select { filterForUser { block() } }
+  }
+
+  private suspend fun selectForUserIncludingDeleted(
+    table: String,
+    block: @PostgrestFilterDSL (PostgrestFilterBuilder.() -> Unit) = {},
+  ): PostgrestResult? {
+    if (authManager.user == null) return null
+    return supabaseClient.from(table).select {
+      filter {
+        and {
+          eq("user_id", authManager.user!!.id)
+          block()
+        }
+      }
+    }
+  }
+
+  private fun PostgrestRequestBuilder.filterForUser(block: PostgrestFilterBuilder.() -> Unit) {
+    val user = authManager.user ?: return
+    filterNonDeleted {
+      and {
+        eq("user_id", user.id)
+        block()
+      }
+    }
+  }
+
+  private fun PostgrestRequestBuilder.filterNonDeleted(
+    block: @PostgrestFilterDSL (PostgrestFilterBuilder.() -> Unit) = {}
+  ) {
+    filter {
+      and {
+        eq("is_deleted", false)
+        block()
+      }
+    }
+  }
+
+  private suspend fun PostgrestQueryBuilder.softDelete(
+    request: PostgrestRequestBuilder.() -> Unit = {}
+  ): PostgrestResult {
+    return update(
+      mapOf("is_deleted" to true.toString(), "updated_at" to DateUtil.now().toString()),
+      request,
+    )
+  }
+
+  override suspend fun getPlayers(): List<Player> {
+    if (authManager.user == null) return emptyList()
+    return selectForUser("player")
+      ?.decodeList<SupabasePlayer>()
+      ?.filter { !it.isDeleted }
+      ?.map { it.toPlayer() } ?: emptyList()
+  }
+
+  suspend fun getPlayer(id: Uuid): Player? {
+    return selectForUser("player") { eq("player_id", id.toString()) }
+      ?.decodeSingleOrNull<SupabasePlayer>()
+      ?.toPlayer()
+  }
+
+  override suspend fun insertPlayer(player: Player) {
+    val user = authManager.user ?: return
+    supabaseClient
+      .from("player")
+      .insert(
+        SupabasePlayer(
+          playerId = player.id.toString(),
+          name = player.name,
+          updatedAt = player.updatedAt,
+          userId = user.id,
+          isDeleted = false,
+        )
+      )
+  }
+
+  override suspend fun renamePlayer(id: Uuid, newName: String) {
+    if (authManager.user == null) return
+    supabaseClient.from("player").update(mapOf("name" to newName)) {
+      filterForUser { eq("player_id", id.toString()) }
+    }
+  }
+
+  override suspend fun deletePlayer(id: Uuid) {
+    if (authManager.user == null) return
+    // Step 1: Find all game_ids where this player is referenced
+    val gameCrossPlayers =
+      supabaseClient
+        .from("game_cross_player")
+        .select { filterNonDeleted { eq("player_id", id.toString()) } }
+        .decodeList<SupabaseGameCrossPlayer>()
+
+    // Step 2: Delete games where game_id is in gameIds
+    if (gameCrossPlayers.isNotEmpty()) {
+      supabaseClient.from("game").softDelete {
+        filterForUser { isIn("game_id", gameCrossPlayers.map { it.gameId }) }
+      }
+    }
+
+    // Step 3: Delete the player itself
+    supabaseClient.from("player").softDelete { filterForUser { eq("player_id", id.toString()) } }
+  }
+
+  suspend fun hardDeletePlayer(id: Uuid) {
+    val userId = authManager.user?.id ?: return
+    // Step 1: Find all game_ids where this player is referenced
+    val gameCrossPlayers =
+      supabaseClient
+        .from("game_cross_player")
+        .select { filter { eq("player_id", id.toString()) } }
+        .decodeList<SupabaseGameCrossPlayer>()
+
+    // Step 2: Delete games where game_id is in gameIds
+    if (gameCrossPlayers.isNotEmpty()) {
+      supabaseClient.from("game").delete {
+        filter {
+          and {
+            eq("user_id", userId)
+            isIn("game_id", gameCrossPlayers.map { it.gameId })
+          }
+        }
+      }
+    }
+
+    // Step 3: Delete the player itself
+    supabaseClient.from("player").delete {
+      filter {
+        and {
+          eq("user_id", userId)
+          eq("player_id", id.toString())
+        }
+      }
+    }
+  }
+
+  suspend fun hardDeletePlayers() {
+    val userId = authManager.user?.id ?: return
+    val playerIds =
+      supabaseClient
+        .from("player")
+        .select { filter { eq("user_id", userId) } }
+        .decodeList<SupabasePlayer>()
+        .map { it.playerId }
+    playerIds.forEach { hardDeletePlayer(Uuid.parse(it)) }
+  }
+
+  suspend fun hardDeleteGames() {
+    val userId = authManager.user?.id ?: return
+    val gameIds =
+      supabaseClient
+        .from("game")
+        .select { filter { eq("user_id", userId) } }
+        .decodeList<SupabaseGame>()
+        .map { it.gameId }
+    gameIds.forEach { hardDeleteGame(Uuid.parse(it)) }
+  }
+
+  override suspend fun getGames(): List<Game> {
+    if (authManager.user == null) return emptyList()
+    val supabaseGames =
+      selectForUser("game")?.decodeList<SupabaseGame>()?.associateBy { it.gameId }
+        ?: return emptyList()
+    val supabaseCrossRefs =
+      supabaseClient
+        .from("game_cross_player")
+        .select { filterNonDeleted { isIn("game_id", supabaseGames.keys.toList()) } }
+        .decodeList<SupabaseGameCrossPlayer>()
+        .groupBy { it.gameId }
+    val supabasePlayers =
+      supabaseClient
+        .from("player")
+        .select {
+          filterForUser {
+            isIn("player_id", supabaseCrossRefs.values.flatten().map { it.playerId }.distinct())
+          }
+        }
+        .decodeList<SupabasePlayer>()
+        .associateBy { it.playerId }
+    val supabaseRounds =
+      supabaseClient
+        .from("round")
+        .select { filterNonDeleted { isIn("game_id", supabaseGames.keys.toList()) } }
+        .decodeList<SupabaseRound>()
+        .groupBy { it.gameId }
+    return supabaseGames.map {
+      val players =
+        supabaseCrossRefs[it.key]?.mapNotNull { crossRef ->
+          supabasePlayers[crossRef.playerId]?.toPlayer()
+        } ?: emptyList()
+      val rounds =
+        supabaseRounds[it.key]?.map { round ->
+          round.toRound { playerId ->
+            supabasePlayers[playerId]?.toPlayer() ?: error { "No player found with id $playerId" }
+          }
+        } ?: emptyList()
+      Game(
+        players,
+        it.value.name,
+        Uuid.parse(it.value.gameId),
+        rounds.toMutableList(),
+        it.value.createdAt,
+        it.value.updatedAt,
+      )
+    }
+  }
+
+  override suspend fun getGame(id: Uuid): Game? {
+    if (authManager.user == null) return null
+    val supabaseGame =
+      supabaseClient
+        .from("game")
+        .select { filterForUser { eq("game_id", id.toString()) } }
+        .decodeSingleOrNull<SupabaseGame>() ?: return null
+    val supabaseCrossRefs =
+      supabaseClient
+        .from("game_cross_player")
+        .select { filter { eq("game_id", supabaseGame.gameId) } }
+        .decodeList<SupabaseGameCrossPlayer>()
+        .groupBy { it.gameId }
+    val supabasePlayers =
+      supabaseClient
+        .from("player")
+        .select {
+          filterForUser {
+            isIn("player_id", supabaseCrossRefs.values.flatten().map { it.playerId }.distinct())
+          }
+        }
+        .decodeList<SupabasePlayer>()
+    val supabaseRounds =
+      supabaseClient
+        .from("round")
+        .select { filterNonDeleted { eq("game_id", supabaseGame.gameId) } }
+        .decodeList<SupabaseRound>()
+    val players = supabasePlayers.map { it.toPlayer() }.associateBy { it.id.toString() }
+    val rounds =
+      supabaseRounds.map {
+        it.toRound { playerId ->
+          players[playerId] ?: error { "No player found with id $playerId" }
+        }
+      }
+    return Game(
+      players.values.toList(),
+      supabaseGame.name,
+      Uuid.parse(supabaseGame.gameId),
+      rounds.toMutableList(),
+      supabaseGame.createdAt,
+      supabaseGame.updatedAt,
+    )
+  }
+
+  override suspend fun insertGame(game: Game) {
+    val user = authManager.user ?: return
+    // Insert all players in bulk
+    if (game.players.isNotEmpty()) {
+      val playerDtos =
+        game.players.map { player ->
+          SupabasePlayer(
+            playerId = player.id.toString(),
+            name = player.name,
+            updatedAt = player.updatedAt,
+            userId = user.id,
+            isDeleted = false,
+          )
+        }
+      supabaseClient.from("player").upsert(playerDtos)
+    }
+    // Insert the game
+    supabaseClient
+      .from("game")
+      .insert(
+        SupabaseGame(
+          gameId = game.id.toString(),
+          userId = user.id,
+          name = game.name,
+          updatedAt = game.updatedAt,
+          createdAt = game.startedAt,
+          isDeleted = false,
+        )
+      )
+    // Insert cross-references for each player in bulk
+    if (game.players.isNotEmpty()) {
+      val crossRefs =
+        game.players.map { player ->
+          SupabaseGameCrossPlayer(
+            playerId = player.id.toString(),
+            updatedAt = game.updatedAt,
+            gameId = game.id.toString(),
+            isDeleted = false,
+          )
+        }
+      supabaseClient.from("game_cross_player").insert(crossRefs)
+    }
+    // Insert rounds in bulk
+    if (game.rounds.isNotEmpty()) {
+      val roundDtos = game.rounds.map { round -> SupabaseRound(round, game.id.toString()) }
+      supabaseClient.from("round").insert(roundDtos)
+    }
+  }
+
+  override suspend fun addRound(gameId: Uuid, round: Round) {
+    if (authManager.user == null) return
+    supabaseClient.from("round").insert(SupabaseRound(round, gameId.toString()))
+  }
+
+  override suspend fun renameGame(id: Uuid, newName: String) {
+    if (authManager.user == null) return
+    supabaseClient.from("game").update(
+      mapOf("name" to newName, "updated_at" to DateUtil.now().toString())
+    ) {
+      filterForUser { eq("game_id", id.toString()) }
+    }
+  }
+
+  override suspend fun deleteRound(roundId: Uuid) {
+    if (authManager.user == null) return
+    supabaseClient.from("round").softDelete {
+      filterNonDeleted { eq("round_id", roundId.toString()) }
+    }
+  }
+
+  override suspend fun updateRound(round: Round) {
+    if (authManager.user == null) return
+    val oldRound =
+      supabaseClient
+        .from("round")
+        .select { filterNonDeleted { eq("round_id", round.id) } }
+        .decodeSingleOrNull<SupabaseRound>()
+    checkNotNull(oldRound) { "Impossible to update a round that is not stored in the database." }
+    supabaseClient.from("round").upsert(SupabaseRound(round, oldRound.gameId))
+  }
+
+  override suspend fun deleteGame(id: Uuid) {
+    if (authManager.user == null) return
+    supabaseClient.from("game").softDelete { filterForUser { eq("game_id", id.toString()) } }
+  }
+
+  suspend fun hardDeleteGame(id: Uuid) {
+    val userId = authManager.user?.id ?: return
+    supabaseClient.from("game").delete {
+      filter {
+        and {
+          eq("user_id", userId)
+          eq("game_id", id.toString())
+        }
+      }
+    }
+  }
+
+  suspend fun upsertPlayersSync(players: List<PlayerSync>) {
+    if (players.isEmpty()) return
+    val user = authManager.user ?: return
+    val dtos =
+      players.map {
+        SupabasePlayer(
+          playerId = it.id.toString(),
+          name = it.name,
+          updatedAt = it.updatedAt,
+          userId = user.id,
+          isDeleted = it.isDeleted,
+        )
+      }
+    supabaseClient.from("player").upsert(dtos)
+  }
+
+  suspend fun upsertGamesSync(games: List<GameSync>) {
+    if (games.isEmpty()) return
+    val user = authManager.user ?: return
+    val gameDtos =
+      games.map {
+        SupabaseGame(
+          gameId = it.id.toString(),
+          userId = user.id,
+          name = it.name,
+          updatedAt = it.updatedAt,
+          createdAt = it.startedAt,
+          isDeleted = it.isDeleted,
+        )
+      }
+    supabaseClient.from("game").upsert(gameDtos)
+    // Cross refs
+    val crossRefs =
+      games.flatMap { game ->
+        game.playerIds.map { playerId ->
+          SupabaseGameCrossPlayer(
+            playerId = playerId.toString(),
+            updatedAt = game.updatedAt,
+            gameId = game.id.toString(),
+            isDeleted = game.isDeleted, // propagate deletion
+          )
+        }
+      }
+    if (crossRefs.isNotEmpty()) {
+      supabaseClient.from("game_cross_player").upsert(crossRefs)
+    }
+  }
+
+  suspend fun upsertRoundsSync(rounds: List<RoundSync>) {
+    if (rounds.isEmpty()) return
+    val dtos =
+      rounds.map {
+        SupabaseRound(
+          roundId = it.id.toString(),
+          updatedAt = it.updatedAt,
+          taker = it.takerId.toString(),
+          partner = it.partnerId?.toString(),
+          contract = it.contract,
+          oudlerCount = it.oudlerCount,
+          takerPoints = it.takerPoints,
+          poignee = it.poignee,
+          petitAuBout = it.petitAuBout,
+          chelem = it.chelem,
+          gameId = it.gameId.toString(),
+          isDeleted = it.isDeleted,
+          index = it.index,
+        )
+      }
+    supabaseClient.from("round").upsert(dtos)
+  }
+
+  suspend fun getLastRemoteSync(deviceId: Uuid): Instant {
+    val user = authManager.user ?: error("No authenticated user")
+    supabaseClient.from("device_sync").upsert(
+      SupabaseDeviceId(deviceId.toString(), user.id, DateUtil.referenceTimePast())
+    ) {
+      onConflict = "device_id,user_id"
+      ignoreDuplicates = true
+    }
+    val supabaseDeviceId =
+      supabaseClient
+        .from("device_sync")
+        .select {
+          filter {
+            and {
+              eq("device_id", deviceId.toString())
+              eq("user_id", user.id)
+            }
+          }
+        }
+        .decodeList<SupabaseDeviceId>()
+    if (supabaseDeviceId.isEmpty()) {
+      error("Failed to insert or retrieve device sync info")
+    } else if (supabaseDeviceId.size > 1) {
+      error("Multiple device sync entries found for device $deviceId and user ${user.id}")
+    }
+    return supabaseDeviceId.first().updatedAt
+  }
+
+  suspend fun updateLastRemoteSync(deviceId: Uuid, lastSync: Instant) {
+    val user = authManager.user ?: return
+    supabaseClient.from("device_sync").upsert(
+      SupabaseDeviceId(deviceId = deviceId.toString(), userId = user.id, updatedAt = lastSync)
+    ) {
+      onConflict = "device_id,user_id"
+      ignoreDuplicates = false
+    }
+  }
+
+  override suspend fun getPlayersUpdatedSince(since: Instant): List<PlayerSync> {
+    if (authManager.user == null) return emptyList()
+    return selectForUserIncludingDeleted("player") { gt("updated_at", since) }
+      ?.decodeList<SupabasePlayer>()
+      ?.map { it.toPlayerSync() } ?: emptyList()
+  }
+
+  override suspend fun getGamesUpdatedSince(since: Instant): List<GameSync> {
+    if (authManager.user == null) return emptyList()
+    val games =
+      selectForUserIncludingDeleted("game") { gt("updated_at", since) }?.decodeList<SupabaseGame>()
+        ?: return emptyList()
+
+    if (games.isEmpty()) return emptyList()
+
+    val gameIds = games.map { it.gameId }
+    val crossRefs =
+      supabaseClient
+        .from("game_cross_player")
+        .select { filter { isIn("game_id", gameIds) } }
+        .decodeList<SupabaseGameCrossPlayer>()
+        .groupBy { it.gameId }
+
+    return games.map { game ->
+      val playerIds = crossRefs[game.gameId]?.map { Uuid.parse(it.playerId) } ?: emptyList()
+      game.toGameSync(playerIds)
+    }
+  }
+
+  override suspend fun getRoundsUpdatedSince(since: Instant): List<RoundSync> {
+    if (authManager.user == null) return emptyList()
+    return supabaseClient
+      .from("round")
+      .select { filter { gt("updated_at", since) } }
+      .decodeList<SupabaseRound>()
+      .map { it.toRoundSync() }
+  }
+}
