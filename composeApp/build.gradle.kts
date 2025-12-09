@@ -1,4 +1,6 @@
-import org.gradle.kotlin.dsl.invoke
+import com.android.ide.common.resources.Locale.create
+import java.io.FileInputStream
+import java.util.Properties
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -144,7 +146,20 @@ kotlin {
   compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
 }
 
+val keystorePropertiesFile = rootProject.file("./keystore/keystore.properties")
+val keystoreProperties = Properties().apply {
+  load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
+  signingConfigs {
+    create("release") {
+      storeFile = file("$rootDir/keystore/keystore.jks")
+      storePassword = (keystoreProperties["storePassword"] as String?) ?:""
+      keyAlias = (keystoreProperties["keyAlias"] as String?)?:""
+      keyPassword = (keystoreProperties["keyPassword"] as String?)?:""
+    }
+  }
   namespace = "fr.axllvy"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -160,6 +175,7 @@ android {
   buildTypes {
     getByName("release") {
       isMinifyEnabled = true
+      signingConfig = signingConfigs.getByName("release")
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
