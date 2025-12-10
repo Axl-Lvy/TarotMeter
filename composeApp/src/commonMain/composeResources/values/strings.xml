@@ -194,6 +194,13 @@
   <string name="settings_account_download_data_description">Sync your data from the cloud</string>
   <string name="settings_account_download_success">Data downloaded successfully</string>
   <string name="settings_account_download_failed">Download failed</string>
+  <string name="settings_account_delete">Delete Account</string>
+  <string name="settings_account_delete_confirmation_title">Delete Account?</string>
+  <string name="settings_account_delete_confirmation_message">Are you sure you want to permanently delete your account? This action cannot be undone. All your data will be permanently removed.</string>
+  <string name="settings_account_delete_confirm">Delete</string>
+  <string name="settings_account_delete_cancel">Cancel</string>
+  <string name="settings_account_delete_success">Account deleted successfully</string>
+  <string name="settings_account_delete_failed">Failed to delete account</string>
   <string
     name="settings_about_description">Tarot Meter is a comprehensive score tracking application for French Tarot games.
   </string>

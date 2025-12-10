@@ -13,6 +13,9 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.ktor.client.request.headers
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -147,5 +150,32 @@ class AuthManager() : InitializableKoinComponent() {
 
   suspend fun verifyEmail(tokenHash: String) {
     supabaseClient.auth.verifyEmailOtp(OtpType.Email.EMAIL, tokenHash = tokenHash)
+  }
+
+  /**
+   * Delete the current user's account.
+   *
+   * This method calls the external API endpoint to delete the user account using the Supabase Admin
+   * SDK. After successful deletion, the user is automatically signed out.
+   *
+   * @throws IllegalStateException if the user is not authenticated
+   * @throws Exception if the deletion fails on the server side
+   */
+  suspend fun deleteAccount() {
+    val session =
+      supabaseClient.auth.currentSessionOrNull()
+        ?: throw IllegalStateException("User not authenticated")
+
+    val response: HttpResponse =
+      supabaseClient.httpClient.delete("https://www.axl-lvy.fr/api/delete-user") {
+        headers { append("Authorization", "Bearer ${session.accessToken}") }
+      }
+
+    if (response.status != HttpStatusCode.OK) {
+      throw Exception("Failed to delete account: ${response.status}")
+    }
+
+    // Sign out after successful deletion
+    signOut()
   }
 }

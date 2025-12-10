@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -120,6 +119,8 @@ kotlin {
 
     val mobileMain by getting { dependencies { implementation(libs.belzspeedscan) } }
 
+    iosMain.dependencies { implementation(libs.ktor.client.darwin) }
+
     androidMain.dependencies {
       implementation(compose.preview)
       implementation(libs.androidx.activity.compose)
@@ -145,7 +146,7 @@ kotlin {
 }
 
 android {
-  namespace = "fr.axllvy"
+  namespace = "fr.axllvy.tarotmeter"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   defaultConfig {
@@ -153,7 +154,7 @@ android {
     minSdk = libs.versions.android.minSdk.get().toInt()
     targetSdk = libs.versions.android.targetSdk.get().toInt()
     versionCode = 1
-    versionName = "1.0"
+    versionName = "1.0.0"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
   packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
