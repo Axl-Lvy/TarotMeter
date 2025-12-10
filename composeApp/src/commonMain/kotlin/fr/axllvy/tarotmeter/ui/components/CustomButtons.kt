@@ -58,3 +58,33 @@ fun SecondaryButton(
     Text(text, style = MaterialTheme.typography.titleMedium)
   }
 }
+
+/**
+ * Danger action button for destructive operations.
+ *
+ * @param text The button text
+ * @param onClick Callback when button is clicked
+ * @param modifier Modifier to be applied to the button
+ * @param enabled Whether the button is enabled
+ */
+@Composable
+fun DangerButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+) {
+  Button(
+    onClick = onClick,
+    modifier = modifier.height(56.dp),
+    shape = RoundedCornerShape(12.dp),
+    enabled = enabled,
+    colors =
+      ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.error,
+        contentColor = MaterialTheme.colorScheme.onError,
+      ),
+  ) {
+    Text(text, style = MaterialTheme.typography.titleMedium)
+  }
+}

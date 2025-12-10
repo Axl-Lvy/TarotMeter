@@ -198,6 +198,13 @@
   <string name="settings_account_download_data_description">Synchroniser vos données depuis le cloud</string>
   <string name="settings_account_download_success">Données téléchargées avec succès</string>
   <string name="settings_account_download_failed">Échec du téléchargement</string>
+  <string name="settings_account_delete">Supprimer le compte</string>
+  <string name="settings_account_delete_confirmation_title">Supprimer le compte ?</string>
+  <string name="settings_account_delete_confirmation_message">Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible. Toutes vos données seront définitivement supprimées.</string>
+  <string name="settings_account_delete_confirm">Supprimer</string>
+  <string name="settings_account_delete_cancel">Annuler</string>
+  <string name="settings_account_delete_success">Compte supprimé avec succès</string>
+  <string name="settings_account_delete_failed">Échec de la suppression du compte</string>
   <string
     name="settings_about_description">Tarot Meter est une application complète de suivi des scores pour les parties de Tarot français.
   </string>
