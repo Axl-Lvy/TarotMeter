@@ -148,18 +148,7 @@ kotlin {
   compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
 }
 
-val keystorePropertiesFile = rootProject.file("./keystore/keystore.properties")
-val keystoreProperties = Properties().apply { load(FileInputStream(keystorePropertiesFile)) }
-
 android {
-  signingConfigs {
-    create("release") {
-      storeFile = file("$rootDir/keystore/keystore.jks")
-      storePassword = (keystoreProperties["storePassword"] as String?) ?: ""
-      keyAlias = (keystoreProperties["keyAlias"] as String?) ?: ""
-      keyPassword = (keystoreProperties["keyPassword"] as String?) ?: ""
-    }
-  }
   namespace = "fr.axllvy.tarotmeter"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -175,7 +164,6 @@ android {
   buildTypes {
     getByName("release") {
       isMinifyEnabled = true
-      signingConfig = signingConfigs.getByName("release")
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
