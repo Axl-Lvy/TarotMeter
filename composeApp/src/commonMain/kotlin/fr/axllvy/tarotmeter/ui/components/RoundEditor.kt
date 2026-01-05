@@ -3,7 +3,9 @@ package fr.axllvy.tarotmeter.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -29,8 +31,25 @@ import fr.axllvy.tarotmeter.util.DateUtil
 import kotlin.uuid.Uuid
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import tarotmeter.composeapp.generated.resources.*
 import tarotmeter.composeapp.generated.resources.Res
+import tarotmeter.composeapp.generated.resources.general_cancel
+import tarotmeter.composeapp.generated.resources.general_ok
+import tarotmeter.composeapp.generated.resources.general_save
+import tarotmeter.composeapp.generated.resources.round_editor_add_new
+import tarotmeter.composeapp.generated.resources.round_editor_edit
+import tarotmeter.composeapp.generated.resources.tarot_add
+import tarotmeter.composeapp.generated.resources.tarot_bonuses
+import tarotmeter.composeapp.generated.resources.tarot_bonuses_button
+import tarotmeter.composeapp.generated.resources.tarot_chelem
+import tarotmeter.composeapp.generated.resources.tarot_contract
+import tarotmeter.composeapp.generated.resources.tarot_oudlers
+import tarotmeter.composeapp.generated.resources.tarot_partner
+import tarotmeter.composeapp.generated.resources.tarot_petit_au_bout
+import tarotmeter.composeapp.generated.resources.tarot_poignee
+import tarotmeter.composeapp.generated.resources.tarot_points
+import tarotmeter.composeapp.generated.resources.tarot_points_defenders
+import tarotmeter.composeapp.generated.resources.tarot_points_taker
+import tarotmeter.composeapp.generated.resources.tarot_taker
 
 /**
  * Holds all state for the round editor form.
@@ -49,7 +68,7 @@ private data class RoundEditorState(
   val partnerIndex: Int,
   val contract: Contract,
   val oudlerCount: Int,
-  val pointsText: String,
+  val pointsText: String?,
   val poignee: Poignee,
   val petitAuBout: PetitAuBout,
   val chelem: Chelem,
@@ -64,7 +83,7 @@ private data class RoundEditorState(
             ?: if (game.players.size == 5) 1 else -1,
         contract = existingRound?.contract ?: Contract.GARDE,
         oudlerCount = existingRound?.oudlerCount ?: 1,
-        pointsText = existingRound?.takerPoints?.toString() ?: "41",
+        pointsText = existingRound?.takerPoints?.toString(),
         poignee = existingRound?.poignee ?: Poignee.NONE,
         petitAuBout = existingRound?.petitAuBout ?: PetitAuBout.NONE,
         chelem = existingRound?.chelem ?: Chelem.NONE,
@@ -78,7 +97,7 @@ private data class RoundEditorState(
         partnerIndex = if (game.players.size == 5) 1 else -1,
         contract = Contract.GARDE,
         oudlerCount = 1,
-        pointsText = "41",
+        pointsText = null,
         poignee = Poignee.NONE,
         petitAuBout = PetitAuBout.NONE,
         chelem = Chelem.NONE,
@@ -153,7 +172,11 @@ fun RoundEditor(
         )
       }
 
-      Footer(existingRound = existingRound, onCancel = onCancel) {
+      Footer(
+        existingRound = existingRound,
+        enabled = state.pointsText?.isNotBlank() ?: false,
+        onCancel = onCancel,
+      ) {
         val round = createRound(game, state, existingRound)
         onValidate(round)
         if (existingRound == null) {
@@ -224,19 +247,41 @@ private fun ContractAndOudlerColumn(
   )
 }
 
-/** Input field for card points with validation. */
+/** Input fields for card points with validation. */
 @Composable
-private fun PointsInputField(pointsText: String, onPointsChange: (String) -> Unit) {
+private fun PointsInputField(pointsText: String?, onPointsChange: (String) -> Unit) {
+  Row(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.weight(1f)) {
+      Text(stringResource(Res.string.tarot_points_taker))
+      Spacer(modifier = Modifier.size(8.dp))
+      PointsField(pointsText?.toIntOrNull()?.toString() ?: "") { points ->
+        onPointsChange(points?.toString() ?: "")
+      }
+    }
+    Spacer(modifier = Modifier.size(16.dp))
+    Column(modifier = Modifier.weight(1f)) {
+      Text(stringResource(Res.string.tarot_points_defenders))
+      Spacer(modifier = Modifier.size(8.dp))
+      PointsField(pointsText?.toIntOrNull()?.let { 91 - it }?.toString() ?: "") { points ->
+        onPointsChange(points?.let { 91 - it }?.toString() ?: "")
+      }
+    }
+  }
+}
+
+/** Single points input field with validation for 0-91 range. */
+@Composable
+private fun PointsField(pointsText: String, onPointsChange: (Int?) -> Unit) {
   OutlinedTextField(
     value = pointsText,
     onValueChange = {
       if (it.isEmpty()) {
-        onPointsChange("")
+        onPointsChange(null)
         return@OutlinedTextField
       }
       val number = it.toIntOrNull() ?: return@OutlinedTextField
       if (number in 0..91) {
-        onPointsChange(number.toString())
+        onPointsChange(number)
       }
     },
     label = { Text(stringResource(Res.string.tarot_points)) },
@@ -292,7 +337,12 @@ private fun computeBonusButtonSubtitle(
 }
 
 @Composable
-private fun Footer(onCancel: (() -> Unit)?, existingRound: Round?, onValidate: () -> Unit) {
+private fun Footer(
+  onCancel: (() -> Unit)?,
+  existingRound: Round?,
+  enabled: Boolean,
+  onValidate: () -> Unit,
+) {
   Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
     if (onCancel != null) {
       TextButton(onClick = { onCancel() }, modifier = Modifier.weight(1f)) {
@@ -308,6 +358,7 @@ private fun Footer(onCancel: (() -> Unit)?, existingRound: Round?, onValidate: (
       onClick = onValidate,
       modifier = Modifier.weight(1f),
       maxLines = 1,
+      enabled = enabled,
     )
   }
 }
@@ -362,7 +413,7 @@ private fun createRound(game: Game, state: RoundEditorState, existingRound: Roun
   val partner =
     if (game.players.size == 5) game.players[state.partnerIndex.coerceIn(0, game.players.lastIndex)]
     else null
-  val points = state.pointsText.toIntOrNull()
+  val points = state.pointsText?.toIntOrNull()
   require(points != null && points in 0..91) { "Points must be between 0 and 91" }
   return Round(
     taker = taker,

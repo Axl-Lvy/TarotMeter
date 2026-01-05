@@ -31,7 +31,10 @@ kotlin {
     }
   }
 
-  jvm()
+  jvm {
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    mainRun { mainClass.set("fr.axllvy.tarotmeter.MainKt") }
+  }
 
   js {
     browser()

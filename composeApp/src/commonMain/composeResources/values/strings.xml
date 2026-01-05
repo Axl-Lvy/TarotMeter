@@ -17,7 +17,9 @@
   <string name="tarot_partner">Partner</string>
   <string name="tarot_contract">Contract</string>
   <string name="tarot_oudlers">Oudlers</string>
-  <string name="tarot_points">Card points (0-91)</string>
+  <string name="tarot_points">Points (0-91)</string>
+  <string name="tarot_points_taker">Attack points</string>
+  <string name="tarot_points_defenders">Defense points</string>
   <string name="tarot_add">Add</string>
   <string name="tarot_bonuses">Bonuses</string>
   <string name="tarot_bonuses_button">Configure Bonuses</string>

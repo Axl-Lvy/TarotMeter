@@ -26,14 +26,14 @@ Use this structure as a guide when creating or updating files:
 src/
   main/
     kotlin/
-      proj/
-        tarotmeter/
-          axl/
+      fr/
+        axllvy/
+          tarotmeter/
   test/
     kotlin/
-      proj/
-        tarotmeter/
-          axl/
+      fr/
+        axllvy/
+          tarotmeter/
 ```
 
 ## 🧶 Patterns
