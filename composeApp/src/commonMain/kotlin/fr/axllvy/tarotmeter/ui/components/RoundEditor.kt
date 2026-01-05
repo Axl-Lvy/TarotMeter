@@ -121,7 +121,7 @@ fun RoundEditor(
   onCancel: (() -> Unit)? = null,
 ) {
   var state by
-    remember(existingRound) { mutableStateOf(RoundEditorState.from(game, existingRound)) }
+  remember(existingRound) { mutableStateOf(RoundEditorState.from(game, existingRound)) }
   var showBonusDialog by remember { mutableStateOf(false) }
 
   CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -247,7 +247,7 @@ private fun ContractAndOudlerColumn(
   )
 }
 
-/** Input field for card points with validation. */
+/** Input fields for card points with validation. */
 @Composable
 private fun PointsInputField(pointsText: String?, onPointsChange: (String) -> Unit) {
   Row(modifier = Modifier.fillMaxWidth()) {
@@ -269,6 +269,7 @@ private fun PointsInputField(pointsText: String?, onPointsChange: (String) -> Un
   }
 }
 
+/** Single points input field with validation for 0-91 range. */
 @Composable
 private fun PointsField(pointsText: String, onPointsChange: (Int?) -> Unit) {
   OutlinedTextField(
