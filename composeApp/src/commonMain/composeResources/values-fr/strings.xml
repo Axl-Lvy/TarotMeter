@@ -17,7 +17,9 @@
   <string name="tarot_partner">Partenaire</string>
   <string name="tarot_contract">Contrat</string>
   <string name="tarot_oudlers">Bouts</string>
-  <string name="tarot_points">Points de cartes (0-91)</string>
+  <string name="tarot_points">Points (0-91)</string>
+  <string name="tarot_points_taker">Points de l'attaque</string>
+  <string name="tarot_points_defenders">Points de la défense</string>
   <string name="tarot_add">Ajouter</string>
   <string name="tarot_bonuses">Primes</string>
   <string name="tarot_bonuses_button">Configurer les Primes</string>
@@ -144,7 +146,7 @@
   <string name="invitation_code_dialog_title">Code d'invitation</string>
   <string name="invitation_code_dialog_message">Partagez ce code à d'autres utilisateurs pour qu'il rejoignent votre partie:</string>
   <string name="invitation_code_dialog_generating">Génération du code d'invitation…</string>
-  <string name="invitation_code_dialog_error">Érreur: %1$s</string>
+  <string name="invitation_code_dialog_error">Erreur: %1$s</string>
   <string name="invitation_code_dialog_copy">Copier</string>
   <string name="invitation_code_dialog_qr">Générer un QR code</string>
 

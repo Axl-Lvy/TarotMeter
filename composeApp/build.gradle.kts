@@ -1,3 +1,4 @@
+import kotlin.text.set
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -31,7 +32,10 @@ kotlin {
     }
   }
 
-  jvm()
+  jvm {
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    mainRun { mainClass.set("fr.axllvy.tarotmeter.MainKt") }
+  }
 
   js {
     browser()
