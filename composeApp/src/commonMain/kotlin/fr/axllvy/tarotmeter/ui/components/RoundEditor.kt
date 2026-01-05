@@ -121,7 +121,7 @@ fun RoundEditor(
   onCancel: (() -> Unit)? = null,
 ) {
   var state by
-  remember(existingRound) { mutableStateOf(RoundEditorState.from(game, existingRound)) }
+    remember(existingRound) { mutableStateOf(RoundEditorState.from(game, existingRound)) }
   var showBonusDialog by remember { mutableStateOf(false) }
 
   CustomElevatedCard(modifier = Modifier.fillMaxWidth()) {
