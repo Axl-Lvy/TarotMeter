@@ -1,5 +1,14 @@
 package fr.axllvy.tarotmeter
 
 import androidx.compose.ui.window.ComposeUIViewController
+import org.koin.core.context.startKoin
 
-fun MainViewController() = ComposeUIViewController { App() }
+private var isKoinInitialized = false
+
+fun MainViewController() = ComposeUIViewController {
+  if (!isKoinInitialized) {
+    startKoin { modules(*initKoinModules()) }
+    isKoinInitialized = true
+  }
+  App()
+}
